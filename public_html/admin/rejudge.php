@@ -22,26 +22,26 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && !$_POST['undo']) {
 #populate copy tables	
 	$sql = "INSERT INTO AUTO_RESPONSES_COPY ";
 	$sql .= "SELECT * FROM AUTO_RESPONSES";
-	$insert_result = mysql_query($sql);
+	$insert_result = mysqli_query($link, $sql);
         if(!$insert_result) {
         	sql_error($sql);
         }
 
 	$sql = "INSERT INTO JUDGED_SUBMISSIONS_COPY ";
 	$sql .= "SELECT * FROM JUDGED_SUBMISSIONS";
-        $insert_result = mysql_query($sql);
+        $insert_result = mysqli_query($link, $sql);
         if(!$insert_result) {
                 sql_error($sql);
         }
 
 	$sql = "DELETE FROM JUDGED_SUBMISSIONS";
-	$delete_result = mysql_query($sql);
+	$delete_result = mysqli_query($link, $sql);
 	if(!$delete_result){
                 sql_error($sql);
         }
 
 	$sql = "DELETE FROM AUTO_RESPONSES";
-        $delete_result = mysql_query($sql);
+        $delete_result = mysqli_query($link, $sql);
         if(!$delete_result){
                 sql_error($sql);
         }
@@ -87,7 +87,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && !$_POST['undo']) {
 	$sql .= "`ATTEMPT`, `SOURCE_FILE`) ";
 	$sql .= "SELECT TEAM_ID, PROBLEM_ID, TS, ATTEMPT, SOURCE_FILE ";
 	$sql .= "FROM JUDGED_SUBMISSIONS_COPY";
-	$insert_result = mysql_query($sql);
+	$insert_result = mysqli_query($link, $sql);
         if(!$insert_result) {
                 sql_error($sql);
         }
@@ -110,7 +110,7 @@ elseif($_SERVER['REQUEST_METHOD'] == 'POST' && $_POST['undo']){
 	system("mysql --password=pc2bgone -u root $db_name < undo.sql", $result);
 	$sql = "DELETE FROM JUDGED_SUBMISSIONS";
 	echo "$sql;<br/>";
-//        $sql_result = mysql_query($sql);
+//        $sql_result = mysqli_query($link, $sql);
 //        if(!$insert_result) {
 //                sql_error($sql);
 //        }
@@ -118,21 +118,21 @@ elseif($_SERVER['REQUEST_METHOD'] == 'POST' && $_POST['undo']){
 	$sql = "INSERT INTO JUDGED_SUBMISSIONS 
 		SELECT * FROM JUDGED_SUBMISSIONS_COPY";
 	echo "$sql;<br/>";
-//        $sql_result = mysql_query($sql);
+//        $sql_result = mysqli_query($link, $sql);
 //        if(!$insert_result) {
 //                sql_error($sql);
 //        }
 
 	$sql = "DROP TABLE `JUDGED_SUBMISSIONS_COPY`";
 	echo "$sql;<br/>";
-//        $sql_result = mysql_query($sql);
+//        $sql_result = mysqli_query($link, $sql);
 //        if(!$insert_result) {
 //                sql_error($sql);
 //        }
 
 	$sql = "DELETE FROM AUTO_RESPONSES";
 	echo "$sql;<br/>";
-//        $sql_result = mysql_query($sql);
+//        $sql_result = mysqli_query($link, $sql);
 //        if(!$insert_result) {
 //               sql_error($sql);
 //        }
@@ -140,14 +140,14 @@ elseif($_SERVER['REQUEST_METHOD'] == 'POST' && $_POST['undo']){
 	$sql = "INSERT INTO AUTO_RESPONSES
 		SELECT * FROM AUTO_RESPONSES_COPY";
 	echo "$sql;<br/>";
-//        $sql_result = mysql_query($sql);
+//        $sql_result = mysqli_query($link, $sql);
 //        if(!$insert_result) {
 //                sql_error($sql);
 //        }
 	
 	$sql = "DROP TABLE `AUTO_RESPONSES_COPY`";
 	echo "$sql;<br/>";
-//        $sql_result = mysql_query($sql);
+//        $sql_result = mysqli_query($link, $sql);
 //        if(!$insert_result) {
 //                sql_error($sql);
 //        }
