@@ -31,12 +31,12 @@ $USE_CHROOT = 1;
 # Look for a new submission
 $sql  = "SELECT * ";
 $sql .= "FROM QUEUED_SUBMISSIONS, CONTEST_CONFIG WHERE TS < (START_TS + CONTEST_END_DELAY) ORDER BY TS";
-$submits_result = mysql_query($sql);
+$submits_result = mysqli_query($link, $sql);
 if(!$submits_result){
     sql_error($sql);
 }
 # If there is a new submission, judge it
-while($submits = mysql_fetch_assoc($submits_result)) {
+while($submits = mysqli_fetch_assoc($submits_result)) {
     # Set variables from the submission
     $id = $submits['QUEUE_ID'];
     $team_id = $submits['TEAM_ID'];
@@ -59,30 +59,30 @@ while($submits = mysql_fetch_assoc($submits_result)) {
     # Get the base and extension of the file name
     $tmp = explode(".", $source_file);
     $file_name = $tmp[0];
-    $file_extension = mysql_escape_string($tmp[1]);
+    $file_extension = mysqli_real_escape_string($tmp[1]);
 
     $sql  = "SELECT * ";
     $sql .= "FROM FILE_EXTENSIONS, LANGUAGE_FILE_EXTENSIONS ";
     $sql .= "WHERE EXT = '$file_extension' AND FILE_EXTENSIONS.EXT_ID = LANGUAGE_FILE_EXTENSIONS.EXT_ID";
-    $sql_result = mysql_query($sql);
+    $sql_result = mysqli_query($link, $sql);
     if(!$sql_result){
 		sql_error($sql);
 	}
     # Invalid submission file type
-    if(mysql_num_rows($sql_result) == 0) {
+    if(mysqli_num_rows($sql_result) == 0) {
 		$auto_response_number = EFILETYPE;
 		$submission_output = "File name: $source_file";
 		update_submission($judged_id, $auto_response_number, $source_file);
     }
     else {
-		$row = mysql_fetch_assoc($sql_result);
+		$row = mysqli_fetch_assoc($sql_result);
 		$lang_id = $row['LANGUAGE_ID'];
 
 		$sql  = "SELECT * ";
 		$sql .= "FROM LANGUAGE ";
 		$sql .= "WHERE LANGUAGE_ID = $lang_id ";
-		$sql_result = mysql_query($sql);
-		$row = mysql_fetch_assoc($sql_result);
+		$sql_result = mysqli_query($link, $sql);
+		$row = mysqli_fetch_assoc($sql_result);
 	
 		$lang_name = $row['LANGUAGE_NAME'];
 		$max_cpu_time = $row['MAX_CPU_TIME'];
@@ -115,12 +115,12 @@ while($submits = mysql_fetch_assoc($submits_result)) {
 			$sql  = "SELECT HEADER ";
 			$sql .= "FROM HEADERS ";
 			$sql .= "WHERE LANGUAGE_ID = $lang_id ";
-			$sql_result = mysql_query($sql);
+			$sql_result = mysqli_query($link, $sql);
 			if(!$sql_result){
 				sql_error($sql);
 			}
 			$headers = array();
-			while($row = mysql_fetch_row($sql_result)) {
+			while($row = mysqli_fetch_row($sql_result)) {
 				array_push($headers, $row[0]);
 			}
 			$problem_handle['preprocess']($headers);
@@ -135,12 +135,12 @@ while($submits = mysql_fetch_assoc($submits_result)) {
 			    $sql  = "SELECT WORD ";
 			    $sql .= "FROM FORBIDDEN_WORDS ";
 			    $sql .= "WHERE LANGUAGE_ID = $lang_id ";
-			    $sql_result = mysql_query($sql);
+			    $sql_result = mysqli_query($link, $sql);
 			    if(!$sql_result) {
 				    sql_error($sql);
 			    }
 
-			    while($row = mysql_fetch_row($sql_result)) {
+			    while($row = mysqli_fetch_row($sql_result)) {
 				    if(preg_match("/(.*$row[0].*)/",
 					    $pre_proc_array[sizeof($pre_proc_array)-1], 
 					    $context)) {
@@ -496,18 +496,18 @@ function new_submission($id,
     $sql .= "VALUES ";
     $sql .= "    ('$team_id','$problem_id'";
     $sql .= ",'$ts','$attempt','$source_file') ";
-    $result = mysql_query($sql);
+    $result = mysqli_query($link, $sql);
     if(!$result){
 	sql_error($sql);
     }
 
-    $new_id = mysql_insert_id();
+    $new_id = mysqli_insert_id($link);
 
     # Delete the row from QUEUED_SUBMISSIONS
     $sql  = "DELETE ";
     $sql .= "FROM QUEUED_SUBMISSIONS ";
     $sql .= "WHERE QUEUE_ID = '$id' ";
-    $result = mysql_query($sql);
+    $result = mysqli_query($link, $sql);
     if(!$result){
 	sql_error($sql);
     }
@@ -554,7 +554,7 @@ function update_submission($judged_id,$auto_response_number,$in_file, $error_no 
     	$sql = "INSERT INTO AUTO_RESPONSES (JUDGED_ID, IN_FILE, AUTO_RESPONSE) ";
     	$sql .= "VALUES ($judged_id, '$in_file', $auto_response_number)";
     }
-    $result = mysql_query($sql);
+    $result = mysqli_query($link, $sql);
     if(!$result)
 	sql_error($sql);
 }

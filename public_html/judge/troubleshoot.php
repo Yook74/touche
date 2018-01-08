@@ -74,11 +74,11 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     		$sql .= "FROM JUDGED_SUBMISSIONS ";
     		$sql .= "WHERE TEAM_ID = $team[id] ";
     		$sql .= "AND PROBLEM_ID = $problem[id] ";
-    		$result = mysql_query($sql);
+    		$result = mysqli_query($link, $sql);
     		
     		$problem_header = 0;
     		do{
-    		    if($row = mysql_fetch_assoc($result)) {
+    		    if($row = mysqli_fetch_assoc($result)) {
     			if(isset($all_problems) 
 			    || $problem_id == $row['PROBLEM_ID']) {
     			

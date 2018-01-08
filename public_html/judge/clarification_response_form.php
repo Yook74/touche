@@ -19,15 +19,15 @@
 	{
 		$sql  = "SELECT * FROM CLARIFICATION_REQUESTS ";
 		$sql .= "WHERE CLARIFICATION_ID=$clarification_id ";
-		$result = mysql_query($sql);
-		$row = mysql_fetch_assoc($result);
+		$result = mysqli_query($link, $sql);
+		$row = mysqli_fetch_assoc($result);
 	}
 	else
 	{
 		$sql = "SELECT * FROM PROBLEMS ORDER BY PROBLEM_ID";
-		$result = mysql_query($sql);
-		$numrows = mysql_num_rows($result);
-		$row = mysql_fetch_assoc($result);
+		$result = mysqli_query($link, $sql);
+		$numrows = mysqli_num_rows($result);
+		$row = mysqli_fetch_assoc($result);
 	}
 
 	echo "<br>\n";
@@ -55,7 +55,7 @@
 		echo "<option value=-1 selected=selected>General</option>\n";
 		for($x = 0; $x < $numrows; $x++) {
 			echo "<option value=" . $row['PROBLEM_ID'] . ">" . $row['PROBLEM_NAME'] . "</option>\n";
-			$row = mysql_fetch_assoc($result);
+			$row = mysqli_fetch_assoc($result);
 		}
 		echo "</select>\n";
 	}
@@ -95,8 +95,8 @@
 
 //WORK ON THIS BUG?
                 $sql = "SELECT * FROM TEAMS ORDER BY TEAM_ID";
-                $result = mysql_query($sql);
-                $numrows = mysql_num_rows($result);
+                $result = mysqli_query($link, $sql);
+                $numrows = mysqli_num_rows($result);
 //		echo "<option value=".($numrows+1).">Respond to All</option>\n";
 //                $row = mysql_fetch_assoc($result);
 //		for($x = 0; $x < $numrows; $x++) {

@@ -16,6 +16,7 @@ is in a directory named src):
     ln ~/src/index.html public_html/index.html
     ln -s ~/src/dbcreate.sql public_html/dbcreate.sql
     ln -s ~/src/readme public_html/readme
+    ln -s ~/src/lib public_html/lib    
 
 We cannot use symbolic links for the `createcontest` scripts since
 they are directly executed by the web server and we use suexec, which
