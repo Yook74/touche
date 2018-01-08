@@ -14,26 +14,20 @@
 include_once('database.inc');
 include_once('responses.inc');
 
-$link = mysql_connect($db_host, $db_user, $db_pass);
+$link = mysqli_connect($db_host, $db_user, $db_pass, $db_name);
 if (!$link) {
     print "Sorry.  Database connect failed.  Retrying...";
     exit;
 }
 
-$connect_good = mysql_select_db($db_name);
-if (!$connect_good) {
-    print "Sorry.  Database selection failed.  Retrying...";
-    exit;
-}
-
-$contest_info = mysql_query("SELECT * FROM CONTEST_CONFIG");
+$contest_info = mysqli_query($link, "SELECT * FROM CONTEST_CONFIG");
 if (!$contest_info) {
     print "Sorry.  Database request (CONTEST_CONFIG) failed.  Retrying...";
     exit;
 }
 
-$row = mysql_fetch_assoc($contest_info);
-    if (mysql_num_rows($contest_info) < 1) {
+$row = mysqli_fetch_assoc($contest_info);
+    if (mysqli_num_rows($contest_info) < 1) {
 	print "Sorry.  No contest configuration information exists.<br /> ";
 	print "Please contact a system administrator.";
 	exit;
@@ -73,15 +67,15 @@ $row = mysql_fetch_assoc($contest_info);
     }
 	$contest_started = $row['HAS_STARTED'];
 
-$teams_query = mysql_query("SELECT * FROM TEAMS");
+$teams_query = mysqli_query($link, "SELECT * FROM TEAMS");
 if (!$teams_query) {
     # Added the "mysql_error() part. -sb 2006-10-05
-    print "Sorry.  Database request (TEAMS) failed with " . mysql_error() . " Retrying...";
+    print "Sorry.  Database request (TEAMS) failed with " . mysqli_error($link) . " Retrying...";
     exit;
 }
-$num_teams = mysql_num_rows($teams_query);
+$num_teams = mysqli_num_rows($teams_query);
 $teams = [];
-while ($row = mysql_fetch_assoc($teams_query)) {
+while ($row = mysqli_fetch_assoc($teams_query)) {
     $team_id = $row['TEAM_ID'];
     $team_user = $row['USERNAME'];
     $teams[$team_id]['user'] = $team_user;
@@ -103,13 +97,13 @@ while ($row = mysql_fetch_assoc($teams_query)) {
 $sql = "SELECT ct.TEAM_ID, c.CATEGORY_NAME";
 $sql .= " FROM CATEGORY_TEAM ct, CATEGORIES c";
 $sql .= " WHERE ct.CATEGORY_ID = c.CATEGORY_ID";
-$categories_query = mysql_query($sql);
+$categories_query = mysqli_query($link, $sql);
 if (!$categories_query) {
     print "Sorry.  Database request (CATEGORIES) failed.  Retrying...";
     exit;
 }
 $categories = [];
-while ($row = mysql_fetch_assoc($categories_query)) {
+while ($row = mysqli_fetch_assoc($categories_query)) {
     $cat_name = $row['CATEGORY_NAME'];
     if ($cat_name) {
 	$categories[$cat_name]['name'] = $cat_name;
@@ -122,14 +116,14 @@ while ($row = mysql_fetch_assoc($categories_query)) {
     }
 }
 
-$problems_query = mysql_query("SELECT * FROM PROBLEMS ORDER BY PROBLEM_ID");
+$problems_query = mysqli_query($link, "SELECT * FROM PROBLEMS ORDER BY PROBLEM_ID");
 if (!$problems_query) {
     print "Sorry.  Database request (PROBLEMS) failed.  Retrying...";
     exit;
 }
 $problems = [];
-$num_problems = mysql_num_rows($problems_query);
-while ($row = mysql_fetch_assoc($problems_query)) {
+$num_problems = mysqli_num_rows($problems_query);
+while ($row = mysqli_fetch_assoc($problems_query)) {
     $problem_id = $row['PROBLEM_ID'];
     $problems[$problem_id]['id'] = $row['PROBLEM_ID'];
     $problems[$problem_id]['name'] = $row['PROBLEM_NAME'];
@@ -137,12 +131,12 @@ while ($row = mysql_fetch_assoc($problems_query)) {
     $problems[$problem_id]['note'] = $row['PROBLEM_NOTE'];
 }
 
-$responses_query = mysql_query("SELECT * FROM RESPONSES");
+$responses_query = mysqli_query($link, "SELECT * FROM RESPONSES");
 if (!$responses_query) {
     print "Sorry.  Database request (RESPONSES) failed.  Retrying...";
     exit;
 }
-while ($row = mysql_fetch_assoc($responses_query)) {
+while ($row = mysqli_fetch_assoc($responses_query)) {
     $response_id = $row['RESPONSE_ID'];
     $responses[$response_id]['id'] = $response_id;
     $responses[$response_id]['response'] = $row['RESPONSE'];

@@ -20,8 +20,7 @@
     	echo "<meta http-equiv = 'refresh' content = '60'>\n";
     }
    
-    $link = mysql_connect ($db_host , $db_user, $db_pass) or die ("Could not connect to database");
-    mysql_select_db ($db_name) or die ("Could not select database");
+    $link = mysqli_connect ($db_host , $db_user, $db_pass, $db_name) or die ("Could not connect to database");
 
 /*
     // There is apparently a problem with $HTTP_GET_VARS vs. $_GET. $HTTP_GET_VARS
@@ -95,8 +94,8 @@
     $sql .= "FROM SITE, TEAMS ";
     $sql .= "WHERE SITE.SITE_ID = TEAMS.SITE_ID AND ";
     $sql .= "TEAMS.TEAM_ID = $team_id";
-    $result = mysql_query($sql);
-    $row = mysql_fetch_assoc($result);
+    $result = mysqli_query($link, $sql);
+    $row = mysqli_fetch_assoc($result);
     $site_current_time = time() - ($row['START_TS'] - $contest_start_ts);
     
 
@@ -113,13 +112,13 @@
 	#also need to make sure it's not more than the current contest
 	$sql .= "ORDER BY PROBLEM_ID ASC ";
 
-	$result = mysql_query($sql);
+	$result = mysqli_query($link, $sql);
 
 	foreach ($problems as $prob_id => $prob_data) {
 	    $standings[$i]['problems'][$prob_id]['penalty'] = 0;
 	}
 
-	while($row = mysql_fetch_assoc($result)) {
+	while($row = mysqli_fetch_assoc($result)) {
 	    if($row['RESPONSE_ID'] == 9) {
 		// each incorrect submission counts as 20 penalty points
 		$incorrect_submission_penalty = ($row['ATTEMPT'] - 1) * 20;
@@ -238,8 +237,8 @@
 
 	//hack so if problems don't start at 0
 	$sql = "select PROBLEM_ID from PROBLEMS ORDER by PROBLEM_ID";
-	$result = mysql_query($sql);
-	$row = mysql_fetch_assoc($result);
+	$result = mysqli_query($link, $sql);
+	$row = mysqli_fetch_assoc($result);
 	$min = $row['PROBLEM_ID'];
 	for($j=$min; $j<($min + $num_problems); $j++) { // change this later
 	    echo "<td align=center>\n";
@@ -305,8 +304,8 @@ function checkexhib($team)
         if($selected_category != 'Exhibition') {
                 $sql  = "SELECT * FROM CATEGORIES AS C, CATEGORY_TEAM AS T WHERE C.CATEGORY_ID = T.CATEGORY_ID AND C.CATEGORY_NAME = 'Exhibition'";
                 $sql .= " AND T.TEAM_ID = $team";
-                $ex = mysql_query($sql);
-                $num_rows = mysql_num_rows($ex);
+                $ex = mysqli_query($link, $sql);
+                $num_rows = mysqli_num_rows($ex);
                 return $num_rows;
         }
         else {

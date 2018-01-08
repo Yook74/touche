@@ -28,8 +28,8 @@
 	    $sql .= "INTO CLARIFICATION_REQUESTS ";
 	    $sql .= "    (TEAM_ID, PROBLEM_ID, QUESTION, SUBMIT_TS) ";
 	    $sql .= " VALUES ";
-	    $sql .= "    ('$team_id', '$problem_id', '".mysql_real_escape_string($question)."', '".time()."')";
-	    mysql_query($sql);
+	    $sql .= "    ('$team_id', '$problem_id', '".mysqli_real_escape_string($link, $question)."', '".time()."')";
+	    mysqli_query($link, $sql);
 	}
 
 	echo "<br>\n";

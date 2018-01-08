@@ -78,9 +78,9 @@ for ($i = 0; $i < count($standings); $i++) {
     $sql .= "WHERE ";
     $sql .= "    TEAM_ID='" . $standings[$i]['team_id'] . "' ";
     $sql .= "ORDER BY PROBLEM_ID ASC ";
-    $result = mysql_query($sql);
+    $result = mysqli_query($link, $sql);
 
-    while($row = mysql_fetch_assoc($result)) {
+    while($row = mysqli_fetch_assoc($result)) {
         if($row['RESPONSE_ID'] == 1) {
             // each incorrect submission counts as 20 penalty points
             $incorrect_submission_penalty = ($row['ATTEMPT'] - 1) * 20;
@@ -260,8 +260,8 @@ function checkexhib($team)
         if($selected_category != 'Exhibition') {
                 $sql  = "SELECT * FROM CATEGORIES AS C, CATEGORY_TEAM AS T WHERE C.CATEGORY_ID = T.CATEGORY_ID AND C.CATEGORY_NAME = 'Exhibition'";
                 $sql .= " AND T.TEAM_ID = $team";
-                $ex = mysql_query($sql);
-                $num_rows = mysql_num_rows($ex);
+                $ex = mysqli_query($link, $sql);
+                $num_rows = mysqli_num_rows($ex);
                 return $num_rows;
         }
         else {

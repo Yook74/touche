@@ -19,11 +19,11 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && !isSet($_POST['team'])) {
 	$sql .= "FROM JUDGED_SUBMISSIONS ";
 	$sql .= "WHERE JUDGED_ID = $_POST[judged_id] ";
 
-	$sql_result = mysql_query($sql);
+	$sql_result = mysqli_query($link, $sql);
         if(!$sql_result) {
         	sql_error($sql);
         }
-        $row = mysql_fetch_assoc($sql_result);
+        $row = mysqli_fetch_assoc($sql_result);
 	$judged = $row['JUDGED'] + 1;
 
 	$set = "SET RESPONSE_ID = $_POST[result], JUDGED = $judged ";
@@ -34,7 +34,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && !isSet($_POST['team'])) {
     $sql .= $set;
     $sql .= "WHERE JUDGED_ID = $_POST[judged_id] ";
 
-    $result = mysql_query($sql);
+    $result = mysqli_query($link, $sql);
     if(!$result) {
         sql_error($sql);
     }
@@ -51,20 +51,20 @@ if (isSet($_POST['team']) && $_POST['team']){
 
 $sql = "SELECT * ";
 $sql .= "FROM PROBLEMS";
-$sql_result = mysql_query($sql);
+$sql_result = mysqli_query($link, $sql);
 if (!$sql_result){
 	sql_error($sql);
 }
 echo "<center>";
 
 # Checks to make sure that there are problems to judge
-if($row = mysql_fetch_assoc($sql_result)){
+if($row = mysqli_fetch_assoc($sql_result)){
 	echo "Problems: ";
 	
 	if(!$_GET){
 		echo "All ";
 		echo "| <a href='$page?problem=" . $row['PROBLEM_NAME'] . "'>" . $row['PROBLEM_NAME'] . "</a> ";
-		while ($row = mysql_fetch_assoc($sql_result)){
+		while ($row = mysqli_fetch_assoc($sql_result)){
 			echo "| <a href='$page?problem=" . $row['PROBLEM_NAME'] . "'>" . $row['PROBLEM_NAME'] . "</a> ";
 		}
 		$problem_name = "ALL";
@@ -80,7 +80,7 @@ if($row = mysql_fetch_assoc($sql_result)){
 			echo "| <a href='$page?problem=" . $row['PROBLEM_NAME'] . "'>" . $row['PROBLEM_NAME'] . "</a> ";
 		}
 
-		while ($row = mysql_fetch_assoc($sql_result)){
+		while ($row = mysqli_fetch_assoc($sql_result)){
 			if ($row['PROBLEM_NAME'] == $problem_name){
 		        	echo "| $problem_name ";
 				$problem_id = $row['PROBLEM_ID'];				
@@ -95,13 +95,13 @@ if($row = mysql_fetch_assoc($sql_result)){
 	$sql = "SELECT * ";
 	$sql .= "FROM CONTEST_CONFIG ";
 
-	$sql_result = mysql_query($sql);
+	$sql_result = mysqli_query($link, $sql);
 
 	if(!$sql_result){
 		sql_error($sql);
 	}
 	
-	$row = mysql_fetch_assoc($sql_result);
+	$row = mysqli_fetch_assoc($sql_result);
 	$start_ts = $row['START_TS'];
 	$team_show = $row['TEAM_SHOW'];
 
@@ -111,7 +111,7 @@ if($row = mysql_fetch_assoc($sql_result)){
 	else
 		$select = "TEAM_ID"; 
 	$sql = "SELECT $select FROM TEAMS ORDER BY $select";
-	$sql_result = mysql_query($sql);
+	$sql_result = mysqli_query($link, $sql);
         if(!$sql_result){
                 sql_error($sql);
         }
@@ -123,7 +123,7 @@ if($row = mysql_fetch_assoc($sql_result)){
 	else
 		echo "<option value='all'>All</option>\n";
 
-	while($row = mysql_fetch_assoc($sql_result)){
+	while($row = mysqli_fetch_assoc($sql_result)){
 		echo "<option value='$row[$select]'";
 		if($row[$select] == $team_filter)
 			echo" selected";
@@ -163,12 +163,12 @@ if($row = mysql_fetch_assoc($sql_result)){
 	}
 	$sql .= "ORDER BY JS.TS";
 	
-	$sql_result = mysql_query($sql);
+	$sql_result = mysqli_query($link, $sql);
 
 	if(!$sql_result){
 		sql_error($sql);
 	}
-	if (mysql_num_rows($sql_result) == 0)
+	if (mysqli_num_rows($sql_result) == 0)
 		$end_string = "there are no submissions for this problem";	
 	else {
 		$end_string = "";
@@ -196,7 +196,7 @@ if($row = mysql_fetch_assoc($sql_result)){
         }
 	echo "<td bgcolor=$hd_bg_color2 align=center>Go to judging page</td></tr>\n";
 	    
-	while($row = mysql_fetch_assoc($sql_result)){
+	while($row = mysqli_fetch_assoc($sql_result)){
 		#calculate time sence start of contest
 		$submit_ts = $row['TS'];
 		// turns out we only want to display min
@@ -213,19 +213,19 @@ if($row = mysql_fetch_assoc($sql_result)){
 			$sql .= "FROM AUTO_RESPONSES AR INNER JOIN RESPONSES R ON R.RESPONSE_ID = AR.AUTO_RESPONSE ";
 			$sql .= "WHERE AR.JUDGED_ID = " . $row['JUDGED_ID']. " ";
 		
-			$response_result = mysql_query($sql);
+			$response_result = mysqli_query($link, $sql);
         		if(!$response_result){
                 		sql_error($sql);
         		}
 			
-			if (mysql_num_rows($response_result) == 0){
+			if (mysqli_num_rows($response_result) == 0){
 				$response = "pending";
 			}
 			else{
-				$response_row = mysql_fetch_assoc($response_result);
+				$response_row = mysqli_fetch_assoc($response_result);
 				$response = $response_row['RESPONSE'];
 				$response_id = $response_row['RESPONSE_ID'];
-				while($response_row = mysql_fetch_assoc($response_result)){
+				while($response_row = mysqli_fetch_assoc($response_result)){
 					if($response_id != ECORRECT){
 						if($response_id != $response_row['RESPONSE_ID'] && $response_row['RESPONSE_ID'] != ECORRECT){
 							$response = "Multiple Responses";

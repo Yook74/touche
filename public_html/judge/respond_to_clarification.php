@@ -19,7 +19,7 @@
 
 	if($clarification_id != 0) {
 		$sql  = "UPDATE CLARIFICATION_REQUESTS ";
-		$sql .= "SET RESPONSE='".mysql_real_escape_string($response)."', ";
+		$sql .= "SET RESPONSE='".mysqli_real_escape_string($link, $response)."', ";
 		$sql .= "    REPLY_TS='".time()."', ";
 		$sql .= "    BROADCAST='$broadcast' ";
 		$sql .= "WHERE CLARIFICATION_ID='$clarification_id' ";
@@ -28,9 +28,9 @@
 		$sql = "INSERT INTO CLARIFICATION_REQUESTS ";
 		$sql .= "(CLARIFICATION_ID, TEAM_ID, PROBLEM_ID, SUBMIT_TS, QUESTION, REPLY_TS, RESPONSE, BROADCAST)";
 		$sql .= "VALUES ('', '0', '$problem', '".time()."', 'Clarification initiated by judge', '".time();
-		$sql .= "', '".mysql_real_escape_string($response)."', '$broadcast');";
+		$sql .= "', '".mysqli_real_escape_string($link, $response)."', '$broadcast');";
 	}
-	mysql_query($sql);
+	mysqli_query($link, $sql);
 	header("location: clarifications.php");
 	exit(0);
 ?>

@@ -102,7 +102,7 @@ else{
     	$sql .= "ORDER BY TEAM_ID ASC ";
 }
 
-$result = mysql_query($sql);
+$result = mysqli_query($link, $sql);
 
 echo "<br><table align=center bgcolor=#000000 width=90% 
     cellpadding=0 cellspacing=0 border=0><tr><td>\n";
@@ -111,7 +111,7 @@ echo "<tr><td colspan=5 align=center bgcolor=$hd_bg_color1>\n";
 echo "<font color=$hd_txt_color1><b>Clarifications</b></font></td></tr>\n";
 
 $clar = 0;
-while ($row = mysql_fetch_assoc($result)) {
+while ($row = mysqli_fetch_assoc($result)) {
     $clar = 1;
     echo "<tr bgcolor=$hd_bg_color2>\n";
     echo "<td align=center width=33%>";

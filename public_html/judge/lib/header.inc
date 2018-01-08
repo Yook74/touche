@@ -17,14 +17,14 @@ global $contest_name, $contest_host, $page_bg_color, $title_bg_color,
 $contest_freeze_ts, $site_start_offset, $contest_end_ts, $num_queued, $num_clarifications;
 	#some sql stuff we'll use a bit later
 	$sql = "select count(*) from QUEUED_SUBMISSIONS";
-	$result = mysql_query($sql);
+	$result = mysqli_query($link, $sql);
 	## Checking added. -sb 2006-10-05
 	if( !$result )  {
-	    print "Sorry.  Database request ($sql) failed with " . mysql_error();
+	    print "Sorry.  Database request ($sql) failed with " . mysqli_error($link);
 	    exit;
 	}
 
-	$row = mysql_fetch_row($result);
+	$row = mysqli_fetch_row($result);
 	$num_queued = $row[0];
 ?>
 
@@ -78,9 +78,9 @@ $contest_freeze_ts, $site_start_offset, $contest_end_ts, $num_queued, $num_clari
 				    $sql .= "FROM CLARIFICATION_REQUESTS ";
 				    $sql .= "WHERE ";
 				    $sql .= "    RESPONSE='' ";
-				    $result = mysql_query($sql);
-					$num_clarifications = mysql_num_rows($result);
-				    if($row = mysql_fetch_row($result)) {
+				    $result = mysqli_query($link, $sql);
+					$num_clarifications = mysqli_num_rows($result);
+				    if($row = mysqli_fetch_row($result)) {
 					echo "<font color='#ff0000'><b>";
 					echo "Clarification Requested";
 					echo "</b></font>";

@@ -76,10 +76,10 @@ if($problem_id != 0) {
     $sql .= "    AND PROBLEM_ID='$problem_id'";
 }
 $sql .= "ORDER BY SUBMIT_TS DESC ";
-$result = mysql_query($sql);
+$result = mysqli_query($link, $sql);
 
 $clar = 0;	
-while ($row = mysql_fetch_assoc($result)) {
+while ($row = mysqli_fetch_assoc($result)) {
 	$clar = 1;
 	echo "<tr bgcolor=$hd_bg_color2>\n";
     echo "<td align=center width=33%>";
