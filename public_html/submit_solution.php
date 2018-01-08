@@ -14,8 +14,7 @@
 
 	$problem_id = $_POST['problem_id'];
 
-	$link = mysql_connect ($db_host, $db_user, $db_pass) or die ("Could not connect to database");
-	mysql_select_db ($db_name) or die ("Could not select database");
+	$link = mysqli_connect ($db_host, $db_user, $db_pass,$db_name) or die ("Could not connect to database");
 
 	// check to see if a file is actually being submitted
 	if ($_FILES['source_file']['size'] == 0) {
@@ -32,25 +31,25 @@
 	// check to see if we already have a successful submission 
 	$sql  = "SELECT * FROM JUDGED_SUBMISSIONS ";
 	$sql .= "WHERE TEAM_ID='$team_id' AND PROBLEM_ID='$problem_id' AND RESPONSE_ID='9' ";
-	$result = mysql_query($sql);
-	echo mysql_error();
-	if (mysql_num_rows($result)>0) {
+	$result = mysqli_query($link, $sql);
+	echo mysqli_error($link);
+	if (mysqli_num_rows($result)>0) {
 		header("location: submissions.php?state=2");
 		exit(0);
 	}
         $sql  = "SELECT * FROM JUDGED_SUBMISSIONS ";
         $sql .= "WHERE TEAM_ID='$team_id' AND PROBLEM_ID='$problem_id' AND RESPONSE_ID='0' ";
-        $result = mysql_query($sql);
-        echo mysql_error();
-        if (mysql_num_rows($result)>0) {
+        $result = mysqli_query($link, $sql);
+        echo mysqli_error($link);
+        if (mysqli_num_rows($result)>0) {
                 header("location: submissions.php?state=4");
                 exit(0);
         }
 	$sql  = "SELECT * FROM QUEUED_SUBMISSIONS ";
 	$sql .= "WHERE TEAM_ID='$team_id' AND PROBLEM_ID='$problem_id'";
-	$result = mysql_query($sql);
-	echo mysql_error();
-	if (mysql_num_rows($result)>0) {
+	$result = mysqli_query($link, $sql);
+	echo mysqli_error($link);
+	if (mysqli_num_rows($result)>0) {
 		header("location: submissions.php?state=4");
 		exit(0);
 	}
@@ -60,10 +59,10 @@
 	$sql .= "WHERE ";
 	$sql .= "    TEAM_ID='$team_id' AND PROBLEM_ID='$problem_id' ";
 	$sql .= "ORDER BY ATTEMPT DESC";
-	$result = mysql_query($sql);
+	$result = mysqli_query($link, $sql);
 	
-	if (mysql_num_rows($result) > 0) {
-		$row = mysql_fetch_assoc($result);
+	if (mysqli_num_rows($result) > 0) {
+		$row = mysqli_fetch_assoc($result);
 		$attempt = $row[ATTEMPT]+1;
 	} else {
 		$attempt = 1;
@@ -92,7 +91,7 @@
 
 	$sql  = "INSERT INTO QUEUED_SUBMISSIONS (TEAM_ID, PROBLEM_ID, ATTEMPT, TS, SOURCE_FILE) ";
 	$sql .= "VALUES ('$team_id','$problem_id', '$attempt', '$ts','$queue_file_name') ";
-	$result = mysql_query($sql);
+	$result = mysqli_query($link, $sql);
 
 	header("location: submissions.php?state=3");
 	exit(0);

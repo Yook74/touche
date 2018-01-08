@@ -16,12 +16,12 @@ if($_GET){
     $sql .= "FROM JUDGED_SUBMISSIONS ";
     $sql .= "WHERE JUDGED_ID = " . $_GET['judged_id'];
 
-    $sql_result = mysql_query($sql);
+    $sql_result = mysqli_query($link, $sql);
 
     if(!$sql_result)
     	sql_error($sql);
 
-    $row = mysql_fetch_assoc($sql_result);
+    $row = mysqli_fetch_assoc($sql_result);
     $source_file = $row['SOURCE_FILE'];
     $viewed = $row['VIEWED'];
     $viewed++;
@@ -29,7 +29,7 @@ if($_GET){
     $sql  = "UPDATE JUDGED_SUBMISSIONS ";
     $sql .= "SET VIEWED = $viewed ";
     $sql .= "WHERE JUDGED_ID = $_GET[judged_id] ";
-    $result = mysql_query($sql);
+    $result = mysqli_query($link, $sql);
     if(!$result) {
         sql_error($sql);
     }
@@ -40,12 +40,12 @@ if($_GET){
     $sql .= "FROM PROBLEMS ";
     $sql .= "WHERE PROBLEM_ID = '" . $_GET['problem'] . "'";
 
-    $sql_result = mysql_query($sql);
+    $sql_result = mysqli_query($link, $sql);
     
     if(!$sql_result)
     	sql_error($sql);
 
-    $row = mysql_fetch_assoc($sql_result);
+    $row = mysqli_fetch_assoc($sql_result);
 
     $problem_name = $row['PROBLEM_NAME'];
     $problem_id = $row['PROBLEM_ID'];
@@ -53,7 +53,7 @@ if($_GET){
     if(!$sql_result)
         sql_error($sql);
 
-    $row = mysql_fetch_assoc($sql_result);
+    $row = mysqli_fetch_assoc($sql_result);
 
     $auto_response = $row['RESPONSE'];
     
@@ -87,13 +87,13 @@ if($_GET){
     $sql .= "FROM AUTO_RESPONSES AR INNER JOIN RESPONSES R ON R.RESPONSE_ID = AR.AUTO_RESPONSE ";
     $sql .= "WHERE AR.JUDGED_ID = $_GET[judged_id]";
 
-    $sql_result = mysql_query($sql);
+    $sql_result = mysqli_query($sql);
     if(!$sql_result)
         sql_error($sql);
 
     $auto_response_id = 10;
 
-    while($row = mysql_fetch_assoc($sql_result)){
+    while($row = mysqli_fetch_assoc($sql_result)){
 	if($auto_response_id > $row['AUTO_RESPONSE'])
 		$auto_response_id = $row['AUTO_RESPONSE'];
 	switch($row['AUTO_RESPONSE']){
@@ -240,12 +240,12 @@ if($_GET){
     $sql = "SELECT * ";
     $sql .= "FROM RESPONSES ";
 
-    $sql_result = mysql_query($sql);
+    $sql_result = mysqli_query($link, $sql);
 
     if(!$sql_result)
         sql_error($sql);
  
-    while($row = mysql_fetch_assoc($sql_result)){
+    while($row = mysqli_fetch_assoc($sql_result)){
 	echo "<option value=" . $row['RESPONSE_ID'];
         if($auto_response_id == $row['RESPONSE_ID']) {
         	echo " selected ";

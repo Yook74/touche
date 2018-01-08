@@ -40,9 +40,9 @@ if(isSet($_POST['submit']) && $_POST['submit'] == 'Start')
 			$contest_started = true;
 //set permissions for html and pdf files
 $sql = "SELECT * FROM PROBLEMS";
-$result = mysql_query($sql);
-if(mysql_num_rows($result) > 0) { 
-       while($row = mysql_fetch_assoc($result)){
+$result = mysqli_query($link, $sql);
+if(mysqli_num_rows($result) > 0) { 
+       while($row = mysqli_fetch_assoc($result)){
 		$dir_name = "../problems/" . $row['PROBLEM_LOC'];
 		chmod($dir_name, 0755);
 
@@ -58,43 +58,43 @@ if(mysql_num_rows($result) > 0) {
 }
 	//		print "cur hour: $cur_hour cur minute: $cur_minute cur second: $cur_second";
 			$sql = "UPDATE CONTEST_CONFIG set START_TIME = '$cur_hour:$cur_minute:$cur_second'";
-			$result = mysql_query($sql);
+			$result = mysqli_query($link, $sql);
 			if(!$result)
 			{
-				print "Grevious error: update failed: " . mysql_error() . "\n<br>$sql";
+				print "Grevious error: update failed: " . mysqli_error($link) . "\n<br>$sql";
 			}
 			$sql = "UPDATE CONTEST_CONFIG set START_TS = '" . time() . "'";
-			$result = mysql_query($sql);
+			$result = mysqli_query($link, $sql);
 			if(!$result)
 			{
-				print "Grevious error: update failed: " . mysql_error() . "\n<br>$sql";
+				print "Grevious error: update failed: " . mysqli_error($link) . "\n<br>$sql";
 			}
 			$sql = "UPDATE CONTEST_CONFIG set HAS_STARTED = '1'";
-			$result = mysql_query($sql);
+			$result = mysqli_query($link, $sql);
 			if(!$result)
 			{
-				print "Grevious error: update failed: " . mysql_error() . "\n<br>$sql";
+				print "Grevious error: update failed: " . mysqli_error($link) . "\n<br>$sql";
 			}
 		}
 		else
 		{
 			$sql = "UPDATE SITE set START_TIME = '$cur_hour:$cur_minute:$cur_second' WHERE SITE_ID = '$site'";
-			$result = mysql_query($sql);
+			$result = mysqli_query($link, $sql);
 			if(!$result)
 			{
-				print "Grevious error: update failed: " . mysql_error() . "\n<br>$sql";
+				print "Grevious error: update failed: " . mysqli_error($link) . "\n<br>$sql";
 			}
 			$sql = "UPDATE SITE set START_TS = '" . time() . "' WHERE SITE_ID = '$site'";
-			$result = mysql_query($sql);
+			$result = mysqli_query($link, $sql);
 			if(!$result)
 			{
-				print "Grevious error: update failed: " . mysql_error() . "\n<br>$sql";
+				print "Grevious error: update failed: " . mysqli_error($link) . "\n<br>$sql";
 			}
 			$sql = "UPDATE SITE set HAS_STARTED = '1' WHERE SITE_ID = '$site'";
-			$result = mysql_query($sql);
+			$result = mysqli_query($link, $sql);
 			if(!$result)
 			{
-				print "Grevious error: update failed: " . mysql_error() . "\n<br>$sql";
+				print "Grevious error: update failed: " . mysqli_error($link) . "\n<br>$sql";
 			}
 		}
 	}
@@ -119,13 +119,13 @@ else
 echo "</td></tr>";
 
 $sql = "SELECT * FROM SITE";
-$result = mysql_query($sql);
+$result = mysqli_query($link, $sql);
 if(!$result)
 {
 	echo "<tr><td bgcolor=$hd_bg_color2>SELECT from SITE table failed</tr></td>";
 }
 
-while($row = mysql_fetch_assoc($result))
+while($row = mysqli_fetch_assoc($result))
 {
 	echo "<tr><td bgcolor=$data_bg_color1>" . $row['SITE_NAME'];
 	echo "</td><td align=center bgcolor=$data_bg_color1>";

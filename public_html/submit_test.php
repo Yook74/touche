@@ -33,15 +33,15 @@
 	$auto_response_number = ENONE;
 	$sql  = "SELECT * ";
 	$sql .= "FROM FILE_EXTENSIONS, LANGUAGE_FILE_EXTENSIONS ";
-	$sql .= "WHERE EXT = '" . mysql_real_escape_string($extension) . "' ";
+	$sql .= "WHERE EXT = '" . mysqli_real_escape_string($link, $extension) . "' ";
 	$sql .= "  AND FILE_EXTENSIONS.EXT_ID = LANGUAGE_FILE_EXTENSIONS.EXT_ID";
-	$sql_result = mysql_query($sql);
+	$sql_result = mysqli_query($link, $sql);
 	if(!$sql_result){
         	sql_error($sql);
         }
 
 	//If file extension exists in File_Extensions table of DB, move file for judging
-	if(!mysql_num_rows($sql_result)) {
+	if(!mysqli_num_rows($sql_result)) {
 		header("location: testcompile.php?state=3");
 		exit(0);
 	}
@@ -59,14 +59,14 @@
 	}
 
 	//Get Language of extension
-	$row = mysql_fetch_assoc($sql_result);
+	$row = mysqli_fetch_assoc($sql_result);
         $lang_id = $row['LANGUAGE_ID'];
 
         $sql  = "SELECT * ";
         $sql .= "FROM LANGUAGE ";
         $sql .= "WHERE LANGUAGE_ID = $lang_id ";
-        $sql_result = mysql_query($sql);
-        $row = mysql_fetch_assoc($sql_result);
+        $sql_result = mysqli_query($link$sql);
+        $row = mysqli_fetch_assoc($sql_result);
 
         $lang_name = $row['LANGUAGE_NAME'];
         $replace_headers = $row['REPLACE_HEADERS'];
@@ -89,12 +89,12 @@
         	$sql  = "SELECT HEADER ";
                 $sql .= "FROM HEADERS ";
                 $sql .= "WHERE LANGUAGE_ID = $lang_id ";
-                $sql_result = mysql_query($sql);
+                $sql_result = mysqli_query($link, $sql);
                 if(!$sql_result){
                 	sql_error($sql);
                 }
                 $headers = array();
-                while($row = mysql_fetch_row($sql_result)) {
+                while($row = mysqli_fetch_row($sql_result)) {
                 	array_push($headers, $row[0]);
                 }
                 $problem_handle['preprocess']($headers);
@@ -109,11 +109,11 @@
 		    $sql  = "SELECT WORD ";
                     $sql .= "FROM FORBIDDEN_WORDS ";
                     $sql .= "WHERE LANGUAGE_ID = $lang_id ";
-                    $sql_result = mysql_query($sql);
+                    $sql_result = mysqli_query($link, $sql);
                     if(!$sql_result) {
                 	sql_error($sql);
                     }
-                    while($row = mysql_fetch_row($sql_result)) {
+                    while($row = mysqli_fetch_row($sql_result)) {
                 	if(preg_match("/(^.*$row[0].*$)/m",
 				      $pre_proc_array[sizeof($pre_proc_array)-1],
 				      $context))

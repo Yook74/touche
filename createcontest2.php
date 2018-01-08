@@ -165,20 +165,15 @@ echo "<br />[$cmd3]<br />";
    $cmd4 .= $contest;
 echo "<br />[$cmd4]<br />";
    system($cmd4, $result);
-$dbU = "contest-skeleton";
-$link = mysql_connect($dbhost, $dbU, $dbpw);
+$dbU = "contest_skeleton";
+$link = mysqli_connect($dbhost, $dbU, $dbpw, $db_name);
 if (!$link) {
     print "Sorry.  Database connect failed.";
     exit;
 }
 
-$connect_good = mysql_select_db($db_name);
-if (!$connect_good) {
-    print "Sorry.  Database selection failed.";
-    exit;
-}
 $base_dir = "/home/contest/$contest";
-$contest_info = mysql_query("INSERT INTO CONTEST_CONFIG (HOST, CONTEST_NAME, FREEZE_DELAY, CONTEST_END_DELAY, BASE_DIRECTORY, JUDGE_USER) VALUES ('$HOST', '$contest', '14400', '18000', '$base_dir', 'judge')");
+$contest_info = mysqli_query($link, "INSERT INTO CONTEST_CONFIG (HOST, CONTEST_NAME, FREEZE_DELAY, CONTEST_END_DELAY, BASE_DIRECTORY, JUDGE_USER) VALUES ('$HOST', '$contest', '14400', '18000', '$base_dir', 'judge')");
 if (!$contest_info) {
     print "Sorry.  Database request (INSERT) failed.";
     exit;
