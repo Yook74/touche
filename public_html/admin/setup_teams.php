@@ -35,21 +35,21 @@ if ($_GET)
 		if($team_id != -1)
 		{
 			$sql = "select * from TEAMS WHERE TEAM_ID = '$team_id'";
-			$result = mysql_query($sql);
+			$result = mysqli_query($link, $sql);
 			if(!$result)
 			{
-				$error_msg = "Error: " . mysql_error();
+				$error_msg = "Error: " . mysqli_error($link);
 				$error_msg .= "<br>SQL: $sql";
 			}
 			else
 			{
-				if(mysql_num_rows($result)==0)
+				if(mysqli_num_rows($result)==0)
 				{
 					$error_msg = "<br>No rows returned: SQL: $sql";
 				}
 				else
 				{			
-					$row = mysql_fetch_assoc($result);
+					$row = mysqli_fetch_assoc($result);
 					$edit_team_name = $row['TEAM_NAME'];
 					$edit_organization = $row['ORGANIZATION'];
 					$edit_username = $row['USERNAME'];
@@ -70,16 +70,16 @@ if ($_GET)
 	{
 		$remove_id = $_GET['remove_id'];
 		$sql="delete from TEAMS where TEAM_ID = $remove_id";
-		$result = mysql_query($sql);
+		$result = mysqli_query($link, $sql);
 
 		if ($result) {
 			$sql = "DELETE FROM CATEGORY_TEAMS WHERE TEAM_ID = $remove_id";
-			$result2 = mysql_query($sql);
+			$result2 = mysqli_query($link, $sql);
 		}
 
 		if(!$result || !$result2)
 		{
-			$error_msg = "Error: " . mysql_error();
+			$error_msg = "Error: " . mysqli_error($link);
 			$error_msg .= "<br>SQL: $sql";
 		}
 		else
@@ -106,10 +106,10 @@ else if($_POST)
 			$sql .= "ALTERNATE_NAME = '" . $_POST['alternate_name'] . "', ";
 			$sql .= "EMAIL = '" . $_POST['email'];
 			$sql .= "' where TEAM_ID = " . $_SESSION['edit_team'];
-			$result = mysql_query($sql);
+			$result = mysqli_query($link, $sql);
 			if(!$result)
 			{
-				$error_msg = "Error: " . mysql_error();
+				$error_msg = "Error: " . mysqli_error($link);
 				$error_msg .= "<br>SQL: $sql";
 			}
 			else
@@ -135,13 +135,13 @@ else if($_POST)
 			$sql .= $_POST['contestant_3_name'] . "', '";
 			$sql .= $_POST['alternate_name'] . "', '";
 			$sql .= $_POST['email'] . "')";
-			$result = mysql_query($sql);
+			$result = mysqli_query($link, $sql);
 			if($result)
 			{
 				$error_msg = "Successful: New team created";
 			}
 			else{
-				$error_msg = "Error:" . mysql_error();
+				$error_msg = "Error:" . mysqli_error($link);
 				$error_msg .= "<br>SQL: $sql";
 			}
 		}
@@ -157,22 +157,22 @@ if(!isSet($action))
 }
 
 $sql = "select * from SITE";
-$result = mysql_query($sql);
+$result = mysqli_query($link, $sql);
 if(!$result)
 {
 	echo "Error: Selecting from Site failed";
-	echo "<br>" . mysql_error();
+	echo "<br>" . mysqli_error($link);
 	echo "<br>$sql";
 	exit();
 }
-if(mysql_num_rows($result) == 0)
+if(mysqli_num_rows($result) == 0)
 {
 	echo "You need to create a site before you can create any teams";
 	exit();
 }
 
 $http_sites = "";
-while($row = mysql_fetch_assoc($result))
+while($row = mysqli_fetch_assoc($result))
 {
 	$http_sites .= "<option value='" . $row['SITE_ID'] . "'"; 
 	if($row['SITE_ID'] == $edit_site_id)
@@ -195,12 +195,12 @@ while($row = mysql_fetch_assoc($result))
 $cur_teams = "";
 //get all the current categories
 $sql = "select * from TEAMS";
-$result = mysql_query($sql);
-if(mysql_num_rows($result) > 0) {
+$result = mysqli_query($link, $sql);
+if(mysqli_num_rows($result) > 0) {
 	$cur_teams = "<a href=setup_teams.php><font size=+1>Add New Team</font></a><br>";
 	$cur_teams .= "<br><table>";
 	$cur_teams .= "<tr><td><font size=+1><b>Edit Current Teams</b></font></td></tr>";
-	while($row = mysql_fetch_assoc($result)){
+	while($row = mysqli_fetch_assoc($result)){
 		$cur_teams .= "<tr><td>" . $row['TEAM_NAME']; 
 		$cur_teams .= " </td><td><font size=-1>";
 		$cur_teams .= "<a href=setup_teams.php?team_id=" . $row['TEAM_ID'] . ">Edit</a>";

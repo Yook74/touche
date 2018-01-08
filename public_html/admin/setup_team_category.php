@@ -16,27 +16,26 @@ include_once("lib/data.inc");
 include_once("lib/session.inc");
 include_once("lib/header.inc");
 
-    $link = mysql_connect ($db_host , $db_user, $db_pass) or die ("Could not connect to database");
-    mysql_select_db ($db_name) or die ("Could not select database");
+    $link = mysqli_connect ($db_host , $db_user, $db_pass, $db_name) or die ("Could not connect to database");
 
     if(isset($_POST["submit"]))
     {
     	$sql = "DELETE FROM CATEGORY_TEAM";
-	mysql_query($sql);
+	mysqli_query($link, $sql);
 	
     	foreach($_POST as $box => $value) {
 	    if($value == 'on') {
 	    	$team = explode("|", $box);
 		$sql = "INSERT INTO CATEGORY_TEAM (TEAM_ID, CATEGORY_ID) VALUES ('$team[0]', '$team[1]');";
-		mysql_query($sql);
+		mysqli_query($link, $sql);
 	    }
 	}
     }
 
     $sql = "SELECT * FROM CATEGORIES";
-    $category = mysql_query($sql);
-    $num_cat = mysql_num_rows($category);
-    $cat_row = mysql_fetch_assoc($category);
+    $category = mysqli_query($link, $sql);
+    $num_cat = mysqli_num_rows($category);
+    $cat_row = mysqli_fetch_assoc($category);
 
     $tmp = $num_cat * 10;
     echo"<form method='POST' action='setup_team_category.php'>";
@@ -48,14 +47,14 @@ include_once("lib/header.inc");
     echo "<td align=center><font color=$hd_txt_color2><b>Team Name</b></font></td>\n";
     for($i=1; $i<=$num_cat; $i++) { 
 	echo "<td align=center><font color=$hd_txt_color2><b>".$cat_row["CATEGORY_NAME"]."</b></font></td>";
-	$cat_row = mysql_fetch_assoc($category);
+	$cat_row = mysqli_fetch_assoc($category);
     }
     echo "</tr>\n";
 
     $sql = "SELECT * FROM TEAMS";
-    $team = mysql_query($sql);
-    $num_teams = mysql_num_rows($team);
-    $team_row = mysql_fetch_assoc($team);
+    $team = mysqli_query($link, $sql);
+    $num_teams = mysqli_num_rows($team);
+    $team_row = mysqli_fetch_assoc($team);
     
     for($i=0; $i<$num_teams; $i++) {
 	if($i%2 == 0) {
@@ -67,8 +66,8 @@ include_once("lib/header.inc");
 
 	for($x=1; $x<=$num_cat; $x++) {
 	    $sql = "SELECT * FROM CATEGORY_TEAM WHERE TEAM_ID = ".$team_row["TEAM_ID"]." AND CATEGORY_ID=$x";
-	    $query = mysql_query($sql);
-	    $check = mysql_num_rows($query);
+	    $query = mysqli_query($link, $sql);
+	    $check = mysqli_num_rows($query);
 	    
 	    echo "<td><input type='checkbox' ";
 	    if($check==1)
@@ -76,7 +75,7 @@ include_once("lib/header.inc");
 	    echo "name='".$team_row["TEAM_ID"]."|$x'/></td>";
 	}
 	
-	$team_row = mysql_fetch_assoc($team);
+	$team_row = mysqli_fetch_assoc($team);
 	echo "</tr>";
     }
     echo "</table>";

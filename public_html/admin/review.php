@@ -20,7 +20,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && !$_POST['team']) {
     $sql .= "SET RESPONSE_ID = $_POST[result], JUDGED = 1 ";
     $sql .= "WHERE JUDGED_ID = $_POST[judged_id] ";
 
-    $result = mysql_query($sql);
+    $result = mysqli_query($link, $sql);
     if(!$result) {
         sql_error($sql);
     }
@@ -44,12 +44,12 @@ if ($_GET['problem'] && $_GET['problem'] != "all")
 $sql = "SELECT * ";
 $sql .= "FROM CONTEST_CONFIG ";
 
-$sql_result = mysql_query($sql);
+$sql_result = mysqli_query($link, $sql);
 
 if(!$sql_result){
         sql_error($sql);
 }
-$row = mysql_fetch_assoc($sql_result);
+$row = mysqli_fetch_assoc($sql_result);
 $start_ts = $row['START_TS'];
 
 
@@ -57,7 +57,7 @@ $start_ts = $row['START_TS'];
 
 $sql = "SELECT * ";
 $sql .= "FROM PROBLEMS";
-$sql_result = mysql_query($sql);
+$sql_result = mysqli_query($link, $sql);
 if (!$sql_result){
         sql_error($sql);
 }
@@ -66,7 +66,7 @@ echo "<center>";
 	if(!$_GET){
                 echo "All ";
                 echo "| <a href='$page?problem=" . $row['PROBLEM_NAME'] . "'>" . $row['PROBLEM_NAME'] . "</a> ";
-                while ($row = mysql_fetch_assoc($sql_result)){
+                while ($row = mysqli_fetch_assoc($sql_result)){
                         echo "| <a href='$page?problem=" . $row['PROBLEM_NAME'] . "'>" . $row['PROBLEM_NAME'] . "</a> ";
                 }
                 $problem_name = "ALL";
@@ -82,7 +82,7 @@ echo "<center>";
                         echo "| <a href='$page?problem=" . $row['PROBLEM_NAME'] . "'>" . $row['PROBLEM_NAME'] . "</a> ";
                 }
 
-                while ($row = mysql_fetch_assoc($sql_result)){
+                while ($row = mysqli_fetch_assoc($sql_result)){
                         if ($row['PROBLEM_NAME'] == $problem_name){
                                 echo "| $problem_name ";
                                 $problem_id = $row['PROBLEM_ID'];
@@ -95,7 +95,7 @@ echo "<center>";
 echo "</center>";
 
 $sql = "SELECT TEAM_NAME FROM TEAMS ORDER BY TEAM_NAME";
-$sql_result = mysql_query($sql);
+$sql_result = mysqli_query($link, $sql);
 if(!$sql_result){
         sql_error($sql);
 }
@@ -109,7 +109,7 @@ if ($team_filter == "all")
 else
         echo "<option value='all'>All</option>\n";
 
-while($row = mysql_fetch_assoc($sql_result)){
+while($row = mysqli_fetch_assoc($sql_result)){
         echo "<option value='$row[TEAM_NAME]'";
 if($row['TEAM_NAME'] == $team_filter)
         echo" selected";
@@ -150,7 +150,7 @@ WHERE P.PROBLEM_ID = JSC.PROBLEM_ID
                 AND JS.PROBLEM_ID = JSC.PROBLEM_ID
                 AND AR.AUTO_RESPONSE <> JSC.RESPONSE_ID" . $where;
 
-$sql_result = mysql_query($sql);
+$sql_result = mysqli_query($link, $sql);
 if (!$sql_result){
         sql_error($sql);
 }
@@ -172,7 +172,7 @@ echo "<td bgcolor=$hd_bg_color2 align=center>Auto Response</td>\n";
 echo "<td bgcolor=$hd_bg_color2 align=center>Current Response</td>\n";
 echo "<td bgcolor=$hd_bg_color2 align=center>Change Jugdement</td></tr>\n";
 
-while($row = mysql_fetch_assoc($sql_result)){
+while($row = mysqli_fetch_assoc($sql_result)){
 	$color_preserve = $data_bg_color1;
 	if ($row['JUDGED'] != 0)
 		$data_bg_color1 = $hd_bg_color2;
