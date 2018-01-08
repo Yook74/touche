@@ -37,21 +37,21 @@ if ($_GET)
 		if($problem_id != -1)
 		{
 			$sql = "select * from PROBLEMS WHERE PROBLEM_ID = '$problem_id'";
-			$result = mysql_query($sql);
+			$result = mysqli_query($link, $sql);
 			if(!$result)
 			{
-				$error_msg = "Error: " . mysql_error();
+				$error_msg = "Error: " . mysqli_error($link);
 				$error_msg .= "<br>SQL: $sql";
 			}
 			else
 			{
-				if(mysql_num_rows($result)==0)
+				if(mysqli_num_rows($result)==0)
 				{
 					$error_msg = "<br>No rows returned: SQL: $sql";
 				}
 				else
 				{			
-					$row = mysql_fetch_assoc($result);
+					$row = mysqli_fetch_assoc($result);
 					$edit_problem_name = $row['PROBLEM_NAME'];
 					$edit_problem_id = $row['PROBLEM_ID'];
 					$edit_problem_loc = $row['PROBLEM_LOC'];
@@ -67,10 +67,10 @@ if ($_GET)
 		$remove_id = $_GET['remove_id'];
 		//delete the problem 
 		$sql="delete from PROBLEMS where PROBLEM_ID = $remove_id";
-		$result = mysql_query($sql);
+		$result = mysqli_query($link, $sql);
 		if(!$result)
 		{
-			$error_msg = "Error: " . mysql_error();
+			$error_msg = "Error: " . mysqli_error($link);
 			$error_msg .= "<br>SQL: $sql";
 		}
 		else
@@ -163,10 +163,10 @@ else if($_POST)
 				$sql .= "PROBLEM_LOC = '" . $_POST['problem_loc'] . "',  ";
 				$sql .= "PROBLEM_NOTE = '" . $_POST['problem_note'] . " ";
 				$sql .= "' where PROBLEM_ID = " . $_SESSION['edit_problem'];
-				$result = mysql_query($sql);
+				$result = mysqli_query($link, $sql);
 				if(!$result)
 				{
-					$error_msg = "Error: " . mysql_error();
+					$error_msg = "Error: " . mysqli_error($link);
 					$error_msg .= "<br>SQL: $sql";
 				}
 				else
@@ -188,13 +188,13 @@ else if($_POST)
 				$sql .= $_POST['problem_loc'] . "', '";
 				$sql .= $_POST['problem_note'] . "')";
 				
-				$result = mysql_query($sql);
+				$result = mysqli_query($link, $sql);
 				if($result)
 				{
 					$error_msg = "Successful: New problem created";
 				}
 				else{
-					$error_msg = "Error:" . mysql_error();
+					$error_msg = "Error:" . mysqli_error($link);
 					$error_msg .= "<br>SQL: $sql";
 				}
 			}
@@ -219,12 +219,12 @@ if(!isSet($action))
 $cur_problems = "";
 //get all the current categories
 $sql = "select * from PROBLEMS ORDER by 'PROBLEM_ID'";
-$result = mysql_query($sql);
-if(mysql_num_rows($result) > 0) {
+$result = mysqli_query($link, $sql);
+if(mysqli_num_rows($result) > 0) {
 	$cur_problems = "<font size=+1><a href=setup_problems.php>Add New Problem</a></font><br>";
 	$cur_problems .= "<br><table>";
 	$cur_problems .= "<tr><td><font size=+1><b>Edit Current Problems</b></font></td></tr>";
-	while($row = mysql_fetch_assoc($result)){
+	while($row = mysqli_fetch_assoc($result)){
 		$cur_problems .= "<tr><td>" . $row['PROBLEM_NAME']; 
 		$cur_problems .= " </td><td><font size=-1>";
 		$cur_problems .= "<a href=setup_problems.php?problem_id=" . $row['PROBLEM_ID'] . ">Edit</a>";

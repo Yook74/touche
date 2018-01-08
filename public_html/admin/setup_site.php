@@ -26,21 +26,21 @@ if ($_GET)
 		if($site_id != -1)
 		{
 			$sql = "select * from SITE WHERE SITE_ID = '$site_id'";
-			$result = mysql_query($sql);
+			$result = mysqli_query($link, $sql);
 			if(!$result)
 			{
-				$error_msg = "Error: " . mysql_error();
+				$error_msg = "Error: " . mysqli_error($link);
 				$error_msg = "<br>SQL: $sql";
 			}
 			else
 			{
-				if(mysql_num_rows($result)==0)
+				if(mysqli_num_rows($result)==0)
 				{
 					$error_msg = "<br>No rows returned: SQL: $sql";
 				}
 				else
 				{			
-					$row = mysql_fetch_assoc($result);
+					$row = mysqli_fetch_assoc($result);
 					$edit_site_name = $row['SITE_NAME'];
 				}
 			}
@@ -52,13 +52,13 @@ if ($_GET)
 		$remove_id = $_GET['remove_id'];
 		//delete the offending site if no teams are in it
 		$sql = "select * from TEAMS where SITE_ID = $remove_id";
-		$result = mysql_query($sql);
+		$result = mysqli_query($link, $sql);
 			if(!$result)
 			{
-				$error_msg = "Error: " . mysql_error();
+				$error_msg = "Error: " . mysqli_error($link);
 				$error_msg = "<br>SQL: $sql";
 			}
-		if(mysql_num_rows($result) > 0)
+		if(mysqli_num_rows($result) > 0)
 		{
 			$error_msg = "Sorry, there are teams in that site, you must move them to a differant site";
 			$error_msg .= " before you can delete this site";
@@ -66,10 +66,10 @@ if ($_GET)
 		else
 		{
 			$sql="delete from SITE where SITE_ID = $remove_id";
-			$result = mysql_query($sql);
+			$result = mysqli_query($link, $sql);
 			if(!$result)
 			{
-				$error_msg = "Error: " . mysql_error();
+				$error_msg = "Error: " . mysqli_error($link);
 				$error_msg .= "<br>SQL: $sql";
 			}
 			else
@@ -89,10 +89,10 @@ else if($_POST)
 		{
 			$sql = "update SITE set SITE_NAME = '" . $_POST['site_name'];
 			$sql .= "' where SITE_ID = " . $_SESSION['edit_site'];
-			$result = mysql_query($sql);
+			$result = mysqli_query($link, $sql);
 			if(!$result)
 			{
-				$error_msg = "Error: " . mysql_error();
+				$error_msg = "Error: " . mysqli_error($link);
 				$error_msg .= "<br>SQL: $sql";
 			}
 			else
@@ -118,13 +118,13 @@ else if($_POST)
 			$sql = "INSERT into SITE (SITE_NAME, START_TIME) ";
 			$sql .= "values('" . $_POST['site_name'] . "',";
 			$sql .= "'$start_hours:$start_minutes')";
-			$result = mysql_query($sql);
+			$result = mysqli_query($link, $sql);
 			if($result)
 			{
 				$error_msg = "Successful: New site created";
 			}
 			else{
-				$error_msg = "Error:" . mysql_error();
+				$error_msg = "Error:" . mysqli_error($link);
 				$error_msg .= "<br>SQL: $sql";
 			}
 		}
@@ -141,12 +141,12 @@ if(!isSet($action))
 $cur_sites = "";
 //get all the current sites
 $sql = "select * from SITE";
-$result = mysql_query($sql);
-if(mysql_num_rows($result) > 0) {
+$result = mysqli_query($link, $sql);
+if(mysqli_num_rows($result) > 0) {
 	$cur_sites = "<a href=setup_site.php><font size=+1>Add New Site</font></a><br>";
 	$cur_sites .= "<br><table>";
 	$cur_sites .= "<tr><td><font size=+1><b>Edit Current Sites</b></font></td></tr>";
-	while($row = mysql_fetch_assoc($result)){
+	while($row = mysqli_fetch_assoc($result)){
 		$cur_sites .= "<tr><td>" . $row['SITE_NAME']; 
 		$cur_sites .= " </td><td><font size=-1>";
 		$cur_sites .= "<a href=setup_site.php?site_id=" . $row['SITE_ID'] . ">Edit</a>";
