@@ -18,9 +18,12 @@ if ($_POST)
 	$failed = false;
 	$host_name = $_POST['contest_host'];
 	$contest_name = $_POST['contest_name'];
-	$contest_month = $_POST['contest_month'];
-	$contest_day = $_POST['contest_day'];
-	$contest_year = $_POST['contest_year'];
+
+# Unused 'month', 'day, 'year'. Giving default values.
+	$contest_month = '01';	#$_POST['contest_month'];
+	$contest_day = '01';	#$_POST['contest_day'];
+	$contest_year = '2001';	#$_POST['contest_year'];
+
 	$freeze_hour = $_POST['freeze_hour'];
 	$freeze_minute = $_POST['freeze_minute'];
 	$freeze_second = $_POST['freeze_second'];
@@ -28,7 +31,13 @@ if ($_POST)
 	$end_minute = $_POST['end_minute'];
 	$end_second = $_POST['end_second'];
 	$username = $_POST['username'];
-	$password = $_POST['password'];
+	if(isset($_POST['password'])){
+		$password = $_POST['password'];
+	}else{
+		$error[$i] = "You must provide a judge password.";
+		$i++;
+		$failed=true;
+	}
 	$base_directory = $_POST['base_directory'];
 	
 	//if the three checkboxes are not checked, they are submitted
@@ -94,8 +103,11 @@ if ($_POST)
 	else {
 		$headers_python = 0;
 	}
-	$num_problems = $_POST['num_problems'];
-	
+	if (isset($_POST['num_problems'])){
+		$num_problems = $_POST['num_problems'];
+	}else{
+		$num_problems = 0;
+	}
 	$i = 0;
 	if ( !$host_name ) {
 		$error[$i] = "You forgot to give a contest host name.<br>";
@@ -169,6 +181,7 @@ if ($_POST)
 	$sql.= "VALUES ( '$host_name', '$contest_name', '$num_problems', '$contest_date', ";
 	$sql.= "	     '$save_start', '$freeze_delay', '$contest_delay', ";
 	$sql.= "	     '$base_directory', '$ignore_stderr', '$username', '$password', '$show_team_names', '$save_ts', '$save_hs') ";
+echo $sql;
 	$success = mysqli_query($link, $sql);
 	if ($success) {
 		if ($forbidden_c == 1 || $forbidden_cpp == 1 || $forbidden_java == 1 || $forbidden_python == 1) {

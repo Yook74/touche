@@ -1,4 +1,5 @@
 <?php
+
 include_once("lib/session.inc");
 include_once("lib/create.inc");
 if($_POST['B1'] == "Submit") {
@@ -236,7 +237,8 @@ $fhdl = fopen("$contest_noesc/readme/inst.html", "w") OR die("Error with opening
 $chk = fwrite($fhdl, $file);
 fclose($fhdl);
 #-----------------------------------------------------------------
-echo "<p>To finish setting up the contest go to: <a href='http://jacob.cse.taylor.edu/~contest/$contest_noesc/admin'>Administration setup</a></p>";
+$username = get_current_user();
+echo "<p>To finish setting up the contest go to: <a href='http://$_SERVER[SERVER_NAME]/~$username/$contest_noesc/admin'>Administration setup</a></p>";
 ?>
 </center></b></td></tr>
 </body>

@@ -9,7 +9,7 @@
 # arch-tag: admin/lib/header.inc
 #
 
-$link = mysqli_connect($db_host, $db_user, $db_pass, $dbname);
+$link = mysqli_connect($db_host, $db_user, $db_pass, $db_name);
 if (!$link) {
     print "Sorry.  Database connect failed.  Retrying...";
     exit;
