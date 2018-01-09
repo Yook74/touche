@@ -1,6 +1,6 @@
 export class Problem {
-    PROBLEM_ID: number;
-    PROBLEM_NAME: string;
-    PROBLEM_LOC: string;
-    PROBLEM_NOTE: string;
+    id: number;
+    name: string;
+    location: string;
+    note: string;
 }
