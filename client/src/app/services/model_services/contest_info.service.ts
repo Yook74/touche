@@ -9,7 +9,7 @@ const mockData: ContestInfo = {
     startTime: '07:39',
     freezeDelay: 2000,
     contestEndDelay: 3000,
-    ignoreStandardError: boolean,
+    ignoreStandardError: true,
     hasStarted: false,
     judgeUsername: 'judge',
     judgePassword: 'password',

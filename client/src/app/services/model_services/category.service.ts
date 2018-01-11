@@ -64,6 +64,6 @@ export class CategoryService {
     }
 
     createCategory(categoryName: string) {
-        return this.baseService.post('');
+        return this.baseService.post('', categoryName);
     }
 }
