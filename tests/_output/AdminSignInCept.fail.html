@@ -1,0 +1,38 @@
+<!--?
+    include_once("create.inc");
+
+    session_name("TOUCHE-CREATE");
+    session_start();
+        header ("expires:Tuesday, 25 Apr 1995 09:30:00 -0700");
+    if(   $_SESSION['admin_user'] != $create_user
+       || $_SESSION['admin_pass'] != $create_pass)
+    {
+        header ("Location: index.php?state=2");
+        exit(0);
+    }
+?--><html><head></head><body bgcolor="#cccccc" link="0000cc" alink="000066" vlink="0000cc">
+<table width="90%" align="center" cellpadding="1" cellspacing="0" border="0" bgcolor="#000000">
+        <tbody><tr><td>
+                <table width="100%" cellpadding="5" cellspacing="0" border="0">
+                        <tbody><tr bgcolor="#3480ba">
+                                <td>
+                                <!-- Beautification hack. 2006-09-25 -sb -->
+
+                                <font color="#ffffff">
+                                <b>Creating Contest</b>  <small></small>
+                                </font>
+                                </td>
+                                <td align="right">
+                                         <font color="#ffffff">
+                                         <b>ADMIN</b>
+                                         </font>
+                                </td>
+                        </tr>
+                        <tr>
+                                <td bgcolor="#ffffff" colspan="2">
+<center>
+</center><p></p><form method="POST" action="createcontest2.php">
+<table align="center" bgcolor="#ffffff" cellpadding="0" cellspacing="0" border="0&lt;tr"><tbody><tr><td><table width="100%" cellpadding="5" cellspacing="1" border="0">
+  <tbody><tr bgcolor="#3480ba">
+          <td align="center" colspan="2"><font color="#ffffff"><b>Contest Setup</b></font></td>
+  </tr>  <tr bgcolor="#cccc99">          <td colspan="2">Fill out info for your contest:</td>  </tr>          <tr bgcolor="#dddddd">                  <td>Name of the contest <b>host</b>:</td>                  <td><input type="text" name="contest_host" size="20" value="">                          </td>          </tr>          <tr bgcolor="#dddddd">                  <td>The contest's <b>name</b>:</td>                  <td><input type="text" name="contest_name" size="20" value="">                          </td>          </tr>          <tr bgcolor="#dddddd">                  <td>Database Host:</td>                   <td><input type="text" name="dbhost" size="20" value="localhost"></td>          </tr>          <tr bgcolor="#dddddd">                  <td>Database Host Password</td>                   <td><input type="password" name="dbpassword" size="20" value=""></td>          </tr>          <tr align="center" bgcolor="#dddddd">                  <td colspan="2"> <input type="submit" value="Submit" name="B1"></td>           </tr>  </tbody></table>  </td></tr></tbody></table></form></td></tr></tbody></table></td></tr></tbody></table></body></html>
