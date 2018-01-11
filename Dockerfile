@@ -12,6 +12,8 @@ RUN apt-get install -y php
 RUN apt-get install -y vim
 RUN apt-get install -y php-cgi
 RUN apt-get install -y php-mysqli
+RUN apt-get install -y sudo
+RUN apt-get install -y gcc
 RUN chmod -R 755 /home
 RUN a2enmod suexec
 RUN a2enmod userdir
@@ -22,5 +24,11 @@ RUN a2enmod cgi
 #Set up Directories for server
 COPY ./ /etc/skel/src
 
+ARG sqlpass
+ARG userpass
+RUN bash /etc/skel/src/setup.sh $sqlpass $userpass
+
 EXPOSE 80
 EXPOSE 3306
+
+CMD /etc/skel/src/startServices.sh
