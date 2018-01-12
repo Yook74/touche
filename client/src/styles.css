@@ -44,8 +44,8 @@ input, button {
     font-family: 'Open Sans', sans-serif !important;
 }
 
-button.no--hover:hover{
-    background: inherit !important;
+.mat-button.no--hover .mat-button-focus-overlay {
+    background-color: initial !important;
 }
 
 
@@ -128,6 +128,24 @@ button.no--hover:hover{
 
 .flex {}
 
+.flex--start {
+    flex: 1;
+    justify-content: flex-start;
+    text-align: left;
+}
+.flex--end {
+    flex: 1;
+    justify-content: flex-end;
+    text-align: right;
+}
+.flex--ver--center {
+    align-content: center;
+}
+.flex--vertical {
+    flex-wrap: wrap;
+    align-content: space-between;
+}
+
 .full--height {
     height: 100vh !important;
     box-sizing: border-box;
@@ -155,4 +173,10 @@ button.no--hover:hover{
 .content {
     margin-top: 64px;
     padding: 2rem;
+}
+
+.user-type {
+    font-size: 1.1rem;
+    font-weight: 400;
+    margin-right: 2rem;
 }

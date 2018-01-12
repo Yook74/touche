@@ -4,5 +4,6 @@ import { Component } from '@angular/core';
     templateUrl: './problems.component.html'
 })
 export class LiveProblemsComponent {
+
     constructor() { }
 }
