@@ -16,6 +16,15 @@
 .background--gray {
     background: #b5bbc0;
 }
+.font--dark {
+    color: #484848;
+}
+.font--light {
+    color: #8f8f8f;
+}
+.font--whtie {
+    color: #fff;
+}
 
 
 
@@ -31,4 +40,8 @@
 }
 .flex {
 
+}
+
+.sidebar {
+    width: 15rem;
 }

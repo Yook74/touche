@@ -3,11 +3,11 @@
         <button mat-icon-button (click)="toggleMenu()">
             <mat-icon>view_headline</mat-icon>
         </button>
-        <span>{{routeName === 'judge' ? 'Judge' : routeName === 'admin' ? 'Admin' : 'User'}}</span>
+        <span>{{routeName === 'judge' ? 'Judge' : routeName === 'Admin' ? 'Admin' : 'User'}}</span>
         <button mat-button>SIGN OUT</button>
     </mat-toolbar-row>
 </mat-toolbar>
-<mat-sidenav-container>
+<mat-sidenav-container class="sidebar">
     <mat-sidenav mode="side" [(opened)]="opened">
         <live-sidenav *ngIf="routeName === 'live'"></live-sidenav>
         <judge-sidenav *ngIf="routeName === 'judge'"></judge-sidenav>
