@@ -25,6 +25,11 @@ import { JudgeProblemsComponent } from './contest/contest_judge/problems/problem
 import { JudgeStandingsComponent } from './contest/contest_judge/standings/standings.component';
 import { ContestAdminComponent } from './contest/contest_admin/contest_admin.component';
 import { AdminSideNavComponent } from './contest/contest_admin/sidenav/sidenav.component';
+import { AdminContestDetailComponent } from './contest/contest_admin/contest_detail/contest_detail.component';
+import { AdminProblemsComponent } from './contest/contest_admin/problems/problems.component';
+import { AdminTeamsComponent } from './contest/contest_admin/teams/teams.component';
+import { AdminLanguagesComponent } from './contest/contest_admin/languages/languages.component';
+import { AdminAdvancedComponent } from './contest/contest_admin/advanced/advanced.component';
 
 import { BaseService } from './services/model_services/base.service';
 import { CategoryService } from './services/model_services/category.service';
@@ -56,7 +61,12 @@ import { TeamService } from './services/model_services/team.service';
     JudgeProblemsComponent,
     JudgeStandingsComponent,
     ContestAdminComponent,
-    AdminSideNavComponent
+    AdminSideNavComponent,
+    AdminContestDetailComponent,
+    AdminProblemsComponent,
+    AdminTeamsComponent,
+    AdminLanguagesComponent,
+    AdminAdvancedComponent
   ],
   imports: [
     BrowserModule,

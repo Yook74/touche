@@ -16,6 +16,11 @@ import { JudgeClarificationsComponent } from './contest/contest_judge/clarificat
 import { JudgeProblemsComponent } from './contest/contest_judge/problems/problems.component';
 import { JudgeStandingsComponent } from './contest/contest_judge/standings/standings.component';
 import { ContestAdminComponent } from './contest/contest_admin/contest_admin.component';
+import { AdminContestDetailComponent } from './contest/contest_admin/contest_detail/contest_detail.component';
+import { AdminProblemsComponent } from './contest/contest_admin/problems/problems.component';
+import { AdminTeamsComponent } from './contest/contest_admin/teams/teams.component';
+import { AdminLanguagesComponent } from './contest/contest_admin/languages/languages.component';
+import { AdminAdvancedComponent } from './contest/contest_admin/advanced/advanced.component';
 
 const appRoutes: Routes = [
     { path: 'create-contest', component: CreateContestComponent },
@@ -31,7 +36,16 @@ const appRoutes: Routes = [
                     { path: '', redirectTo: 'contest-detail', pathMatch: 'full' }
                 ]
             },
-            { path: 'admin', component: ContestAdminComponent, data: { route: 'admin' } },
+            {
+                path: 'admin', component: ContestAdminComponent, data: { route: 'admin' }, children: [
+                    { path: 'contest-detail', component: AdminContestDetailComponent },
+                    { path: 'problems', component: AdminProblemsComponent },
+                    { path: 'teams', component: AdminTeamsComponent },
+                    { path: 'languages', component: AdminLanguagesComponent },
+                    { path: 'advanced', component: AdminAdvancedComponent },
+                    { path: '', redirectTo: 'contest-detail', pathMatch: 'full' }
+                ]
+            },
             {
                 path: '', component: ContestLiveComponent, data: { route: 'live' }, children: [
                     { path: 'contest-detail', component: LiveContestDetailComponent },
