@@ -2,7 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
 @Component({
-    templateUrl: './contest.component.html'
+    templateUrl: './contest.component.html',
+    styleUrls: ['./contest.component.css']
 })
 export class ContestComponent implements OnInit {
     opened: boolean;
