@@ -9,7 +9,7 @@
         </mat-toolbar-row>
     </mat-toolbar>
     <mat-sidenav-container class="sidebar" fxFlexFill>
-        <mat-sidenav mode="side" [(opened)]="opened">
+        <mat-sidenav mode="side" [(opened)]="opened" class="background--dark">
             <live-sidenav *ngIf="routeName === 'live'"></live-sidenav>
             <judge-sidenav *ngIf="routeName === 'judge'"></judge-sidenav>
             <admin-sidenav *ngIf="routeName === 'admin'"></admin-sidenav>

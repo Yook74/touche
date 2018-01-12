@@ -1,8 +1,113 @@
 /* You can add global styles to this file, and also import other style files */
 
+
+/* Put contest styles here */
+
+@import url('https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700');
 html,
 body {
-    box-sizing: border-box;
-    height: 100%;
     margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 400;
+    height: 100%;
+}
+
+mat-icon {
+    vertical-align: middle;
+    line-height: 0.85 !important;
+    margin: 0.5rem;
+}
+
+
+/* Side Menu */
+
+.menu {
+    box-sizing: border-box;
+    padding: 1.3rem;
+    padding-top: 0.8rem;
+    padding-bottom: 0.8rem;
+}
+
+.menu {}
+
+
+/* Color Theme */
+
+.background--dark {
+    background: #36404a;
+}
+
+.background--darker {
+    background: #2a3138;
+}
+
+.background--light {
+    background: #ebeff2;
+}
+
+.background--green {
+    background: #0cc2aa;
+}
+
+.background--gray {
+    background: #b5bbc0;
+}
+
+.font--dark {
+    color: #484848;
+}
+
+.font--light {
+    color: #8f8f8f;
+}
+
+.font--white {
+    color: #fff !important;
+}
+
+.font--bold {
+    font-weight: 600;
+}
+
+.font--normal {
+    font-weight: 400;
+}
+
+
+/* Layout */
+
+.flexbox {
+    display: flex;
+}
+
+.flexbox.row {
+    flex-direction: row;
+}
+
+.flexbox.column {
+    flex-direction: column;
+}
+
+.flex {}
+
+.full--height {
+    height: calc(100vh - 64px);
+    box-sizing: border-box;
+}
+
+.full--width {
+    width: 100vw;
+    box-sizing: border-box;
+}
+
+.box--border {
+    box-sizing: border-box;
+}
+
+.topbar {}
+
+.sidebar {
+    width: 15rem;
 }
