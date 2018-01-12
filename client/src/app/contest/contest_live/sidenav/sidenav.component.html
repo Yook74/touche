@@ -1,6 +1,18 @@
-<div class="flex row">
-    <div class="menu background--darker font--white hover--font--white"><mat-icon>device_hub</mat-icon>Contest</div>
-    <div class="menu hover--font--white"><mat-icon>assessment</mat-icon>Problems</div>
-    <div class="menu hover--font--white"><mat-icon>question_answer</mat-icon>Clarifications</div>
-    <div class="menu hover--font--white"><mat-icon>assessment</mat-icon>Standings</div>
+<div fxLayout="column">
+    <button mat-button routerLink="./contest-detail" routerLinkActive="active background--darker">
+        <mat-icon>device_hub</mat-icon>
+        <span>Contest</span>
+    </button>
+    <button mat-button routerLink="./problems" routerLinkActive="active background--darker">
+        <mat-icon>library_books</mat-icon>
+        <span>Problems</span>
+    </button>
+    <button mat-button routerLink="./clarifications" routerLinkActive="active background--darker">
+        <mat-icon>question_answer</mat-icon>
+        <span>Clarifications</span>
+    </button>
+    <button mat-button routerLink="./standings" routerLinkActive="active background--darker">
+        <mat-icon>assessment</mat-icon>
+        <span>Standings</span>
+    </button>
 </div>
