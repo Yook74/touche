@@ -1,5 +1,5 @@
 <mat-toolbar>
-    <mat-toolbar-row>
+    <mat-toolbar-row class="topbar">
         <button mat-icon-button (click)="toggleMenu()">
             <mat-icon>view_headline</mat-icon>
         </button>
@@ -7,13 +7,13 @@
         <button mat-button>SIGN OUT</button>
     </mat-toolbar-row>
 </mat-toolbar>
-<mat-sidenav-container class="sidebar">
-    <mat-sidenav mode="side" [(opened)]="opened">
+<mat-sidenav-container class="flexbox full--width full--height background--light box--border">
+    <mat-sidenav class="sidebar background--dark" mode="side" [(opened)]="opened">
         <live-sidenav *ngIf="routeName === 'live'"></live-sidenav>
         <judge-sidenav *ngIf="routeName === 'judge'"></judge-sidenav>
         <admin-sidenav *ngIf="routeName === 'admin'"></admin-sidenav>
     </mat-sidenav>
-    <mat-sidenav-content>
+    <mat-sidenav-content class="box--border">
         <router-outlet></router-outlet>
     </mat-sidenav-content>
 </mat-sidenav-container>
