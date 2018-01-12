@@ -1,1 +1,22 @@
-This is the admin sidenav
+<div fxLayout="column">
+    <button mat-button routerLink="./admin/contest-detail" routerLinkActive="active background--darker font--white" class="menu">
+        <mat-icon>device_hub</mat-icon>
+        <span>Contest</span>
+    </button>
+    <button mat-button routerLink="./admin/problems" routerLinkActive="active background--darker font--white" class="menu">
+        <mat-icon>library_books</mat-icon>
+        <span>Problems</span>
+    </button>
+    <button mat-button routerLink="./admin/teams" routerLinkActive="active background--darker font--white" class="menu">
+        <mat-icon>group</mat-icon>
+        <span>Teams</span>
+    </button>
+    <button mat-button routerLink="./admin/languages" routerLinkActive="active background--darker font--white" class="menu">
+        <mat-icon>subject</mat-icon>
+        <span>Language Settings</span>
+    </button>
+    <button mat-button routerLink="./admin/advanced" routerLinkActive="active background--darker font--white" class="menu">
+        <mat-icon>settings</mat-icon>
+        <span>Advanced</span>
+    </button>
+</div>

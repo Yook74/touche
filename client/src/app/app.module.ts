@@ -18,8 +18,18 @@ import { LiveProblemsComponent } from './contest/contest_live/problems/problems.
 import { LiveStandingsComponent } from './contest/contest_live/standings/standings.component';
 import { ContestJudgeComponent } from './contest/contest_judge/contest_judge.component';
 import { JudgeSideNavComponent } from './contest/contest_judge/sidenav/sidenav.component';
+import { JudgeContestDetailComponent } from './contest/contest_judge/contest_detail/contest_detail.component';
+import { JudgeSubmissionsComponent } from './contest/contest_judge/submissions/submissions.component';
+import { JudgeClarificationsComponent } from './contest/contest_judge/clarifications/clarifications.component';
+import { JudgeProblemsComponent } from './contest/contest_judge/problems/problems.component';
+import { JudgeStandingsComponent } from './contest/contest_judge/standings/standings.component';
 import { ContestAdminComponent } from './contest/contest_admin/contest_admin.component';
 import { AdminSideNavComponent } from './contest/contest_admin/sidenav/sidenav.component';
+import { AdminContestDetailComponent } from './contest/contest_admin/contest_detail/contest_detail.component';
+import { AdminProblemsComponent } from './contest/contest_admin/problems/problems.component';
+import { AdminTeamsComponent } from './contest/contest_admin/teams/teams.component';
+import { AdminLanguagesComponent } from './contest/contest_admin/languages/languages.component';
+import { AdminAdvancedComponent } from './contest/contest_admin/advanced/advanced.component';
 
 import { BaseService } from './services/model_services/base.service';
 import { CategoryService } from './services/model_services/category.service';
@@ -45,8 +55,18 @@ import { TeamService } from './services/model_services/team.service';
     LiveStandingsComponent,
     ContestJudgeComponent,
     JudgeSideNavComponent,
+    JudgeContestDetailComponent,
+    JudgeSubmissionsComponent,
+    JudgeClarificationsComponent,
+    JudgeProblemsComponent,
+    JudgeStandingsComponent,
     ContestAdminComponent,
-    AdminSideNavComponent
+    AdminSideNavComponent,
+    AdminContestDetailComponent,
+    AdminProblemsComponent,
+    AdminTeamsComponent,
+    AdminLanguagesComponent,
+    AdminAdvancedComponent
   ],
   imports: [
     BrowserModule,
