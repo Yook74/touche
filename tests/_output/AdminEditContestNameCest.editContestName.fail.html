@@ -1,0 +1,59 @@
+<!DOCTYPE html PUBLIC "-//W3C/DTD HTML 4.0 Transitional//EN"><html><head></head><body bgcolor="#cccccc" link="0000cc" alink="000066" vlink="0000cc">
+<table width="90%" align="center" cellpadding="1" cellspacing="0" border="0" bgcolor="#000000">
+	<tbody><tr><td>
+		<table width="100%" cellpadding="5" cellspacing="0" border="0">
+			<tbody><tr bgcolor="#3480ba">	
+				<td>
+				<!-- Beautification hack. 2006-09-25 -sb -->
+                <img src="../images/favicon.ico">
+
+  				<font color="#ffffff">
+				  				<b>edit_name</b> - <small>edit_host</small>
+				  				</font>
+				</td>
+				<td align="right">
+ 					 <font color="#ffffff">
+ 					 <b>JUDGE/ADMIN</b>
+ 					 </font>
+				</td>
+			</tr>
+			<tr>	
+				<td bgcolor="#dcdcdc" align="left"><b>
+				<a href="setup_contest.php">Edit contest details</a> &nbsp;
+  				<a href="setup_problems.php">Problems</a> &nbsp;
+				<a href="setup_data_sets.php">Data Sets</a> &nbsp;
+  				<a href="setup_site.php">Sites</a> &nbsp; 
+  				<a href="setup_teams.php">Teams</a> &nbsp;  
+  				<a href="setup_categories.php">Categories</a> &nbsp;
+				<a href="setup_team_category.php">Team Category</a> &nbsp;
+								<a href="setup_headers.php">Headers</a> &nbsp;
+								<a href="setup_forbidden.php">Forbidden</a> &nbsp;
+								<a href="misc.php">Misc</a> &nbsp;
+				</b>
+				
+				</td>
+				<td align="right" bgcolor="#dcdcdc">
+				<b>Official Time: 08:20:04</b>
+				</td>
+			</tr>
+			<tr>
+				<td bgcolor="#ffffff" colspan="2">
+<center>
+</center><p></p><form method="POST" action="setup_contest.php">
+<table align="center" bgcolor="#ffffff" cellpadding="0" cellspacing="0" border="0&lt;tr"><tbody><tr><td><table width="100%" cellpadding="5" cellspacing="1" border="0">
+  <tbody><tr bgcolor="#3480ba">
+		<td align="center" colspan="2"><font color="#ffffff"><b>Edit Contest Info</b></font></td>
+	</tr>	<tr bgcolor="#cccc99">		<td colspan="2">Which aspect of your contest would you like to change?</td>	</tr>		<tr bgcolor="#dddddd">			<td>Name of the contest <b>host</b>:</td>			<td><input type="text" name="contest_host" size="20" value="edit_host">				</td>		</tr>		<tr bgcolor="#dddddd">			<td>The contest's <b>name</b>:</td>			<td><input type="text" name="contest_name" size="20" value="edit_name">				</td>		</tr>		<tr bgcolor="#dddddd"> 			<td>Amount of time (HH:mm:ss) until the standings are frozen:</td> 			<td><input type="text" name="freeze_hour" size="2" maxlength="2" value="04">:			<input type="text" name="freeze_minute" size="2" maxlength="2" value="00">:			<input type="text" name="freeze_second" size="2" maxlength="2" value="00"></td>		</tr>		<tr bgcolor="#dddddd">			<td>Duration of the contest (HH:mm:ss)</td> 			<td><input type="text" name="end_hour" size="2" maxlength="2" value="05">:			<input type="text" name="end_minute" size="2" maxlength="2" value="00">:			<input type="text" name="end_second" size="2" maxlength="2" value="00"></td> 		</tr>		<tr bgcolor="#dddddd">			<td>Base directory of the contest information (ex: 			/usr/home/contest):</td> 			<td><input type="text" name="base_directory" size="30" value="/home/contest/contest_name"></td>		</tr>		<tr bgcolor="#dddddd">			<td>Username for all the judges to use</td> 			<td><input type="text" name="username" size="20" value="judge"></td>		</tr>		<tr bgcolor="#dddddd">			<td>Password for the judge account</td> 			<td><input type="password" name="password" size="20" value=""></td>		</tr>		<tr bgcolor="#cccc99">			<td colspan="2">Customize the judging experience</td>		</tr>		<tr bgcolor="#dddddd">			<td>Ignore standard error?</td>			<td><input type="checkbox" name="stderr">						</td></tr>		<tr bgcolor="#dddddd">			<td>Check for forbidden words (C, C++, Java, Python)?</td>			<td> C: &nbsp;			<input type="checkbox" name="forbidden_c" checked="">				 &nbsp; C++: &nbsp;			<input type="checkbox" name="forbidden_cpp" checked="">				 &nbsp; Java: &nbsp;			<input type="checkbox" name="forbidden_java" 0="">				 &nbsp; Python: &nbsp;			<input type="checkbox" name="forbidden_python">				</td>		</tr>		<tr bgcolor="#dddddd">			<td>Automatically include standard headers				(C, C++, Java, Python)?</td>			<td> C: &nbsp;			<input type="checkbox" name="headers_c" checked="">				 &nbsp; C++: &nbsp;			<input type="checkbox" name="headers_cpp" checked="">				 &nbsp; Java: &nbsp;			<input type="checkbox" name="headers_java" 0="">				 &nbsp; Python: &nbsp;			<input type="checkbox" name="headers_python">				</td>		</tr>          <tr bgcolor="#dddddd">                  <td>Display team names to judges?</td>                  <td><input type="checkbox" name="team_show">                                    </td></tr>		<tr align="center" bgcolor="#dddddd">			<td colspan="2"> <input type="submit" value="Submit" name="B1"></td> 		</tr>	</tbody></table>	<!--
+    Copyright (C) 2002 David Whittington
+
+	See the file "COPYING" for further information about the copyright
+	and warranty status of this work.
+
+    arch-tag: admin/lib/footer.inc
+!-->
+
+</td></tr></tbody></table>
+</form></td></tr></tbody></table>
+
+
+</td></tr></tbody></table></body></html>

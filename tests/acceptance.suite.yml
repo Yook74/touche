@@ -8,6 +8,6 @@ actor: AcceptanceTester
 modules:
     enabled:
         - WebDriver:
-            url: http://10.120.160.20/~nhamilto/
+            url: http://10.120.160.20/~nhamilto/contest_name/admin/
             browser: phantomjs
-      
+        - Asserts

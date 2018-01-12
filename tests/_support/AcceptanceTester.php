@@ -20,25 +20,17 @@ class AcceptanceTester extends \Codeception\Actor
 {
     // do not remove this line
 	use _generated\AcceptanceTesterActions;
-
-	public function indexLogin($name, $password)
+	
+	public function adminLogin($username, $password)
 	{
 		$I = $this;
 		$I->amOnPage('/index.php');
-		$I->fillField('user', $name);
+		$I->fillField('user',$username);
 		$I->fillField('password', $password);
 		$I->click('submit');
-		$I->amOnPage('/createcontest.php');
+		$I->amOnPage('/setup_contest.php');
 	}
 	
-	public function createContest ($contestHost, $contestName, $dbPassword)
-	{
-		$I = $this;
-		$I->fillField("contest_host", $contestHost);
-		$I->fillField("contest_name", $contestName);
-		$I->fillField("dbpassword", $dbPassword);
-		$I->amOnPage('/createcontest2.php');
-	}
 
 
 
