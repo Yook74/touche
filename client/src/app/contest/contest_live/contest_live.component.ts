@@ -1,12 +1,8 @@
-import { Component, OnInit } from '@angular/core';
-import { StandingService } from '../../services/model_services/standing.service';
+import { Component } from '@angular/core';
 
 @Component({
     templateUrl: './contest_live.component.html'
 })
-export class ContestLiveComponent implements OnInit {
-    constructor(private service: StandingService) { }
-
-    ngOnInit() {
-    }
+export class ContestLiveComponent {
+    constructor() { }
 }

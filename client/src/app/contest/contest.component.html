@@ -1,0 +1,10 @@
+<mat-sidenav-container>
+    <mat-sidenav mode="side" [(opened)]="opened">
+        <live-sidenav *ngIf="routeName === 'live'"></live-sidenav>
+        <judge-sidenav *ngIf="routeName === 'judge'"></judge-sidenav>
+        <admin-sidenav *ngIf="routeName === 'admin'"></admin-sidenav>
+    </mat-sidenav>
+    <mat-sidenav-content>
+        <router-outlet></router-outlet>
+    </mat-sidenav-content>
+</mat-sidenav-container>
