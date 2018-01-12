@@ -5,6 +5,7 @@ import { MatButtonModule, MatSidenavModule, MatToolbarModule, MatIconModule } fr
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
+import { FlexLayoutModule } from '@angular/flex-layout';
 
 import { AppComponent } from './app.component';
 import { CreateContestComponent } from './create_contest/create_contest.component';
@@ -48,7 +49,8 @@ import { TeamService } from './services/model_services/team.service';
     HttpClientModule,
     FormsModule,
     MatToolbarModule,
-    MatIconModule
+    MatIconModule,
+    FlexLayoutModule
   ],
   providers: [
     BaseService,
