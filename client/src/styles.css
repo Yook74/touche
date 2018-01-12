@@ -7,7 +7,7 @@
 @import url('https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700');
 
 * {
-    transition: all 0.1s ease-out;
+    transition: all 0.1s ease-out !important;
 }
 
 html,
@@ -22,52 +22,61 @@ body {
 
 mat-icon {
     vertical-align: middle;
-    line-height: 0.85 !important;
-    margin: 0.5rem;
+    line-height: 0.95 !important;
+    margin: 0.5rem !important;
 }
 
 
 /* Side Menu */
 
 .menu {
-    box-sizing: border-box;
-    padding: 1.3rem;
-    padding-top: 0.8rem;
-    padding-bottom: 0.8rem;
+    box-sizing: border-box !important;
+    padding: 1.3rem !important;
+    padding-top: 0.8rem !important;
+    padding-bottom: 0.8rem !important;
     cursor: pointer;
-    color: #b5bbc0;
+    color: #b5bbc0 !important;
+    text-align: left !important;
 }
 
+input, button {
+    font-weight: 400 !important;
+    font-family: 'Open Sans', sans-serif !important;
+}
+
+button.no--hover:hover{
+    background: inherit !important;
+}
 
 
 /* Color Theme */
 
 .background--dark {
-    background: #36404a;
+    background: #36404a !important;
 }
 
 .background--darker {
-    background: #2a3138;
+    background: #2a3138 !important;
 }
 
 .background--light {
-    background: #ebeff2;
+    background: #ebeff2 !important;
 }
 
 .background--green {
-    background: #0cc2aa;
+    background: #0cc2aa !important;
 }
 
 .background--gray {
-    background: #b5bbc0;
+    background: #b5bbc0 !important;
 }
 
 .font--dark {
-    color: #484848;
+    color: #484848 !important;
 }
 
 .font--light {
-    color: #8f8f8f;
+    color: #8f8f8f !important;
 }
 
 .font--white {
@@ -79,20 +88,20 @@ mat-icon {
 }
 
 .font--bold {
-    font-weight: 600;
+    font-weight: 600 !important;
 }
 
 .font--normal {
-    font-weight: 400;
+    font-weight: 400 !important;
 }
 
 .font--uppercase {
-    text-transform: uppercase;
+    text-transform: uppercase !important;
 }
 
 
 .hover--font--white:hover {
-    color: #fff;
+    color: #fff !important;
 }
 
 
@@ -136,7 +145,7 @@ mat-icon {
 .topbar {
     position: fixed;
     z-index: 100;
-    background: #fff;
+    background: #fff !important;
     display: flex;
 }
 .sidebar {
@@ -145,4 +154,5 @@ mat-icon {
 }
 .content {
     margin-top: 64px;
+    padding: 2rem;
 }
