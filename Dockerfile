@@ -14,7 +14,8 @@ RUN apt-get install -y php-cgi
 RUN apt-get install -y php-mysqli
 RUN apt-get install -y sudo
 RUN apt-get install -y gcc
-RUN chmod -R 755 /home
+RUN apt-get install -y cron
+RUN DEBIAN_FRONTEND=noninteractive apt-get -y install mysql-server
 RUN a2enmod suexec
 RUN a2enmod userdir
 RUN a2enmod php7.0
