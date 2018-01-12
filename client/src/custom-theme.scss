@@ -1,0 +1,192 @@
+@import '~@angular/material/theming';
+// Plus imports for other components in your app.
+
+// Include the common styles for Angular Material. We include this here so that you only
+// have to load a single css file for Angular Material in your app.
+// Be sure that you only ever include this mixin once!
+@include mat-core();
+
+/* For use in src/lib/core/theming/_palette.scss */
+$md-primary: (
+    50 : #e2f8f5,
+    100 : #b6ede6,
+    200 : #86e1d5,
+    300 : #55d4c4,
+    400 : #30cbb7,
+    500 : #0cc2aa,
+    600 : #0abca3,
+    700 : #08b499,
+    800 : #06ac90,
+    900 : #039f7f,
+    A100 : #c9fff3,
+    A200 : #96ffe7,
+    A400 : #63ffdb,
+    A700 : #4affd5,
+    contrast: (
+        50 : #000000,
+        100 : #000000,
+        200 : #000000,
+        300 : #000000,
+        400 : #000000,
+        500 : #000000,
+        600 : #000000,
+        700 : #ffffff,
+        800 : #ffffff,
+        900 : #ffffff,
+        A100 : #000000,
+        A200 : #000000,
+        A400 : #000000,
+        A700 : #000000,
+    )
+);
+
+$md-accent: (
+    50 : #f6f7f7,
+    100 : #e9ebec,
+    200 : #dadde0,
+    300 : #cbcfd3,
+    400 : #c0c5c9,
+    500 : #b5bbc0,
+    600 : #aeb5ba,
+    700 : #a5acb2,
+    800 : #9da4aa,
+    900 : #8d969c,
+    A100 : #ffffff,
+    A200 : #ffffff,
+    A400 : #cee9ff,
+    A700 : #b4deff,
+    contrast: (
+        50 : #000000,
+        100 : #000000,
+        200 : #000000,
+        300 : #000000,
+        400 : #000000,
+        500 : #000000,
+        600 : #000000,
+        700 : #000000,
+        800 : #000000,
+        900 : #000000,
+        A100 : #000000,
+        A200 : #000000,
+        A400 : #000000,
+        A700 : #000000,
+    )
+);
+
+$md-white: (
+    50 : #ffffff,
+    100 : #ffffff,
+    200 : #ffffff,
+    300 : #ffffff,
+    400 : #ffffff,
+    500 : #ffffff,
+    600 : #ffffff,
+    700 : #ffffff,
+    800 : #ffffff,
+    900 : #ffffff,
+    A100 : #ffffff,
+    A200 : #ffffff,
+    A400 : #ffffff,
+    A700 : #ffffff,
+    contrast: (
+        50 : #000000,
+        100 : #000000,
+        200 : #000000,
+        300 : #000000,
+        400 : #000000,
+        500 : #000000,
+        600 : #000000,
+        700 : #000000,
+        800 : #000000,
+        900 : #000000,
+        A100 : #000000,
+        A200 : #000000,
+        A400 : #000000,
+        A700 : #000000,
+    )
+);
+
+$md-dark: (
+    50 : #e7e8e9,
+    100 : #c3c6c9,
+    200 : #9ba0a5,
+    300 : #727980,
+    400 : #545d65,
+    500 : #36404a,
+    600 : #303a43,
+    700 : #29323a,
+    800 : #222a32,
+    900 : #161c22,
+    A100 : #68b3ff,
+    A200 : #359aff,
+    A400 : #0280ff,
+    A700 : #0074e7,
+    contrast: (
+        50 : #000000,
+        100 : #000000,
+        200 : #000000,
+        300 : #ffffff,
+        400 : #ffffff,
+        500 : #ffffff,
+        600 : #ffffff,
+        700 : #ffffff,
+        800 : #ffffff,
+        900 : #ffffff,
+        A100 : #000000,
+        A200 : #000000,
+        A400 : #ffffff,
+        A700 : #ffffff,
+    )
+);
+
+$md-light: (
+    50 : #fdfdfd,
+    100 : #f9fafb,
+    200 : #f5f7f9,
+    300 : #f1f4f6,
+    400 : #eef1f4,
+    500 : #ebeff2,
+    600 : #e9edf0,
+    700 : #e5ebee,
+    800 : #e2e8ec,
+    900 : #dde4e8,
+    A100 : #ffffff,
+    A200 : #ffffff,
+    A400 : #ffffff,
+    A700 : #ffffff,
+    contrast: (
+        50 : #000000,
+        100 : #000000,
+        200 : #000000,
+        300 : #000000,
+        400 : #000000,
+        500 : #000000,
+        600 : #000000,
+        700 : #000000,
+        800 : #000000,
+        900 : #000000,
+        A100 : #000000,
+        A200 : #000000,
+        A400 : #000000,
+        A700 : #000000,
+    )
+);
+
+
+
+// Define the palettes for your theme using the Material Design palettes available in palette.scss
+// (imported above). For each palette, you can optionally specify a default, lighter, and darker
+// hue.
+$custom-app-primary: mat-palette($md-primary);
+$custom-app-accent:  mat-palette($md-accent, A200, A100, A400);
+
+// The warn palette is optional (defaults to red).
+$custom-app-white:    mat-palette($md-white);
+
+// Create the theme object (a Sass map containing all of the palettes).
+$custom-app-theme: mat-light-theme($custom-app-primary, $custom-app-accent, $custom-app-white);
+
+// Include theme styles for core and each component used in your app.
+// Alternatively, you can import and @include the theme mixins for each component
+// that you are using.
+@include angular-material-theme($custom-app-theme);
