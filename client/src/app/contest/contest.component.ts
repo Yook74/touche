@@ -16,4 +16,8 @@ export class ContestComponent implements OnInit {
     ngOnInit() {
         this.routeName = this.route.firstChild.snapshot.data['route'];
     }
+
+    toggleMenu() {
+        this.opened = !this.opened;
+    }
 }
