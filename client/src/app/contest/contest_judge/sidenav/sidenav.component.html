@@ -1,1 +1,22 @@
-This is the judge sidenav
+<div fxLayout="column">
+    <button mat-button routerLink="./judge/contest-detail" routerLinkActive="active background--darker">
+        <mat-icon>device_hub</mat-icon>
+        <span>Contest</span>
+    </button>
+    <button mat-button routerLink="./judge/submissions" routerLinkActive="active background--darker">
+        <mat-icon>inbox</mat-icon>
+        <span>Submissions</span>
+    </button>
+    <button mat-button routerLink="./judge/clarifications" routerLinkActive="active background--darker">
+        <mat-icon>question_answer</mat-icon>
+        <span>Clarifications</span>
+    </button>
+    <button mat-button routerLink="./judge/problems" routerLinkActive="active background--darker">
+        <mat-icon>library_books</mat-icon>
+        <span>Problems</span>
+    </button>
+    <button mat-button routerLink="./judge/standings" routerLinkActive="active background--darker">
+        <mat-icon>assessment</mat-icon>
+        <span>Standings</span>
+    </button>
+</div>
