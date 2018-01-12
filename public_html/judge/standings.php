@@ -14,7 +14,7 @@
     include_once("lib/session.inc");
     include_once("lib/header.inc");
 #
-judge_header(60);
+judge_header(60, $link);
 
 if (!isset($HTTP_GET_VARS['selected_category'])) {
     $selected_category = "Overall";
