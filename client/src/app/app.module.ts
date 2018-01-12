@@ -1,7 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { RoutingModule } from './routing.module';
-import { MatButtonModule, MatSidenavModule, MatToolbarModule, MatIconModule } from '@angular/material';
+import { MatButtonModule, MatSidenavModule, MatToolbarModule, MatIconModule, MatTableModule } from '@angular/material';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
@@ -58,7 +58,8 @@ import { TeamService } from './services/model_services/team.service';
     FormsModule,
     MatToolbarModule,
     MatIconModule,
-    FlexLayoutModule
+    FlexLayoutModule,
+    MatTableModule
   ],
   providers: [
     BaseService,
