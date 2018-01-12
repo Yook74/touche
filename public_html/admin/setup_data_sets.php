@@ -64,7 +64,7 @@ if($_POST)
 				$data_dir . $_POST['problem_id'] . "_" . $_FILES['data_set_in']['name'] . $in_suffix);
 		if(!$result)
 		{
-			print "Failed to upload in file";
+			print "$data_dir Failed to upload in file";
 			$error_msg = "Failed to upload 'in' file";
 		}
 		//copy over the destination out file name so when we glob the directory later
@@ -150,7 +150,7 @@ if(mysqli_num_rows($result) > 0) {
 		$cur_data_sets .= "<tr><td align=right><table>";
 		foreach ($fs_parse as $file)
 		{
-			$file_names = split("/", $file);
+			$file_names = explode("/", $file);
 			$file_name = $file_names[count($file_names)-1];
 			$data_set_name = preg_replace("/\.in$/", "",$file_name);
 			$cur_data_sets .= "<tr><td><font size=-1> $data_set_name</font></td>";
