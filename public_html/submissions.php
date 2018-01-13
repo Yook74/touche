@@ -15,7 +15,6 @@
 	include_once("lib/data.inc");
 
 	$state = $_GET['state'];
-	
 	if ($state == 1) {
 		echo "<center><br><font color=\"#ee0000\">No file selected for submission!</font><br></center>\n";
 	}
@@ -83,7 +82,7 @@
 		$sql2 .= "ORDER BY ATTEMPT";
 		$result2 = mysqli_query($link, $sql2);
 		echo mysqli_error($link);
-		if(mysqli_num_rows($result)||mysql_num_rows($result2)) {
+		if(mysqli_num_rows($result)||mysqli_num_rows($result2)) {
 			echo "	<tr bgcolor=\"$hd_bg_color2\">\n";
 			echo "		<td align=\"center\" width=\"33%\">Attempt</small></td>\n";
 			echo "		<td align=\"center\" width=\"33%\">Submission Time</small></td>\n";
