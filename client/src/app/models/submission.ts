@@ -2,7 +2,7 @@ export class Submission {
     id: number;
     teamId: number;
     problemId: number;
-    timestamp: number;
+    timestamp: string;
     attempt: number;
     sourceFile: string;
     responseId: number;

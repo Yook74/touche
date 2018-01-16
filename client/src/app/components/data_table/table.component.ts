@@ -1,5 +1,5 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { MatTableDataSource } from '@angular/material';
+import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { MatTableDataSource, MatSort } from '@angular/material';
 import { TableColumn } from '../../models/table_column';
 
 @Component({
@@ -10,7 +10,18 @@ export class TableComponent implements OnInit {
     @Input() headers: string[];
     @Input() columns: TableColumn[];
     @Input() data: any[];
-    dataSource: MatTableDataSource;
+    dataSource: MatTableDataSource<any>;
+
+
+    @ViewChild(MatSort) sort: MatSort;
+
+    /**
+    * Set the sort after the view init since this component will
+    * be able to query its view for the initialized sort.
+    */
+    ngAfterViewInit() {
+    this.dataSource.sort = this.sort;
+    }
 
     constructor() { }
 
