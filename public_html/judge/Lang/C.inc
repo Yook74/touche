@@ -37,10 +37,10 @@ function c_compile() {
     $command .= " -lm -o ";
     $command .= $problem_handle['judged_dir'];
     $command .= $problem_handle['file_name'];
-    $command .= " &> ";
-    $command .= $problem_handle['judged_dir'];
-    $command .= $problem_handle['file_name'];
-    $command .= ".err";
+#    $command .= " &> ";
+#    $command .= $problem_handle['judged_dir'];
+#    $command .= $problem_handle['file_name'];
+#    $command .= ".err";
     return $command;
 }
 
