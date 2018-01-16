@@ -1,10 +1,23 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { TableColumn } from '../../../models/table_column';
+import { Problem } from '../../../models/problem';
+import { ProblemService } from '../../../services/model_services/problem.service';
 
 @Component({
     templateUrl: './problems.component.html'
 })
-export class LiveProblemsComponent {
-    headers: string[] = ['Name', 'Attachments', 'Attempts','Submit'];
+export class LiveProblemsComponent implements OnInit {
+    tableColumns: TableColumn[] = [
+        { header: 'Name', dataField: 'name', displayIsComponent: false, componentName: '' },
+        { header: 'Attachments', dataField: 'id', displayIsComponent: true, componentName: '' },
+        { header: 'Attempts', dataField: 'id', displayIsComponent: true, componentName: '' },
+        { header: 'Submit', dataField: 'id', displayIsComponent: true, componentName: '' }
+    ];
+    problems: Problem[];
 
-    constructor() { }
+    constructor(private service: ProblemService) { }
+
+    ngOnInit() {
+        this.problems = this.service.getMockData();
+    }
 }

@@ -8,7 +8,7 @@ import { FormsModule } from '@angular/forms';
 import { FlexLayoutModule } from '@angular/flex-layout';
 
 import { AppComponent } from './app.component';
-import { TableComponent } from './components/table.component';
+import { TableComponent } from './components/data_table/table.component';
 import { CreateContestComponent } from './create_contest/create_contest.component';
 import { ContestComponent } from './contest/contest.component';
 import { ContestLiveComponent } from './contest/contest_live/contest_live.component';
