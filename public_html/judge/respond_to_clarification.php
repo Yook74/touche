@@ -26,11 +26,14 @@
 	}
 	else {
 		$sql = "INSERT INTO CLARIFICATION_REQUESTS ";
-		$sql .= "(CLARIFICATION_ID, TEAM_ID, PROBLEM_ID, SUBMIT_TS, QUESTION, REPLY_TS, RESPONSE, BROADCAST)";
-		$sql .= "VALUES ('', '0', '$problem', '".time()."', 'Clarification initiated by judge', '".time();
+		$sql .= "(TEAM_ID, PROBLEM_ID, SUBMIT_TS, QUESTION, REPLY_TS, RESPONSE, BROADCAST)";
+		$sql .= "VALUES ('0', '$problem', '".time()."', 'Clarification initiated by judge', '".time();
 		$sql .= "', '".mysqli_real_escape_string($link, $response)."', '$broadcast');";
 	}
-	mysqli_query($link, $sql);
+	$result = mysqli_query($link, $sql);
+	if(!$result){
+		echo mysqli_error($link);
+	}
 	header("location: clarifications.php");
 	exit(0);
 ?>
