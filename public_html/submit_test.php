@@ -65,7 +65,7 @@
         $sql  = "SELECT * ";
         $sql .= "FROM LANGUAGE ";
         $sql .= "WHERE LANGUAGE_ID = $lang_id ";
-        $sql_result = mysqli_query($link$sql);
+        $sql_result = mysqli_query($link, $sql);
         $row = mysqli_fetch_assoc($sql_result);
 
         $lang_name = $row['LANGUAGE_NAME'];

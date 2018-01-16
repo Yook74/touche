@@ -61,7 +61,7 @@ else if($_POST)
 		if(isset($_SESSION['edit_language']))
 		{
 			//parse the headers string
-			$build_headers = split("\n", $_POST['edit_headers']);
+			$build_headers = explode("\n", $_POST['edit_headers']);
 			unset($error_msg);
 			//clear out the DB
 			$sql = "delete from HEADERS where LANGUAGE_ID = '";
@@ -155,7 +155,7 @@ else
 	//are editing something
 	if(isset($edit_headers))
 	{
-		$sub_headers = split(":", $edit_headers);
+		$sub_headers = explode(":", $edit_headers);
 		echo "	  <tr bgcolor=\"$data_bg_color1\">";
 		echo "		<td valign=top>Headers </td>";
 		echo "		<td><textarea rows=10 name='edit_headers'>";
