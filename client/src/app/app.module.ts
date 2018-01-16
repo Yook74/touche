@@ -11,12 +11,15 @@ import { AppComponent } from './app.component';
 import { TableComponent } from './components/table.component';
 import { CreateContestComponent } from './create_contest/create_contest.component';
 import { ContestComponent } from './contest/contest.component';
+
 import { ContestLiveComponent } from './contest/contest_live/contest_live.component';
 import { LiveSideNavComponent } from './contest/contest_live/sidenav/sidenav.component';
 import { LiveContestDetailComponent } from './contest/contest_live/contest_detail/contest_detail.component';
 import { LiveClarificationsComponent } from './contest/contest_live/clarifications/clarifications.component';
 import { LiveProblemsComponent } from './contest/contest_live/problems/problems.component';
 import { LiveStandingsComponent } from './contest/contest_live/standings/standings.component';
+import { LiveTimerComponent } from './contest/contest_live/timer/timer.component';
+
 import { ContestJudgeComponent } from './contest/contest_judge/contest_judge.component';
 import { JudgeSideNavComponent } from './contest/contest_judge/sidenav/sidenav.component';
 import { JudgeContestDetailComponent } from './contest/contest_judge/contest_detail/contest_detail.component';
@@ -24,6 +27,8 @@ import { JudgeSubmissionsComponent } from './contest/contest_judge/submissions/s
 import { JudgeClarificationsComponent } from './contest/contest_judge/clarifications/clarifications.component';
 import { JudgeProblemsComponent } from './contest/contest_judge/problems/problems.component';
 import { JudgeStandingsComponent } from './contest/contest_judge/standings/standings.component';
+import { JudgeTimerComponent } from './contest/contest_judge/timer/timer.component';
+
 import { ContestAdminComponent } from './contest/contest_admin/contest_admin.component';
 import { AdminSideNavComponent } from './contest/contest_admin/sidenav/sidenav.component';
 import { AdminContestDetailComponent } from './contest/contest_admin/contest_detail/contest_detail.component';
@@ -31,6 +36,7 @@ import { AdminProblemsComponent } from './contest/contest_admin/problems/problem
 import { AdminTeamsComponent } from './contest/contest_admin/teams/teams.component';
 import { AdminLanguagesComponent } from './contest/contest_admin/languages/languages.component';
 import { AdminAdvancedComponent } from './contest/contest_admin/advanced/advanced.component';
+import { AdminTimerComponent } from './contest/contest_admin/timer/timer.component';
 
 import { ContestNameService } from './services/contest_name.service';
 import { BaseService } from './services/model_services/base.service';
@@ -56,6 +62,7 @@ import { TeamService } from './services/model_services/team.service';
     LiveClarificationsComponent,
     LiveProblemsComponent,
     LiveStandingsComponent,
+    LiveTimerComponent,
     ContestJudgeComponent,
     JudgeSideNavComponent,
     JudgeContestDetailComponent,
@@ -63,13 +70,15 @@ import { TeamService } from './services/model_services/team.service';
     JudgeClarificationsComponent,
     JudgeProblemsComponent,
     JudgeStandingsComponent,
+    JudgeTimerComponent,
     ContestAdminComponent,
     AdminSideNavComponent,
     AdminContestDetailComponent,
     AdminProblemsComponent,
     AdminTeamsComponent,
     AdminLanguagesComponent,
-    AdminAdvancedComponent
+    AdminAdvancedComponent,
+    AdminTimerComponent
   ],
   imports: [
     BrowserModule,
