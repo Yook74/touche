@@ -234,13 +234,14 @@ while($submits = mysqli_fetch_assoc($submits_result)) {
 							#structure inside of the chroot environment
 							$arg_cmd = "$base_dir/chroot_wrapper.exe" . 
 								" " .
-								$use_proc_fs . " `#1` " . 
-								$chroot_directory . " `#2` " .
-								$sys_command . " `#3` " . 
-								$problem_handle['data_dir'] . $cur_input . " `#4` " .
-								$problem_handle['output'] .
-								"$judged_id- `#5` ";
-								print "RUNNING: " . $arg_cmd;
+
+								$use_proc_fs . " " . 
+								$chroot_directory . " " .
+								$sys_command . " " . 
+								$problem_handle['data_dir'] . $cur_input . " " .
+								$problem_handle['output'] . " " .
+								"$judged_id-";
+
 #make use of bash'es built in ulimit capabilities
 							$args = array("-c","ulimit -t $safe_max_cpu_time;$arg_cmd");
 							$envs = array("HOME" => "$base_dir/..");
