@@ -1,3 +1,4 @@
+import 'rxjs/add/operator/filter';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 

@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
-import 'rxjs/add/operator/filter';
+import { ContestNameService } from '../contest_name.service';
 
 const baseURL: string = 'http://localhost:8000';
 const httpOptions = {
@@ -10,35 +9,22 @@ const httpOptions = {
 
 @Injectable()
 export class BaseService {
-    private params;
 
-    constructor(private http: HttpClient, private router: Router, private route: ActivatedRoute) {
-        this.router.events
-            .filter(event => event instanceof NavigationEnd)
-            .subscribe((event) => {
-                let r = this.route;
-                while (r.firstChild) {
-                    r = r.firstChild
-                }
-                r.paramMap.subscribe(paramMap => {
-                    this.params = paramMap['params'];
-                });
-            });
-    }
+    constructor(private http: HttpClient, private contestNameService: ContestNameService) { }
 
     get(route: string) {
-        return this.http.get(`${baseURL}/${this.params.contestName}/${route}.php`);
+        return this.http.get(`${baseURL}/${this.contestNameService.getContestName()}/${route}.php`);
     }
 
     post(route: string, data) {
-        return this.http.post(`${baseURL}/${this.params.contestName}/${route}.php`, data, httpOptions);
+        return this.http.post(`${baseURL}/${this.contestNameService.getContestName()}/${route}.php`, data, httpOptions);
     }
 
     put(route: string, data) {
-        return this.http.put(`${baseURL}/${this.params.contestName}/${route}.php`, data, httpOptions);
+        return this.http.put(`${baseURL}/${this.contestNameService.getContestName()}/${route}.php`, data, httpOptions);
     }
 
     delete(route: string) {
-        return this.http.delete(`${baseURL}/${this.params.contestName}/${route}.php`);
+        return this.http.delete(`${baseURL}/${this.contestNameService.getContestName()}/${route}.php`);
     }
 }

@@ -32,6 +32,7 @@ import { AdminTeamsComponent } from './contest/contest_admin/teams/teams.compone
 import { AdminLanguagesComponent } from './contest/contest_admin/languages/languages.component';
 import { AdminAdvancedComponent } from './contest/contest_admin/advanced/advanced.component';
 
+import { ContestNameService } from './services/contest_name.service';
 import { BaseService } from './services/model_services/base.service';
 import { CategoryService } from './services/model_services/category.service';
 import { ClarificationService } from './services/model_services/clarification.service';
@@ -84,6 +85,7 @@ import { TeamService } from './services/model_services/team.service';
     MatTableModule
   ],
   providers: [
+    ContestNameService,
     BaseService,
     CategoryService,
     ClarificationService,
