@@ -4,5 +4,6 @@ import { Component } from '@angular/core';
     templateUrl: './clarifications.component.html'
 })
 export class LiveClarificationsComponent {
+    headers: string[] = ['Question', 'Response', 'Time Submitted','Time Answered','Details'];
     constructor() { }
 }

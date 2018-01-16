@@ -36,6 +36,8 @@ mat-icon {
     padding-bottom: 0.8rem !important;
     cursor: pointer;
     color: #b5bbc0 !important;
+    font-weight: 300 !important;
+    font-size: 1rem !important;
     text-align: left !important;
 }
 
@@ -48,6 +50,14 @@ input, button {
     background-color: initial !important;
 }
 
+.heading {
+    font-size: 1.4rem;
+    margin: 0;
+    margin-bottom: 1.5rem;
+    font-weight: 700 !important;
+    text-transform: uppercase;
+    color: #484848;
+}
 
 /* Color Theme */
 
@@ -175,8 +185,9 @@ input, button {
     padding: 2rem;
 }
 
-.user-type {
-    font-size: 1.1rem;
+.role {
+    font-size: 1rem;
     font-weight: 400;
     margin-right: 2rem;
+    line-height: 2.3;
 }

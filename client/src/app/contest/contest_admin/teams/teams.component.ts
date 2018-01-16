@@ -4,5 +4,6 @@ import { Component } from '@angular/core';
     templateUrl: './teams.component.html'
 })
 export class AdminTeamsComponent {
+    headers: string[] = ['Name', 'Organization', 'Coach','Site','Categories','Edit','Delete'];
     constructor() { }
 }
