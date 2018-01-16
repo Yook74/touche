@@ -11,15 +11,17 @@
         </mat-toolbar-row>
     </mat-toolbar>
     <mat-sidenav-container fxFlexFill class="flexbox row full--height">
-        <mat-sidenav mode="side" [(opened)]="opened" class="sidebar background--dark flex--vertical">
-            <div>
+        <mat-sidenav mode="side" [(opened)]="opened" class="flexbox column sidebar background--dark flex--vertical">
+            <div class="nav">
                 <live-sidenav *ngIf="routeName === 'live'"></live-sidenav>
                 <judge-sidenav *ngIf="routeName === 'judge'"></judge-sidenav>
                 <admin-sidenav *ngIf="routeName === 'admin'"></admin-sidenav>
             </div>
-            <div class="sidebar-timer background--darker">
-                <div class="contest-name">{{contestName}}</div>
-                Timer here
+            <div class="timer background--darker">
+                <div class="contest-name font--light">{{ contestName }}</div>
+                <live-timer *ngIf="routeName === 'live'"></live-timer>
+                <judge-timer *ngIf="routeName === 'judge'"></judge-timer>
+                <admin-timer *ngIf="routeName === 'admin'"></admin-timer>
             </div>
         </mat-sidenav>
         <mat-sidenav-content class="content background--light">
