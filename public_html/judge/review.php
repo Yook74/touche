@@ -13,7 +13,7 @@
     include_once("lib/header.inc");
 #
 
-judge_header(60);
+judge_header(60, $link);
 # Set up default directories
 $problem_handle['queue_dir'] = "$base_dir/queue/";
 $problem_handle['judged_dir'] = "$base_dir/judged/";
