@@ -3,6 +3,7 @@
 
         <ng-container *ngFor="let header of headers" [matColumnDef]="header">
             <mat-header-cell *matHeaderCellDef>{{header}}</mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{element.name}} </mat-cell>
         </ng-container>
 
         <mat-header-row *matHeaderRowDef="headers"></mat-header-row>

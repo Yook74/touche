@@ -5,5 +5,6 @@ import { Component } from '@angular/core';
 })
 export class LiveProblemsComponent {
     headers: string[] = ['Name', 'Attachments', 'Attempts','Submit'];
+
     constructor() { }
 }
