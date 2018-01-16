@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { TableColumn } from '../../../models/table_column';
 import { Problem } from '../../../models/problem';
 import { ProblemService } from '../../../services/model_services/problem.service';
+import { JudgeProblemAttachmentsComponent } from './attachments/attachments.component';
 
 @Component({
     templateUrl: './problems.component.html'
@@ -9,7 +10,7 @@ import { ProblemService } from '../../../services/model_services/problem.service
 export class JudgeProblemsComponent implements OnInit {
     tableColumns: TableColumn[] = [
         { header: 'Name', dataField: 'name', displayIsComponent: false, componentName: '' },
-        { header: 'Attachments', dataField: 'id', displayIsComponent: true, componentName: '' }
+        { header: 'Attachments', dataField: 'id', displayIsComponent: true, componentName: JudgeProblemAttachmentsComponent }
     ];
     problems: Problem[];
 

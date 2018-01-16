@@ -20,13 +20,13 @@ export class TableComponent implements OnInit {
     * be able to query its view for the initialized sort.
     */
     ngAfterViewInit() {
-    this.dataSource.sort = this.sort;
+        this.dataSource.sort = this.sort;
     }
 
     constructor() { }
 
     ngOnInit() {
         this.headers = this.columns.map(c => c.header);
-        this.dataSource = new MatTableDataSource(this.data);
+        this.dataSource = new MatTableDataSource<any>(this.data);
     }
 }
