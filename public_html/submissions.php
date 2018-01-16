@@ -15,7 +15,6 @@
 	include_once("lib/data.inc");
 
 	$state = $_GET['state'];
-	
 	if ($state == 1) {
 		echo "<center><br><font color=\"#ee0000\">No file selected for submission!</font><br></center>\n";
 	}
@@ -74,22 +73,22 @@
 		$sql .= "WHERE ";
 		$sql .= "    PROBLEM_ID='$problem[id]' AND TEAM_ID='$team_id' ";
 		$sql .= "ORDER BY ATTEMPT ASC";
-		$result = mysql_query($sql);
-		echo mysql_error();
+		$result = mysqli_query($link, $sql);
+		echo mysqli_error($link);
 		$sql2 =  "SELECT TS, ATTEMPT   ";
 		$sql2 .= "FROM QUEUED_SUBMISSIONS ";
 		$sql2 .= "WHERE ";
 		$sql2 .= "    PROBLEM_ID='$problem[id]' AND TEAM_ID='$team_id' ";
 		$sql2 .= "ORDER BY ATTEMPT";
-		$result2 = mysql_query($sql2);
-		echo mysql_error();
-		if(mysql_num_rows($result)||mysql_num_rows($result2)) {
+		$result2 = mysqli_query($link, $sql2);
+		echo mysqli_error($link);
+		if(mysqli_num_rows($result)||mysqli_num_rows($result2)) {
 			echo "	<tr bgcolor=\"$hd_bg_color2\">\n";
 			echo "		<td align=\"center\" width=\"33%\">Attempt</small></td>\n";
 			echo "		<td align=\"center\" width=\"33%\">Submission Time</small></td>\n";
 			echo "		<td align=\"center\" width=\"34%\">Result</td>\n";
 			echo "	</tr>\n";
-			while($row = mysql_fetch_array($result)) {
+			while($row = mysqli_fetch_array($result)) {
 				// --- START HACK ALERT ---
                                 // sb hack - 2007-09-27
                                 // Should be ECORRECT, not 9
@@ -112,7 +111,7 @@
 				echo "</font></td>\n";
 				echo "</tr>\n";
 			}
-			while($row = mysql_fetch_array($result2)) {
+			while($row = mysqli_fetch_array($result2)) {
 				$color = "red";
 				echo "<tr bgcolor=\"$data_bg_color1\">\n";
 				echo "<td align=\"center\"><font color=\"$color\">".$row['ATTEMPT']."</font></td>\n";
