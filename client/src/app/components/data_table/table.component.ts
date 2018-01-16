@@ -10,12 +10,12 @@ export class TableComponent implements OnInit {
     @Input() headers: string[];
     @Input() columns: TableColumn[];
     @Input() data: any[];
-    dataSource: MatTableDataSource;
+    dataSource: MatTableDataSource<any>;
 
     constructor() { }
 
     ngOnInit() {
         this.headers = this.columns.map(c => c.header);
-        this.dataSource = new MatTableDataSource(this.data);
+        this.dataSource = new MatTableDataSource<any>(this.data);
     }
 }
