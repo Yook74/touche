@@ -187,7 +187,7 @@ if (!$link) {
     exit;
 }
 
-$base_dir = "/home/contest/$contest_clone_name";
+$base_dir = "/home/contest_skeleton/$contest_clone_name";
 $contest_info = mysqli_query($link, "UPDATE CONTEST_CONFIG SET CONTEST_NAME = \"$contest_clone_name\", CONTEST_DATE = '0000-00-00', START_TIME='00:00:00', FREEZE_DELAY='14400', CONTEST_END_DELAY='18000', BASE_DIRECTORY=\"$base_dir\", START_TS='0', HAS_STARTED='0'");
 if (!$contest_info) {
     print "Sorry.  Database request (UPDATE) failed.";

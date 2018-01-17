@@ -173,7 +173,7 @@ if (!$link) {
     exit;
 }
 
-$base_dir = "/home/contest/$contest";
+$base_dir = "/home/contest_skeleton/$contest";
 $contest_info = mysqli_query($link, "INSERT INTO CONTEST_CONFIG (HOST, CONTEST_NAME, FREEZE_DELAY, CONTEST_END_DELAY, BASE_DIRECTORY, JUDGE_USER) VALUES ('$HOST', '$contest', '14400', '18000', '$base_dir', 'judge')");
 if (!$contest_info) {
     print "Sorry.  Database request (INSERT) failed.";
