@@ -16,9 +16,4 @@ cat /home/contest_skeleton/src/php7cgi > /etc/apache2/mods-enabled/php7.0.conf
 su contest_skeleton -c "sh /home/contest_skeleton/src/links.sh"
 chmod -R u=rw,go=r,a+X /home
 find /home -iname "*.php" | xargs chmod +x
-output="$( bash <<EOF
-hostname
-EOF
-)"
-echo "contest_skeleton	$output = NOPASSWD: /bin/chown, /bin/chmod" >> /etc/sudoers
 echo -e "$(sudo crontab -u contest_skeleton -l)\n* * * * * /home/contest_skeleton/master-crontab.cron > /dev/null 2>&1" | sudo crontab -u contest_skeleton -

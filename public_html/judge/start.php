@@ -12,7 +12,7 @@ include_once("lib/config.inc");
 include_once("lib/judge.inc");
 include_once("lib/header.inc");
 
-judge_header(0);
+judge_header(0, $link);
 
 function make_file_readable($fp, &$missing_files) {
 	if (file_exists($fp)) {
