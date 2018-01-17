@@ -73,73 +73,8 @@ $md-accent: (
     )
 );
 
-$md-white: (
-    50 : #ffffff,
-    100 : #ffffff,
-    200 : #ffffff,
-    300 : #ffffff,
-    400 : #ffffff,
-    500 : #ffffff,
-    600 : #ffffff,
-    700 : #ffffff,
-    800 : #ffffff,
-    900 : #ffffff,
-    A100 : #ffffff,
-    A200 : #ffffff,
-    A400 : #ffffff,
-    A700 : #ffffff,
-    contrast: (
-        50 : #000000,
-        100 : #000000,
-        200 : #000000,
-        300 : #000000,
-        400 : #000000,
-        500 : #000000,
-        600 : #000000,
-        700 : #000000,
-        800 : #000000,
-        900 : #000000,
-        A100 : #000000,
-        A200 : #000000,
-        A400 : #000000,
-        A700 : #000000,
-    )
-);
 
-$md-dark: (
-    50 : #e7e8e9,
-    100 : #c3c6c9,
-    200 : #9ba0a5,
-    300 : #727980,
-    400 : #545d65,
-    500 : #36404a,
-    600 : #303a43,
-    700 : #29323a,
-    800 : #222a32,
-    900 : #161c22,
-    A100 : #68b3ff,
-    A200 : #359aff,
-    A400 : #0280ff,
-    A700 : #0074e7,
-    contrast: (
-        50 : #000000,
-        100 : #000000,
-        200 : #000000,
-        300 : #ffffff,
-        400 : #ffffff,
-        500 : #ffffff,
-        600 : #ffffff,
-        700 : #ffffff,
-        800 : #ffffff,
-        900 : #ffffff,
-        A100 : #000000,
-        A200 : #000000,
-        A400 : #ffffff,
-        A700 : #ffffff,
-    )
-);
-
-$md-light: (
+$md-warn: (
     50 : #fdfdfd,
     100 : #f9fafb,
     200 : #f5f7f9,
@@ -181,10 +116,10 @@ $custom-app-primary: mat-palette($md-primary);
 $custom-app-accent:  mat-palette($md-accent, A200, A100, A400);
 
 // The warn palette is optional (defaults to red).
-$custom-app-white:    mat-palette($md-white);
+$custom-app-warn:    mat-palette($md-warn);
 
 // Create the theme object (a Sass map containing all of the palettes).
-$custom-app-theme: mat-light-theme($custom-app-primary, $custom-app-accent, $custom-app-white);
+$custom-app-theme: mat-light-theme($custom-app-primary, $custom-app-accent, $custom-app-warn);
 
 // Include theme styles for core and each component used in your app.
 // Alternatively, you can import and @include the theme mixins for each component

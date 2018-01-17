@@ -13,7 +13,8 @@ const mockData: ContestInfo = {
     hasStarted: false,
     judgeUsername: 'judge',
     judgePassword: 'password',
-    showTeams: true
+    showTeams: true,
+    baseDirectory: '/home'
 };
 
 @Injectable()

@@ -5,7 +5,7 @@ export class ContestInfo {
     startTime: string;
     freezeDelay: number;
     contestEndDelay: number;
-    // baseDirectory: string;
+    baseDirectory: string;
     // queueDirectory: string;
     // judgeDirectory: string;
     // dataDirectory: string;

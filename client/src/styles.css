@@ -25,6 +25,18 @@ mat-icon {
     line-height: 0.95 !important;
     margin: 0.5rem !important;
 }
+mat-table {
+    font-size: 0.9rem;
+    font-family: 'Open Sans', sans-serif;
+    -webkit-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.1);
+    -moz-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.1);
+    box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.1);
+}
+mat-header-cell {
+    font-size: 0.8rem !important;
+    font-weight: 600 !important;
+    color: #8f8f8f;
+}
 
 
 /* Side Menu */
@@ -44,6 +56,27 @@ mat-icon {
 input, button {
     font-weight: 400 !important;
     font-family: 'Open Sans', sans-serif !important;
+}
+.input-time {
+    width: 2rem;
+    text-align: center;
+}
+
+.mat-form-field-infix {
+    margin-top: -0.7rem;
+}
+
+.mat-checkbox-inner-container {
+    width: 1rem !important;
+    height: 1rem !important;
+    line-height: 0;
+    margin: auto;
+    margin-right: 8px;
+    order: 0;
+    position: relative;
+    vertical-align: middle;
+    white-space: nowrap;
+    flex-shrink: 0;
 }
 
 .mat-button.no--hover .mat-button-focus-overlay {
@@ -116,9 +149,9 @@ input, button {
 
 
 .box--shadow {
-    -webkit-box-shadow: 0px 0px 8px 0px rgba(0,0,0,0.25);
-    -moz-box-shadow: 0px 0px 8px 0px rgba(0,0,0,0.25);
-    box-shadow: 0px 0px 8px 0px rgba(0,0,0,0.25);
+    -webkit-box-shadow: 0px 0px 8px 0px rgba(0,0,0,0.2);
+    -moz-box-shadow: 0px 0px 8px 0px rgba(0,0,0,0.2);
+    box-shadow: 0px 0px 8px 0px rgba(0,0,0,0.2);
 }
 
 
@@ -220,4 +253,44 @@ input, button {
     font-weight: 400;
     margin-right: 2rem;
     line-height: 2.3;
+}
+
+
+.grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 1rem;
+    //grid-auto-rows: minmax(500px, auto);
+}
+.grid-table {
+    display: grid;
+    grid-template-columns: 10rem 2fr;
+    grid-gap: 1rem;
+    margin-bottom: 2rem !important;
+}
+.box {
+    background: #fff;
+    border-bottom: 1px solid rgba(0,0,0,0.12);
+    padding: 2rem;
+    font-size: 0.9rem;
+    -webkit-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.1);
+    -moz-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.1);
+    box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.1);
+    min-height: 350px;
+}
+.box div {
+    margin-bottom: 0.3rem;
+    font-size: 0.9rem;
+    font-family: 'Open Sans', sans-serif;
+}
+
+
+
+@media all and (max-width: 1000px) and (min-width: 50px) {
+    .grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-gap: 1rem;
+        //grid-auto-rows: minmax(500px, auto);
+    }
 }

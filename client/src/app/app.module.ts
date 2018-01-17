@@ -1,7 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { RoutingModule } from './routing.module';
-import { MatButtonModule, MatSidenavModule, MatToolbarModule, MatIconModule, MatTableModule } from '@angular/material';
+import { MatButtonModule, MatSidenavModule, MatToolbarModule, MatIconModule, MatTableModule, MatCheckboxModule, MatFormFieldModule, MatInputModule } from '@angular/material';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
@@ -30,6 +30,9 @@ import { LiveTimerComponent } from './contest/contest_live/timer/timer.component
 import { ContestJudgeComponent } from './contest/contest_judge/contest_judge.component';
 import { JudgeSideNavComponent } from './contest/contest_judge/sidenav/sidenav.component';
 import { JudgeContestDetailComponent } from './contest/contest_judge/contest_detail/contest_detail.component';
+import { JudgeContestDetailStatusComponent } from './contest/contest_judge/contest_detail/status/status.component';
+import { JudgeContestDetailTeamsComponent } from './contest/contest_judge/contest_detail/teams/teams.component';
+import { JudgeContestDetailTimeRemainingComponent } from './contest/contest_judge/contest_detail/time_remaining/time_remaining.component';
 import { JudgeSubmissionsComponent } from './contest/contest_judge/submissions/submissions.component';
 import { JudgeSubmissionJudgeComponent } from './contest/contest_judge/submissions/judge/judge.component';
 import { JudgeClarificationsComponent } from './contest/contest_judge/clarifications/clarifications.component';
@@ -66,6 +69,7 @@ import { ProblemService } from './services/model_services/problem.service';
 import { ResponseService } from './services/model_services/response.service';
 import { StandingService } from './services/model_services/standing.service';
 import { SubmissionService } from './services/model_services/submission.service';
+import { SiteService } from './services/model_services/site.service';
 import { TeamService } from './services/model_services/team.service';
 
 
@@ -92,6 +96,9 @@ import { TeamService } from './services/model_services/team.service';
     ContestJudgeComponent,
     JudgeSideNavComponent,
     JudgeContestDetailComponent,
+    JudgeContestDetailTeamsComponent,
+    JudgeContestDetailStatusComponent,
+    JudgeContestDetailTimeRemainingComponent,
     JudgeSubmissionsComponent,
     JudgeSubmissionJudgeComponent,
     JudgeClarificationsComponent,
@@ -129,7 +136,10 @@ import { TeamService } from './services/model_services/team.service';
     MatToolbarModule,
     MatIconModule,
     FlexLayoutModule,
-    MatTableModule
+    MatTableModule,
+    MatCheckboxModule,
+    MatFormFieldModule,
+    MatInputModule 
   ],
   providers: [
     ContestNameService,
@@ -141,6 +151,7 @@ import { TeamService } from './services/model_services/team.service';
     ResponseService,
     StandingService,
     SubmissionService,
+    SiteService,
     TeamService
   ],
   entryComponents: [
@@ -149,6 +160,9 @@ import { TeamService } from './services/model_services/team.service';
     LiveClarificationDetailsComponent,
     LiveStandingProblemsComponent,
     LiveStandingFinalScoreComponent,
+    JudgeContestDetailTeamsComponent,
+    JudgeContestDetailStatusComponent,
+    JudgeContestDetailTimeRemainingComponent,
     JudgeClarificationAnswerComponent,
     JudgeProblemAttachmentsComponent,
     JudgeStandingProblemsComponent,
