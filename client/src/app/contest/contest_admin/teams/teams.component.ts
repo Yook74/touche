@@ -11,13 +11,13 @@ import { AdminTeamCategoriesComponent } from './categories/categories.component'
 })
 export class AdminTeamsComponent {
     tableColumns: TableColumn[] = [
-        { header: 'Name', dataField: 'name', displayIsComponent: false, componentName: '' },
-        { header: 'Organization', dataField: 'organization', displayIsComponent: false, componentName: '' },
-        { header: 'Coach', dataField: 'coachName', displayIsComponent: false, componentName: '' },
-        { header: 'Site', dataField: 'id', displayIsComponent: false, componentName: '' },
-        { header: 'Categories', dataField: 'id', displayIsComponent: true, componentName: AdminTeamCategoriesComponent },
-        { header: 'Edit', dataField: 'id', displayIsComponent: true, componentName: AdminTeamEditComponent },
-        { header: 'Delete', dataField: 'id', displayIsComponent: true, componentName: AdminTeamDeleteComponent }
+        { header: 'Name', dataField: 'name', displayIsComponent: false, component: null },
+        { header: 'Organization', dataField: 'organization', displayIsComponent: false, component: null },
+        { header: 'Coach', dataField: 'coachName', displayIsComponent: false, component: null },
+        { header: 'Site', dataField: 'id', displayIsComponent: false, component: null },
+        { header: 'Categories', dataField: 'id', displayIsComponent: true, component: AdminTeamCategoriesComponent },
+        { header: 'Edit', dataField: 'id', displayIsComponent: true, component: AdminTeamEditComponent },
+        { header: 'Delete', dataField: 'id', displayIsComponent: true, component: AdminTeamDeleteComponent }
     ];
     teams: Team[];
 

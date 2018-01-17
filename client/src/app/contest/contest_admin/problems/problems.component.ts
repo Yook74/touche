@@ -12,12 +12,12 @@ import { AdminProblemDeleteComponent } from './delete/delete.component';
 })
 export class AdminProblemsComponent {
     tableColumns: TableColumn[] = [
-        { header: 'Name', dataField: 'name', displayIsComponent: false, componentName: '' },
-        { header: 'Location', dataField: 'location', displayIsComponent: false, componentName: '' },
-        { header: 'Attachments', dataField: 'id', displayIsComponent: true, componentName: AdminProblemAttachmentsComponent },
-        { header: 'Data Sets', dataField: 'id', displayIsComponent: true, componentName: AdminProblemDataSetsComponent },
-        { header: 'Edit', dataField: 'id', displayIsComponent: true, componentName: AdminProblemEditComponent },
-        { header: 'Delete', dataField: 'id', displayIsComponent: true, componentName: AdminProblemDeleteComponent }
+        { header: 'Name', dataField: 'name', displayIsComponent: false, component: null },
+        { header: 'Location', dataField: 'location', displayIsComponent: false, component: null },
+        { header: 'Attachments', dataField: 'id', displayIsComponent: true, component: AdminProblemAttachmentsComponent },
+        { header: 'Data Sets', dataField: 'id', displayIsComponent: true, component: AdminProblemDataSetsComponent },
+        { header: 'Edit', dataField: 'id', displayIsComponent: true, component: AdminProblemEditComponent },
+        { header: 'Delete', dataField: 'id', displayIsComponent: true, component: AdminProblemDeleteComponent }
     ];
     problems: Problem[];
 

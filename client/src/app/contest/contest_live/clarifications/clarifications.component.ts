@@ -9,11 +9,11 @@ import { LiveClarificationDetailsComponent } from './details/details.component';
 })
 export class LiveClarificationsComponent {
     tableColumns: TableColumn[] = [
-        { header: 'Question', dataField: 'question', displayIsComponent: false, componentName: '' },
-        { header: 'Response', dataField: 'response', displayIsComponent: false, componentName: '' },
-        { header: 'Time Submitted', dataField: 'submitTimestamp', displayIsComponent: false, componentName: '' },
-        { header: 'Time Answered', dataField: 'replyTimestamp', displayIsComponent: false, componentName: '' },
-        { header: 'Details', dataField: 'details', displayIsComponent: true, componentName: LiveClarificationDetailsComponent }
+        { header: 'Question', dataField: 'question', displayIsComponent: false, component: null },
+        { header: 'Response', dataField: 'response', displayIsComponent: false, component: null },
+        { header: 'Time Submitted', dataField: 'submitTimestamp', displayIsComponent: false, component: null },
+        { header: 'Time Answered', dataField: 'replyTimestamp', displayIsComponent: false, component: null },
+        { header: 'Details', dataField: 'details', displayIsComponent: true, component: LiveClarificationDetailsComponent }
     ];
     clarifications: Clarification[];
 

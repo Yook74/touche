@@ -10,10 +10,10 @@ import { JudgeStandingFinalScoreComponent } from './final_score/final_score.comp
 })
 export class JudgeStandingsComponent {
     tableColumns: TableColumn[] = [
-        { header: 'Rank', dataField: 'rank', displayIsComponent: false, componentName: null },
-        { header: 'Team', dataField: 'teamName', displayIsComponent: false, componentName: null },
-        { header: 'Problems', dataField: 'problemsCompleted', displayIsComponent: true, componentName: JudgeStandingProblemsComponent },
-        { header: 'Final Score', dataField: 'rank', displayIsComponent: true, componentName: JudgeStandingFinalScoreComponent }
+        { header: 'Rank', dataField: 'rank', displayIsComponent: false, component: null },
+        { header: 'Team', dataField: 'teamName', displayIsComponent: false, component: null },
+        { header: 'Problems', dataField: 'problemsCompleted', displayIsComponent: true, component: JudgeStandingProblemsComponent },
+        { header: 'Final Score', dataField: 'rank', displayIsComponent: true, component: JudgeStandingFinalScoreComponent }
     ];
     standings: Standing[];
 

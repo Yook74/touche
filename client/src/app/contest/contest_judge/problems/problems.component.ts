@@ -9,8 +9,8 @@ import { JudgeProblemAttachmentsComponent } from './attachments/attachments.comp
 })
 export class JudgeProblemsComponent implements OnInit {
     tableColumns: TableColumn[] = [
-        { header: 'Name', dataField: 'name', displayIsComponent: false, componentName: '' },
-        { header: 'Attachments', dataField: 'id', displayIsComponent: true, componentName: JudgeProblemAttachmentsComponent }
+        { header: 'Name', dataField: 'name', displayIsComponent: false, component: null },
+        { header: 'Attachments', dataField: 'id', displayIsComponent: true, component: JudgeProblemAttachmentsComponent }
     ];
     problems: Problem[];
 
