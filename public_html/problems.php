@@ -1,4 +1,8 @@
 <?php
+include_once("lib/header.php");
+if($USE_JSON) {
+    echo "Problems";
+} else {
 #
 # Copyright (C) 2003 David Whittington
 # Copyright (C) 2003 Jonathan Geisler
@@ -51,5 +55,6 @@ foreach ($problems as $problem) {
 echo "</table>\n";
 
     include("lib/footer.inc");
+}
 ?>
 
