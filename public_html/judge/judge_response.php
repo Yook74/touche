@@ -3,7 +3,7 @@ include_once("lib/config.inc");
 include_once("lib/judge.inc");
 include_once("lib/header.inc");
 include_once("lib/database.inc");
-judge_header(0);
+judge_header(0, $link);
 $problem_handle['queue_dir'] = "$base_dir/queue/";
 $problem_handle['judged_dir'] = "$base_dir/judged/";
 $problem_handle['data_dir'] = "$base_dir/data/";
