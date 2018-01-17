@@ -1,6 +1,7 @@
 1. Install docker
 2. sudo docker build --build-arg sqlpass=password --build-arg userpass=password -t "jterm-2018:dockerfile" .
 3. sudo docker run -it jterm-2018:dockerfile
+4. go to server name/~contest_skeleton/
 
-if you need to run it on a different port than port 80 you need to add the tag -p (port number):80 to the docker run command.
+If you need to run it on a different port than port 80 you need to add the tag -p (port number):80 to the docker run command.
 On the docker build replace password for the sqlpass and the userpass with whatever you want the password to be for the database and the standard user on the server. If you want to exit the command line and keep the server running you need to run CTRL+p CTRL+q if that doesn't work try ^p^q and see if that works. If you make changes outside of the docker container and want them to be reflected in the container you need to run the build again otherwise restarting the server you only need to run the docker run command. After you exit out of a docker container make sure you run sudo docker system prune to clean up the extra docker images and containers
