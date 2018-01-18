@@ -38,7 +38,6 @@ mat-header-cell {
     color: #8f8f8f;
 }
 
-
 /* Side Menu */
 
 .menu {
@@ -78,6 +77,11 @@ input, button {
     white-space: nowrap;
     flex-shrink: 0;
 }
+
+.input-textarea {
+    margin-top: 1.5rem !important;
+}
+
 
 .mat-button.no--hover .mat-button-focus-overlay {
     background-color: initial !important;
@@ -271,6 +275,12 @@ input, button {
     margin-top: 64px;
     padding: 2rem;
     width: 100%;
+    height: auto !important;
+}
+
+.paragraph {
+    padding-top: 0.3rem;
+    padding-bottom: 1rem;
 }
 
 .role {
@@ -310,14 +320,13 @@ input, button {
     box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.1);
     min-height: 350px;
 }
-.box div {
-    margin-bottom: 0.3rem;
+.box .row {
+    padding-bottom: 1rem;
     font-size: 0.9rem;
     font-family: 'Open Sans', sans-serif;
 }
-
 .switch {
-    margin: 1rem 2rem;
+    margin: 0.5rem 1rem;
 }
 
 
