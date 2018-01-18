@@ -83,6 +83,13 @@ input, button {
     background-color: initial !important;
 }
 
+.button-primary {
+    margin: 0.5rem !important;
+    color: #fff !important;
+}
+
+
+
 .heading {
     font-size: 1.4rem;
     margin: 0;
@@ -90,6 +97,10 @@ input, button {
     font-weight: 700 !important;
     text-transform: uppercase;
     color: #484848;
+}
+.heading.language {
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
 }
 
 /* Color Theme */
@@ -142,6 +153,15 @@ input, button {
     text-transform: uppercase !important;
 }
 
+.text--left {
+    text-align: left;
+}
+.text--right {
+    text-align: right;
+}
+.text--center {
+    text-align: center;
+}
 
 .hover--font--white:hover {
     color: #fff !important;
@@ -197,6 +217,11 @@ input, button {
 .full--width {
     width: 100vw;
     box-sizing: border-box;
+}
+
+.width--input {
+    width: 14rem;
+    margin: 0 auto;
 }
 
 .box--border {
@@ -264,9 +289,16 @@ input, button {
 }
 .grid-table {
     display: grid;
-    grid-template-columns: 10rem 2fr;
+    grid-template-columns: 10rem 1fr;
     grid-gap: 1rem;
     margin-bottom: 2rem !important;
+}
+.grid-half {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 1rem;
+    margin-bottom: 2rem !important;
+    text-align: center;
 }
 .box {
     background: #fff;
@@ -282,6 +314,10 @@ input, button {
     margin-bottom: 0.3rem;
     font-size: 0.9rem;
     font-family: 'Open Sans', sans-serif;
+}
+
+.switch {
+    margin: 1rem 2rem;
 }
 
 
