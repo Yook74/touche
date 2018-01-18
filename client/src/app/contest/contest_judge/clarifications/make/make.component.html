@@ -1,12 +1,16 @@
-<div class="heading">Problem 1 Clarification</div>
+<div class="heading">New Clarification</div>
 <form>
 <div class="row font--dark grid-table">
     <div class="font--bold">Problem</div>
-    <div>Problem 1</div>
-</div>
-<div class="row font--dark grid-table">
-    <div class="font--bold">Question</div>
-    <div>What is the question?</div>
+    <div>
+        <mat-form-field class="select-primary input-long">
+          <mat-select placeholder="Problem">
+            <mat-option *ngFor="let problem of problems" [value]="problem.value">
+              {{ problem.viewValue }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+    </div>
 </div>
 <div class="row font--dark grid-table">
     <div class="font--bold">Response</div>
@@ -17,11 +21,7 @@
         </mat-form-field>
     </div>
 </div>
-<div class="row font--dark grid-table">
-    <div class="font--bold">Respond to all</div>
-    <div><mat-checkbox color="primary" class="" ></mat-checkbox></div>
-</div>
 </form>
 <div class="text--center">
-    <button mat-raised-button color="primary" class="button-primary">Save</button>
+    <button mat-raised-button color="primary" class="button-primary">Make</button>
 </div>

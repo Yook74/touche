@@ -1,0 +1,27 @@
+<div class="heading">New Clarification</div>
+<form>
+<div class="row font--dark grid-table">
+    <div class="font--bold">Problem</div>
+    <div>
+        <mat-form-field class="select-primary input-long">
+          <mat-select placeholder="Problem">
+            <mat-option *ngFor="let problem of problems" [value]="problem.value">
+              {{ problem.viewValue }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+    </div>
+</div>
+<div class="row font--dark grid-table">
+    <div class="font--bold">Question</div>
+    <div>
+        <mat-form-field class="input-long">
+            <textarea matInput placeholder="Question" matTextareaAutosize matAutosizeMinRows="5"
+    matAutosizeMaxRows="5"></textarea>
+        </mat-form-field>
+    </div>
+</div>
+</form>
+<div class="text--center">
+    <button mat-raised-button color="primary" class="button-primary">Request</button>
+</div>

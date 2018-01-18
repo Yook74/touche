@@ -1,2 +1,17 @@
-<div class="heading">Teams</div>
+<div class="grid">
+    <div class="heading">Teams</div>
+    <div class="heading-bar text--right">
+        <button mat-raised-button color="" class="button-white" (click)="openSites()">Sites</button>
+        <button mat-raised-button color="" class="button-white" (click)="openCategories()">Categories</button>
+        <button mat-raised-button color="primary" class="button-primary" (click)="addTeam()">Add Team</button>
+        <mat-form-field class="select-primary">
+          <mat-select placeholder="Filter">
+            <mat-option *ngFor="let filter of filters" [value]="filter.value">
+              {{ filter.viewValue }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+    </div>
+</div>
+
 <data-table [columns]="tableColumns" [data]="teams"></data-table>

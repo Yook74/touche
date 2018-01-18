@@ -18,6 +18,25 @@ export class JudgeSubmissionsComponent {
     ];
     submissions: Submission[];
 
+    filters_submission = [
+        {value: 'filter-0', viewValue: 'New Submissions'},
+        {value: 'filter-1', viewValue: 'Judged Submissions'}
+    ];
+
+    filters_problem = [
+        {value: 'filter-0', viewValue: 'All Problems'},
+        {value: 'filter-1', viewValue: 'Problem 1'},
+        {value: 'filter-2', viewValue: 'Problem 2'},
+        {value: 'filter-3', viewValue: 'Problem 3'}
+    ];
+
+    filters_team = [
+        {value: 'filter-0', viewValue: 'All Teams'},
+        {value: 'filter-1', viewValue: 'Team 1'},
+        {value: 'filter-2', viewValue: 'Team 2'},
+        {value: 'filter-3', viewValue: 'Team 3'}
+    ];
+
     constructor(private service: SubmissionService) { }
 
     ngOnInit() {

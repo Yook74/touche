@@ -1,0 +1,38 @@
+<div class="heading">New Problem</div>
+<form>
+<div class="row font--dark grid-table">
+    <div class="font--bold">Name</div>
+    <div>
+        <mat-form-field class="input-long">
+            <input matInput type="text" placeholder="Name" >
+        </mat-form-field>
+    </div>
+</div>
+<div class="row font--dark grid-table">
+    <div class="font--bold">Location</div>
+    <div>
+        <mat-form-field class="input-long">
+            <input matInput type="text" placeholder="Location" >
+        </mat-form-field>
+    </div>
+</div>
+<div class="row font--dark grid-table">
+    <div class="font--bold">Notes</div>
+    <div>
+        <mat-form-field class="input-long">
+            <textarea matInput placeholder="Notes" matTextareaAutosize matAutosizeMinRows="5"
+    matAutosizeMaxRows="5"></textarea>
+        </mat-form-field>
+    </div>
+</div>
+<div class="row font--dark grid-table">
+    <div class="font--bold">Attachments</div>
+    <div>
+        <button mat-raised-button color="accent" class="button-accent margin--bottom">Upload HTML</button><br>
+        <button mat-raised-button color="accent" class="button-accent margin--bottom">Upload PDF</button>
+    </div>
+</div>
+</form>
+<div class="text--center">
+    <button mat-raised-button color="primary" class="button-primary">Save</button>
+</div>

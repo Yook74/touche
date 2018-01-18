@@ -1,2 +1,13 @@
-<div class="heading">Standings</div>
+<div class="grid">
+    <div class="heading">Standings</div>
+    <div class="heading-bar text--right">
+        <mat-form-field class="select-primary">
+          <mat-select placeholder="Filter">
+            <mat-option *ngFor="let filter of filters" [value]="filter.value">
+              {{ filter.viewValue }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+    </div>
+</div>
 <data-table [columns]="tableColumns" [data]="standings"></data-table>

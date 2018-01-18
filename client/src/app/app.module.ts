@@ -1,7 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { RoutingModule } from './routing.module';
-import { MatButtonModule, MatSidenavModule, MatToolbarModule, MatIconModule, MatTableModule, MatCheckboxModule, MatFormFieldModule, MatInputModule } from '@angular/material';
+import { MatButtonModule, MatSidenavModule, MatToolbarModule, MatIconModule, MatTableModule, MatCheckboxModule, MatFormFieldModule, MatInputModule, MatDialogModule, MatSelectModule } from '@angular/material';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
@@ -19,6 +19,7 @@ import { LiveSideNavComponent } from './contest/contest_live/sidenav/sidenav.com
 import { LiveContestDetailComponent } from './contest/contest_live/contest_detail/contest_detail.component';
 import { LiveClarificationsComponent } from './contest/contest_live/clarifications/clarifications.component';
 import { LiveClarificationDetailsComponent } from './contest/contest_live/clarifications/details/details.component';
+import { LiveClarificationRequestComponent } from './contest/contest_live/clarifications/request/request.component';
 import { LiveProblemsComponent } from './contest/contest_live/problems/problems.component';
 import { LiveProblemAttachmentsComponent } from './contest/contest_live/problems/attachments/attachments.component';
 import { LiveProblemSubmitComponent } from './contest/contest_live/problems/submit/submit.component';
@@ -37,6 +38,7 @@ import { JudgeSubmissionsComponent } from './contest/contest_judge/submissions/s
 import { JudgeSubmissionJudgeComponent } from './contest/contest_judge/submissions/judge/judge.component';
 import { JudgeClarificationsComponent } from './contest/contest_judge/clarifications/clarifications.component';
 import { JudgeClarificationAnswerComponent } from './contest/contest_judge/clarifications/answer/answer.component';
+import { JudgeClarificationMakeComponent } from './contest/contest_judge/clarifications/make/make.component';
 import { JudgeProblemsComponent } from './contest/contest_judge/problems/problems.component';
 import { JudgeProblemAttachmentsComponent } from './contest/contest_judge/problems/attachments/attachments.component';
 import { JudgeStandingsComponent } from './contest/contest_judge/standings/standings.component';
@@ -52,10 +54,12 @@ import { AdminProblemAttachmentsComponent } from './contest/contest_admin/proble
 import { AdminProblemDataSetsComponent } from './contest/contest_admin/problems/data_sets/data_sets.component';
 import { AdminProblemDeleteComponent } from './contest/contest_admin/problems/delete/delete.component';
 import { AdminProblemEditComponent } from './contest/contest_admin/problems/edit/edit.component';
+import { AdminProblemAddComponent } from './contest/contest_admin/problems/add/add.component';
 import { AdminTeamsComponent } from './contest/contest_admin/teams/teams.component';
-import { AdminTeamCategoriesComponent } from './contest/contest_admin/teams/categories/categories.component';
+import { AdminTeamCategoryComponent } from './contest/contest_admin/teams/category/category.component';
 import { AdminTeamDeleteComponent } from './contest/contest_admin/teams/delete/delete.component';
 import { AdminTeamEditComponent } from './contest/contest_admin/teams/edit/edit.component';
+import { AdminTeamAddComponent } from './contest/contest_admin/teams/add/add.component';
 import { AdminLanguagesComponent } from './contest/contest_admin/languages/languages.component';
 import { AdminAdvancedComponent } from './contest/contest_admin/advanced/advanced.component';
 import { AdminTimerComponent } from './contest/contest_admin/timer/timer.component';
@@ -86,6 +90,7 @@ import { TeamService } from './services/model_services/team.service';
     LiveContestDetailComponent,
     LiveClarificationsComponent,
     LiveClarificationDetailsComponent,
+    LiveClarificationRequestComponent,
     LiveProblemsComponent,
     LiveProblemAttachmentsComponent,
     LiveProblemSubmitComponent,
@@ -103,6 +108,7 @@ import { TeamService } from './services/model_services/team.service';
     JudgeSubmissionJudgeComponent,
     JudgeClarificationsComponent,
     JudgeClarificationAnswerComponent,
+    JudgeClarificationMakeComponent,
     JudgeProblemsComponent,
     JudgeProblemAttachmentsComponent,
     JudgeStandingsComponent,
@@ -117,10 +123,12 @@ import { TeamService } from './services/model_services/team.service';
     AdminProblemAttachmentsComponent,
     AdminProblemDeleteComponent,
     AdminProblemEditComponent,
+    AdminProblemAddComponent,
     AdminTeamsComponent,
     AdminTeamEditComponent,
     AdminTeamDeleteComponent,
-    AdminTeamCategoriesComponent,
+    AdminTeamCategoryComponent,
+    AdminTeamAddComponent,
     AdminLanguagesComponent,
     AdminAdvancedComponent,
     AdminTimerComponent
@@ -139,7 +147,9 @@ import { TeamService } from './services/model_services/team.service';
     MatTableModule,
     MatCheckboxModule,
     MatFormFieldModule,
-    MatInputModule 
+    MatInputModule,
+    MatDialogModule,
+    MatSelectModule
   ],
   providers: [
     ContestNameService,
@@ -158,12 +168,14 @@ import { TeamService } from './services/model_services/team.service';
     LiveProblemAttachmentsComponent,
     LiveProblemSubmitComponent,
     LiveClarificationDetailsComponent,
+    LiveClarificationRequestComponent,
     LiveStandingProblemsComponent,
     LiveStandingFinalScoreComponent,
     JudgeContestDetailTeamsComponent,
     JudgeContestDetailStatusComponent,
     JudgeContestDetailTimeRemainingComponent,
     JudgeClarificationAnswerComponent,
+    JudgeClarificationMakeComponent,
     JudgeProblemAttachmentsComponent,
     JudgeStandingProblemsComponent,
     JudgeStandingFinalScoreComponent,
@@ -172,9 +184,11 @@ import { TeamService } from './services/model_services/team.service';
     AdminProblemDeleteComponent,
     AdminProblemAttachmentsComponent,
     AdminProblemEditComponent,
+    AdminProblemAddComponent,
     AdminTeamEditComponent,
     AdminTeamDeleteComponent,
-    AdminTeamCategoriesComponent
+    AdminTeamCategoryComponent,
+    AdminTeamAddComponent
   ],
   bootstrap: [AppComponent]
 })

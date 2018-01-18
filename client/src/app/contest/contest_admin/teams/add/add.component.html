@@ -1,0 +1,118 @@
+<div class="heading">New Team</div>
+<form>
+<div class="grid gap-big">
+    <section>
+        <div class="row font--dark grid-table">
+            <div class="font--bold">Name</div>
+            <div>
+                <mat-form-field class="input-long">
+                    <input matInput type="text" placeholder="Name" >
+                </mat-form-field>
+            </div>
+        </div>
+        <div class="row font--dark grid-table">
+            <div class="font--bold">Organization</div>
+            <div>
+                <mat-form-field class="input-long">
+                    <input matInput type="text" placeholder="Organization" >
+                </mat-form-field>
+            </div>
+        </div>
+        <div class="row font--dark grid-table">
+            <div class="font--bold">Site</div>
+            <div>
+                <mat-form-field class="select-primary input-long">
+                  <mat-select placeholder="Site">
+                    <mat-option *ngFor="let site of sites" [value]="site.value">
+                      {{ site.viewValue }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+            </div>
+        </div>
+        <div class="row font--dark grid-table margin-bottom">
+            <div class="font--bold">Categories</div>
+            <div>
+                <mat-form-field class="select-primary input-long">
+                  <mat-select placeholder="Categories" multiple>
+                    <mat-option *ngFor="let category of categories" [value]="category.value">
+                      {{ category.viewValue }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+            </div>
+        </div>
+
+        <div class="row font--dark grid-table margin--top">
+            <div class="font--bold">Username</div>
+            <div>
+                <mat-form-field class="input-long">
+                    <input matInput type="text" placeholder="Username" >
+                </mat-form-field>
+            </div>
+        </div>
+        <div class="row font--dark grid-table">
+            <div class="font--bold">Password</div>
+            <div>
+                <mat-form-field class="input-long">
+                    <input matInput type="text" placeholder="Password" >
+                </mat-form-field>
+            </div>
+        </div>
+        <div class="row font--dark grid-table">
+            <div class="font--bold">Email Address</div>
+            <div>
+                <mat-form-field class="input-long">
+                    <input matInput type="text" placeholder="Email Address" >
+                </mat-form-field>
+            </div>
+        </div>
+
+    </section>
+    <section>
+        <div class="row font--dark grid-table">
+            <div class="font--bold">Coach</div>
+            <div>
+                <mat-form-field class="input-long">
+                    <input matInput type="text" placeholder="Name" >
+                </mat-form-field>
+            </div>
+        </div>
+        <div class="row font--dark grid-table">
+            <div class="font--bold">Contestant 1</div>
+            <div>
+                <mat-form-field class="input-long">
+                    <input matInput type="text" placeholder="Name" >
+                </mat-form-field>
+            </div>
+        </div>
+        <div class="row font--dark grid-table">
+            <div class="font--bold">Contestant 2</div>
+            <div>
+                <mat-form-field class="input-long">
+                    <input matInput type="text" placeholder="Name" >
+                </mat-form-field>
+            </div>
+        </div>
+        <div class="row font--dark grid-table">
+            <div class="font--bold">Contestant 3</div>
+            <div>
+                <mat-form-field class="input-long">
+                    <input matInput type="text" placeholder="Name" >
+                </mat-form-field>
+            </div>
+        </div>
+        <div class="row font--dark grid-table">
+            <div class="font--bold">Alternate</div>
+            <div>
+                <mat-form-field class="input-long">
+                    <input matInput type="text" placeholder="Name" >
+                </mat-form-field>
+            </div>
+        </div>
+    </section>
+</div>
+</form>
+<div class="text--center">
+    <button mat-raised-button color="primary" class="button-primary">Add</button>
+</div>

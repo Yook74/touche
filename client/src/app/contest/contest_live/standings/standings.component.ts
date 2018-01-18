@@ -17,6 +17,13 @@ export class LiveStandingsComponent {
     ];
     standings: Standing[];
 
+    filters = [
+        {value: 'filter-0', viewValue: 'All Teams'},
+        {value: 'filter-1', viewValue: 'Team 1'},
+        {value: 'filter-2', viewValue: 'Team 2'},
+        {value: 'filter-3', viewValue: 'Team 3'}
+    ];
+
     constructor(private service: StandingService) { }
 
     ngOnInit() {

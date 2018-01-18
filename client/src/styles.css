@@ -38,6 +38,16 @@ mat-header-cell {
     color: #8f8f8f;
 }
 
+.mat-dialog-container {
+    padding: 3rem !important;
+}
+.mat-dialog-container form {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+}
+.mat-dialog-container .row {
+    margin-bottom: 0.6rem !important;
+}
 /* Side Menu */
 
 .menu {
@@ -82,14 +92,30 @@ input, button {
     margin-top: 1.5rem !important;
 }
 
+.input-long {
+    width: 100%;
+    min-width: 16rem;
+}
+
 
 .mat-button.no--hover .mat-button-focus-overlay {
     background-color: initial !important;
 }
 
-.button-primary {
-    margin: 0.5rem !important;
+.button-primary, .button-accent, .button-white {
+    margin: 0 0.25rem !important;
     color: #fff !important;
+}
+.button-accent {
+    color: #fff !important;
+    background: #8f8f8f !important;
+}
+.button-white {
+    color: #0cc2aa !important;
+}
+
+.select-primary {
+    margin: 0 0.25rem !important;
 }
 
 
@@ -101,6 +127,9 @@ input, button {
     font-weight: 700 !important;
     text-transform: uppercase;
     color: #484848;
+}
+.heading .heading-bar {
+    margin-top: -1rem;
 }
 .heading.language {
     font-size: 1.2rem;
@@ -228,6 +257,24 @@ input, button {
     margin: 0 auto;
 }
 
+
+.margin--top {
+    margin-top: 0.5rem !important;
+}
+.margin--bottom {
+    margin-bottom: 0.5rem !important;
+}
+.margin--left {
+    margin-left: 0.5rem !important;
+}
+.margin--right {
+    margin-right: 0.5rem !important;
+}
+
+
+
+
+
 .box--border {
     box-sizing: border-box;
 }
@@ -296,6 +343,9 @@ input, button {
     grid-template-columns: 1fr 1fr;
     grid-gap: 1rem;
     //grid-auto-rows: minmax(500px, auto);
+}
+.grid.gap-big {
+    grid-gap: 3rem;
 }
 .grid-table {
     display: grid;
