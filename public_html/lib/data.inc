@@ -34,11 +34,11 @@ $row = mysqli_fetch_assoc($contest_info);
     $contest_name = $row['CONTEST_NAME'];
     $contest_date = $row['CONTEST_DATE'];
     list ($contest_year, $contest_month, $contest_day)
-	= split('-', $contest_date);
+	= explode('-', $contest_date);
 
     $contest_start_time = $row['START_TIME'];
     list ($contest_start_hour, $contest_start_minute)
-	= split(':', $contest_start_time);
+	= explode(':', $contest_start_time);
     $contest_freeze_time = $row['FREEZE_DELAY'];
     $contest_end_time = $row['CONTEST_END_DELAY'];
     $base_dir = $row['BASE_DIRECTORY'];
@@ -61,7 +61,7 @@ if(isset($team_id)){
     $row = mysqli_fetch_assoc($site_info);
     $site_start_time = $row['START_TIME'];
     list ($site_start_hour, $site_start_minute, $site_start_second)
-	= split(':', $site_start_time);
+	= explode(':', $site_start_time);
 #  $site_start_ts = mktime($site_start_hour,
 #			       $site_start_minute,
 #			       $site_start_second,

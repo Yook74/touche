@@ -61,7 +61,7 @@ else if($_POST)
 		if(isset($_SESSION['edit_language']))
 		{
 			//parse the headers string
-			$build_forbidden_words = split("\n", $_POST['edit_forbidden_words']);
+			$build_forbidden_words = explode("\n", $_POST['edit_forbidden_words']);
 			unset($error_msg);
 			//clear out the DB
 			$sql = "delete from FORBIDDEN_WORDS where LANGUAGE_ID = '";
@@ -155,7 +155,7 @@ else
 	//are editing something
 	if(isset($edit_forbidden_words))
 	{
-		$sub_headers = split(":", $edit_forbidden_words);
+		$sub_headers = explode(":", $edit_forbidden_words);
 		echo "	  <tr bgcolor=\"$data_bg_color1\">";
 		echo "		<td valign=top>Forbidden Words </td>";
 		echo "		<td><textarea rows=10 name='edit_forbidden_words'>";
