@@ -20,7 +20,6 @@ RUN a2enmod suexec
 RUN a2enmod userdir
 RUN a2enmod php7.0
 RUN a2enmod cgi
-# RUN apt-get install -y mysql-server
 
 #Set up Directories for server
 COPY ./ /etc/skel/src
@@ -29,7 +28,6 @@ ARG sqlpass
 ARG userpass
 RUN bash /etc/skel/src/setup.sh $sqlpass $userpass
 
-EXPOSE 80
-EXPOSE 3306
+EXPOSE 8000
 
 CMD /etc/skel/src/startServices.sh

@@ -4,6 +4,8 @@ contestpasswd=$2
 echo -e "EnableSendfile off\nDefaultType None" >> /etc/apache2/suexec/www-data
 sed -i 's/cgi-bin//g' /etc/apache2/suexec/www-data
 sed -i 's/;cgi.force_redirect = 1/cgi.force_redirect = 0/g' /etc/php/7.0/cgi/php.ini
+sed -i 's/<VirtualHost *:80>/<VirtualHost *:8000>/g' /etc/apache2/sites-enabled/000-default.conf
+sed -i 's/Listen 80/Listen 8000/g' /etc/apache2/ports.conf
 sed -i '299d' /etc/php/7.0/cgi/php.ini
 mkdir /var/run/mysqld
 chown -R mysql:mysql /var/lib/mysql /var/run/mysqld
