@@ -1,4 +1,5 @@
 <?php
+
 include_once("lib/session.inc");
 include_once("lib/create.inc");
 if($_POST['B1'] == "Submit") {
@@ -154,29 +155,26 @@ echo "<br />[$cmd2]<br />";
    system($cmd2, $result);
 echo"Finished.</p>\n";
 echo "<p>Creating Database . . . ";
-   $mypwd = "pc2bgone";
+   $mypwd = "password";
    $cmd3 = "mysqladmin --password=$mypwd -u root create $db_name";
+echo "<br />[$cmd3]<br />";
    system($cmd3, $result);
    $cmd3 = "mysql --password=$mypwd -u root $db_name < dbcreate.sql";
+echo "<br />[$cmd3]<br />";
    system($cmd3, $result);
    $cmd4 = "cp -r develop/ ./";
    $cmd4 .= $contest;
 echo "<br />[$cmd4]<br />";
    system($cmd4, $result);
 $dbU = "contest_skeleton";
-$link = mysql_connect($dbhost, $dbU, $dbpw);
+$link = mysqli_connect($dbhost, $dbU, $dbpw, $db_name);
 if (!$link) {
     print "Sorry.  Database connect failed.";
     exit;
 }
 
-$connect_good = mysql_select_db($db_name);
-if (!$connect_good) {
-    print "Sorry.  Database selection failed.";
-    exit;
-}
-$base_dir = "/home/contest/$contest";
-$contest_info = mysql_query("INSERT INTO CONTEST_CONFIG (HOST, CONTEST_NAME, FREEZE_DELAY, CONTEST_END_DELAY, BASE_DIRECTORY, JUDGE_USER) VALUES ('$HOST', '$contest', '14400', '18000', '$base_dir', 'judge')");
+$base_dir = "/home/contest_skeleton/$contest";
+$contest_info = mysqli_query($link, "INSERT INTO CONTEST_CONFIG (HOST, CONTEST_NAME, FREEZE_DELAY, CONTEST_END_DELAY, BASE_DIRECTORY, JUDGE_USER) VALUES ('$HOST', '$contest', '14400', '18000', '$base_dir', 'judge')");
 if (!$contest_info) {
     print "Sorry.  Database request (INSERT) failed.";
     exit;
@@ -239,7 +237,8 @@ $fhdl = fopen("$contest_noesc/readme/inst.html", "w") OR die("Error with opening
 $chk = fwrite($fhdl, $file);
 fclose($fhdl);
 #-----------------------------------------------------------------
-echo "<p>To finish setting up the contest go to: <a href='http://jacob.cse.taylor.edu/~contest/$contest_noesc/admin'>Administration setup</a></p>";
+$username = get_current_user();
+echo "<p>To finish setting up the contest go to: <a href='http://$_SERVER[SERVER_NAME]/~$username/$contest_noesc/admin'>Administration setup</a></p>";
 ?>
 </center></b></td></tr>
 </body>

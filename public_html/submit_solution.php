@@ -85,9 +85,13 @@
 	}
 
 	$queue_file_name = "$team_id-$problem_id-$ts.$extension";
-    move_uploaded_file($_FILES['source_file']['tmp_name'],
+    $result = move_uploaded_file($_FILES['source_file']['tmp_name'],
 		       "$base_dir/queue/$queue_file_name");
-    chmod("$base_dir/queue/$queue_file_name", 0644);
+    if(!$result){
+		print "Failed to upload submission. Please contact administrator.";
+	}
+
+	chmod("$base_dir/queue/$queue_file_name", 0644);
 
 	$sql  = "INSERT INTO QUEUED_SUBMISSIONS (TEAM_ID, PROBLEM_ID, ATTEMPT, TS, SOURCE_FILE) ";
 	$sql .= "VALUES ('$team_id','$problem_id', '$attempt', '$ts','$queue_file_name') ";

@@ -46,7 +46,7 @@ while($submits = mysqli_fetch_assoc($submits_result)) {
     $source_file = $submits['SOURCE_FILE'];
     $submitted_source = $problem_handle['queue_dir'] . $source_file;
     # Move submission from queue to judged table
-    $judged_id = new_submission($id,$team_id, $problem_id,$ts,$attempt,$source_file);
+    $judged_id = new_submission($id,$team_id, $problem_id,$ts,$attempt,$source_file,$link);
 
     # Read in the submitted file and save it to the judged dir
     $original_source_content = read_entire_file($submitted_source);
@@ -59,7 +59,7 @@ while($submits = mysqli_fetch_assoc($submits_result)) {
     # Get the base and extension of the file name
     $tmp = explode(".", $source_file);
     $file_name = $tmp[0];
-    $file_extension = mysqli_real_escape_string($tmp[1]);
+    $file_extension = mysqli_real_escape_string($link, $tmp[1]);
 
     $sql  = "SELECT * ";
     $sql .= "FROM FILE_EXTENSIONS, LANGUAGE_FILE_EXTENSIONS ";
@@ -72,7 +72,7 @@ while($submits = mysqli_fetch_assoc($submits_result)) {
     if(mysqli_num_rows($sql_result) == 0) {
 		$auto_response_number = EFILETYPE;
 		$submission_output = "File name: $source_file";
-		update_submission($judged_id, $auto_response_number, $source_file);
+		update_submission($judged_id, $auto_response_number, $source_filei, $link);
     }
     else {
 		$row = mysqli_fetch_assoc($sql_result);
@@ -152,7 +152,7 @@ while($submits = mysqli_fetch_assoc($submits_result)) {
 			}
 
 			if($auto_response_number == EFORBIDDEN){
-				update_submission($judged_id, $auto_response_number, $submission_output);
+				update_submission($judged_id, $auto_response_number, $submission_output, $link);
 			}
 		}
 	
@@ -169,7 +169,7 @@ while($submits = mysqli_fetch_assoc($submits_result)) {
 				$submission_output .= 
 					read_entire_file($problem_handle['judged_dir'] . 
 					$problem_handle['file_name'] . ".err");
-				update_submission($judged_id, $auto_response_number, $problem_handle['file_name'] . ".err");
+				update_submission($judged_id, $auto_response_number, $problem_handle['file_name'] . ".err", $link);
     			}
 		}
 	
@@ -234,12 +234,14 @@ while($submits = mysqli_fetch_assoc($submits_result)) {
 							#structure inside of the chroot environment
 							$arg_cmd = "$base_dir/chroot_wrapper.exe" . 
 								" " .
+
 								$use_proc_fs . " " . 
 								$chroot_directory . " " .
 								$sys_command . " " . 
 								$problem_handle['data_dir'] . $cur_input . " " .
-								$problem_handle['output'] .
+								$problem_handle['output'] . " " .
 								"$judged_id-";
+
 #make use of bash'es built in ulimit capabilities
 							$args = array("-c","ulimit -t $safe_max_cpu_time;$arg_cmd");
 							$envs = array("HOME" => "$base_dir/..");
@@ -449,10 +451,10 @@ while($submits = mysqli_fetch_assoc($submits_result)) {
 				echo "\nauto_resopnse_number: $auto_response_number\n";	        
     				if($auto_response_number != ERUNTIME){
 					echo "\nerror: $run_time_errorno\n";
-					update_submission($judged_id,$auto_response_number, $cur_input, $run_time_errorno);
+					update_submission($judged_id,$auto_response_number, $cur_input, $link, $run_time_errorno);
 				}
 				else{
-					update_submission($judged_id,$auto_response_number, $cur_input);
+					update_submission($judged_id,$auto_response_number, $cur_input, $link);
 				}
 						
 			}
@@ -464,7 +466,7 @@ while($submits = mysqli_fetch_assoc($submits_result)) {
     if($auto_response_number == ENONE){
 	    $auto_response_number = EUNKNOWN;
 	    $submission_output = read_entire_file($diff_out_file);
-	    update_submission($judged_id, $auto_response_number, $cur_input);
+	    update_submission($judged_id, $auto_response_number, $cur_input, $link);
     }
 }
 
@@ -483,7 +485,8 @@ function new_submission($id,
 		$problem_id,
 		$ts,
 		$attempt,
-		$source_file) {
+		$source_file,
+		$link) {
     ### Stalking the elusive bug. Put in some parameter validation. -sb 2006-10-05
     if( !($id>0) || !($team_id>0) || !($problem_id>0) ){
 	echo "new_submission WARNING: id=$id, team_id=$team_id, problem_id=$problem_id<br />\n";
@@ -544,7 +547,7 @@ function save_file($filename,$file) {
 # Update the judged submission
 # Input: $judged_id - submission id from the judged table
 #        $auto_response_number - response number
-function update_submission($judged_id,$auto_response_number,$in_file, $error_no = NULL) {
+function update_submission($judged_id,$auto_response_number,$in_file, $link, $error_no = NULL) {
     if($error_no){
 	    echo "\nerrorno: $error_no\n";
 	    $sql = "INSERT INTO AUTO_RESPONSES (JUDGED_ID, IN_FILE, AUTO_RESPONSE, ERROR_NO) ";

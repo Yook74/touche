@@ -9,22 +9,17 @@
 # arch-tag: admin/lib/header.inc
 #
 
-$link = mysql_connect($db_host, $db_user, $db_pass);
+$link = mysqli_connect($db_host, $db_user, $db_pass, $db_name);
 if (!$link) {
     print "Sorry.  Database connect failed.  Retrying...";
     exit;
 }
 
-$connect_good = mysql_select_db($db_name);
-if (!$connect_good) {
-    print "Sorry.  Database selection failed.  Retrying...";
-    exit;
-}
 	include_once ("../lib/config.inc");
 #	include_once ("../lib/data.inc");
 	include_once ("lib/session.inc");
-	$result = mysql_query("SELECT * FROM CONTEST_CONFIG");
-	if (mysql_num_rows($result) > 0) {
+	$result = mysqli_query($link, "SELECT * FROM CONTEST_CONFIG");
+	if (mysqli_num_rows($result) > 0) {
 		include_once ("lib/contest_info.inc");
 	}
 ?>
@@ -68,13 +63,13 @@ if (!$connect_good) {
 				<?php $lang_sql = "SELECT 	sum(REPLACE_HEADERS) AS heads,";
 				$lang_sql  .= "		sum(CHECK_BAD_WORDS) AS bad_words ";
 				$lang_sql  .= "FROM LANGUAGE";
-				$sel_sql = mysql_query($lang_sql);
+				$sel_sql = mysqli_query($link, $lang_sql);
 				if (!$sel_sql) {
 					echo "Error!  Could not create the header ";
 					echo "correctly.<br /> Please contact an ";
 					echo "administrator.";
 				}
-				$contest_stuff = mysql_fetch_assoc($sel_sql);
+				$contest_stuff = mysqli_fetch_assoc($sel_sql);
 				if ($contest_stuff['heads'] > 0) { ?>
 				<a href="setup_headers.php">Headers</a> &nbsp;
 				<?php }

@@ -16,7 +16,7 @@
     include_once("lib/session.inc");
     include_once("../lib/data.inc");
 
-judge_header(0);
+judge_header(0, $link);
 echo "<br><table align=center bgcolor=#000000 width=50%
     cellpadding=0 cellspacing=0 border=0><tr><td>\n";
 echo "<table align=center width=100% cellpadding=5 cellspacing=1 border=0>\n";

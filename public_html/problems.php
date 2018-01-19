@@ -1,4 +1,28 @@
 <?php
+include_once("lib/header.php");
+if($USE_JSON) {
+    include_once("lib/database.inc");
+    $link = mysqli_connect($db_host, $db_user, $db_pass, $db_name);
+    $method = $_SERVER['REQUEST_METHOD'];
+    $response = '';
+    if ($method === 'GET') {
+        $problems = [];
+        $problems_query = mysqli_query($link, "SELECT * FROM PROBLEMS");
+        while ($row = mysqli_fetch_assoc($problems_query)) {
+            $problem = array(
+                'id' => $row['PROBLEM_ID'],
+                'name' => $row['PROBLEM_NAME'],
+                'loc' => $row['PROBLEM_LOC'],
+                'note' => $row['PROBLEM_NOTE'],
+                'hasHTML' => file_exists("problems/".$row['PROBLEM_LOC']."/".$row['PROBLEM_NAME'].".html"),
+                'hasPDF' => file_exists("problems/".$row['PROBLEM_LOC']."/".$row['PROBLEM_NAME'].".pdf")
+            );
+            array_push($problems, $problem);
+        }
+        $response = $problems;
+    }
+    echo json_encode($response);
+} else {
 #
 # Copyright (C) 2003 David Whittington
 # Copyright (C) 2003 Jonathan Geisler
@@ -51,5 +75,6 @@ foreach ($problems as $problem) {
 echo "</table>\n";
 
     include("lib/footer.inc");
+}
 ?>
 

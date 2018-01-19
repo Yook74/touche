@@ -1,0 +1,7 @@
+DirectoryIndex index.php
+
+AddHandler cgi-script .php
+AddType application/x-httpd-php .php
+<Files *.php>
+    Options +ExecCGI
+</Files>
