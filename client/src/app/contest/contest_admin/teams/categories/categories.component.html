@@ -1,1 +1,7 @@
-Categories
+<div class="heading">Categories</div>
+
+<data-table [columns]="tableColumns" [data]="categories" class="modal"></data-table>
+
+<div class="heading-bar text--right margin--top">
+    <button mat-raised-button color="primary" class="button-primary" (click)="addCategory()">Add Category</button>
+</div>

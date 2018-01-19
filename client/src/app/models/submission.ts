@@ -3,7 +3,7 @@ export class Submission {
     teamId: number;
     problemId: number;
     timestamp: string;
-    attempt: number;
+    attempts: number;
     sourceFile: string;
     responseId: number;
     autoResponseId: number;

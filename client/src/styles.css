@@ -25,6 +25,9 @@ mat-icon {
     line-height: 0.95 !important;
     margin: 0.5rem !important;
 }
+mat-table mat-icon {
+    color: #484848;
+}
 mat-table {
     font-size: 0.9rem;
     font-family: 'Open Sans', sans-serif;
@@ -32,10 +35,24 @@ mat-table {
     -moz-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.1);
     box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.1);
 }
+.modal mat-table {
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+    min-width: 600px;
+}
 mat-header-cell {
     font-size: 0.8rem !important;
     font-weight: 600 !important;
-    color: #8f8f8f;
+    color: #484848;
+}
+mat-cell {
+    font-size: 0.9rem !important;
+    font-weight: 400 !important;
+    color: #8f8f8f !important;
+}
+.standing-problem {
+    margin-right: 1rem;
 }
 
 .mat-dialog-container {
@@ -60,6 +77,19 @@ mat-header-cell {
     font-weight: 300 !important;
     font-size: 1rem !important;
     text-align: left !important;
+}
+
+a {
+    text-decoration: none;
+}
+
+.download-link {
+    color: #0cc2aa;
+    font-weight: 500;
+    margin: 0;
+    padding: 0;
+    vertical-align: middle;
+    margin-right: 1rem;
 }
 
 input, button {

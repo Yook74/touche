@@ -13,7 +13,7 @@ export class LiveProblemsComponent implements OnInit {
         { header: 'Name', dataField: 'name', displayIsComponent: false, component: null },
         { header: 'Attachments', dataField: 'id', displayIsComponent: true, component: LiveProblemAttachmentsComponent },
         { header: 'Attempts', dataField: 'id', displayIsComponent: false, component: null },
-        { header: 'Submit', dataField: 'id', displayIsComponent: true, component: LiveProblemAttachmentsComponent }
+        { header: 'Submit', dataField: 'id', displayIsComponent: true, component: LiveProblemSubmitComponent }
     ];
     problems: Problem[];
 

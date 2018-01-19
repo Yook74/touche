@@ -5,7 +5,7 @@
             <mat-header-cell *matHeaderCellDef mat-sort-header>{{column.header}}</mat-header-cell>
             <mat-cell *matCellDef="let row">
                 <span *ngIf="!column.displayIsComponent">{{row[column.dataField]}}</span>
-                <data-table-field *ngIf="!column.displayIsComponent" [component]="column.component" [data]="row[column.dataField]"></data-table-field>
+                <data-table-field *ngIf="column.displayIsComponent" [component]="column.component" [data]="row[column.dataField]"></data-table-field>
             </mat-cell>
         </ng-container>
 

@@ -8,6 +8,8 @@ import { AdminTeamEditComponent } from './edit/edit.component';
 import { AdminTeamDeleteComponent } from './delete/delete.component';
 import { AdminTeamCategoryComponent } from './category/category.component';
 import { AdminTeamAddComponent } from './add/add.component';
+import { AdminSitesComponent } from './sites/sites.component';
+import { AdminCategoriesComponent } from './categories/categories.component';
 
 @Component({
     templateUrl: './teams.component.html'
@@ -40,6 +42,28 @@ export class AdminTeamsComponent {
 
     addTeam(): void {
         let dialogRef = this.dialog.open(AdminTeamAddComponent, {
+            width: '',
+            data: { }
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+            console.log('The dialog was closed');
+        });
+    }
+
+    openSites(): void {
+        let dialogRef = this.dialog.open(AdminSitesComponent, {
+            width: '',
+            data: { }
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+            console.log('The dialog was closed');
+        });
+    }
+
+    openCategories(): void {
+        let dialogRef = this.dialog.open(AdminCategoriesComponent, {
             width: '',
             data: { }
         });
