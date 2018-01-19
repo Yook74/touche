@@ -62,6 +62,6 @@
 	echo "</td></tr></table>\n";
 	
 	reset($problems);
-	mysql_close ($link);
+	mysqli_close($link);
 	include_once("lib/footer.inc");
 ?>

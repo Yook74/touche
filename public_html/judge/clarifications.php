@@ -14,7 +14,7 @@
     include_once("lib/header.inc");
 
 
-judge_header(60);
+judge_header(60, $link);
 if (isSet($_GET['clar_id'])) {
 	$clar_id = $_GET["clar_id"];
 } else {

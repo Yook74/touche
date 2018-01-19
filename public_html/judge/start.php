@@ -12,7 +12,7 @@ include_once("lib/config.inc");
 include_once("lib/judge.inc");
 include_once("lib/header.inc");
 
-judge_header(0);
+judge_header(0, $link);
 
 function make_file_readable($fp, &$missing_files) {
 	if (file_exists($fp)) {
@@ -31,6 +31,7 @@ if(isSet($_POST['submit']) && $_POST['submit'] == 'Start')
 	system("touch $base_dir/../active-contests/$contest_name", $result);
         if ($result != 0){
                 echo "<p><font color=$hd_txt_color2>Warning! Crontab Failed to start, please contact the system administrator</font></p>";
+		exit;
         }
 
 	foreach($_POST['chksite'] as $site)

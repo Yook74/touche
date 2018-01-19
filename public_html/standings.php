@@ -162,7 +162,7 @@
     usort($standings, "cmp");
     //find the first team that is not exhibition
     $x = 0;
-    while(checkexhib($standings[$x]['team_id']) == 1) {
+    while(checkexhib($standings[$x]['team_id'], $link) == 1) {
 	$standings[$x]['rank'] = '-';
 	$x++;
     }
@@ -171,7 +171,7 @@
     $current_rank = 1;
     for($i=$x+1; $i < count($standings); $i++) {
         //check to see if the team is exhibition, if it is, don't rank them
-        $excheck = checkexhib($standings[$i]['team_id']);
+        $excheck = checkexhib($standings[$i]['team_id'], $link);
 
         //echo $standings[$i]['team_id'] ." - " . $excheck . "<br>";
         if($excheck == 1)
@@ -298,7 +298,7 @@
 	return ("$hours:$mins"); 
     }
 
-function checkexhib($team)
+function checkexhib($team, $link)
 {
         global $selected_category;
         if($selected_category != 'Exhibition') {

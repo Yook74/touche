@@ -23,28 +23,28 @@ if ($_GET)
 		if($lang_id != -1)
 		{
 			$sql = "select * from LANGUAGE WHERE LANGUAGE_ID = '$lang_id'";
-			$result = mysql_query($sql);
+			$result = mysqli_query($link, $sql);
 			if(!$result)
 			{
-				$error_msg = "Error: " . mysql_error();
+				$error_msg = "Error: " . mysqli_error($link);
 				$error_msg .= "<br>SQL: $sql";
 			}
 			else
 			{
-				$row = mysql_fetch_assoc($result);
+				$row = mysqli_fetch_assoc($result);
 				$language_name = $row['LANGUAGE_NAME'];
 			}
 			$sql = "select * from HEADERS WHERE LANGUAGE_ID = '$lang_id'";
-			$result = mysql_query($sql);
+			$result = mysqli_query($link, $sql);
 			if(!$result)
 			{
-				$error_msg = "Error: " . mysql_error();
+				$error_msg = "Error: " . mysqli_error($link);
 				$error_msg .= "<br>SQL: $sql";
 			}
 			else
 			{
 				$edit_headers = "";
-				while($row = mysql_fetch_assoc($result))
+				while($row = mysqli_fetch_assoc($result))
 				{
 					$edit_headers .= $row['HEADER'] . ":";
 				}
@@ -61,15 +61,15 @@ else if($_POST)
 		if(isset($_SESSION['edit_language']))
 		{
 			//parse the headers string
-			$build_headers = split("\n", $_POST['edit_headers']);
+			$build_headers = explode("\n", $_POST['edit_headers']);
 			unset($error_msg);
 			//clear out the DB
 			$sql = "delete from HEADERS where LANGUAGE_ID = '";
 			$sql .= $_SESSION['edit_language'] . "'";
-			$result = mysql_query($sql);
+			$result = mysqli_query($sql);
 			if(!$result)
 			{
-				$error_msg .= "Error: " . mysql_error();
+				$error_msg .= "Error: " . mysqli_error($link);
 				$error_msg .= "<br>SQL: $sql";
 			}
 			foreach($build_headers as $header)
@@ -80,10 +80,10 @@ else if($_POST)
 				{
 					$sql = "insert into HEADERS values('" . $_SESSION['edit_language'];
 					$sql .= "', '$header')";
-					$result = mysql_query($sql);
+					$result = mysqli_query($link, $sql);
 					if(!$result)
 					{
-						$error_msg .= "Error: " . mysql_error();
+						$error_msg .= "Error: " . mysqli_error($link);
 						$error_msg .= "<br>SQL: $sql";
 					}
 				}
@@ -106,12 +106,12 @@ if(!isSet($action))
 $cur_headers = "";
 //get all the current categories
 $sql = "select * from LANGUAGE";
-$result = mysql_query($sql);
-if(mysql_num_rows($result) > 0) {
+$result = mysqli_query($link, $sql);
+if(mysqli_num_rows($result) > 0) {
 	$cur_headers = "<font size=+1>&nbsp</font><br>";
 	$cur_headers .= "<br><table>";
 	$cur_headers .= "<tr><td><font size=+1><b>Edit Current Headers</b></font></td></tr>";
-	while($row = mysql_fetch_assoc($result)){
+	while($row = mysqli_fetch_assoc($result)){
 		$cur_headers .= "<tr><td>" . $row['LANGUAGE_NAME']; 
 		$cur_headers .= " </td><td><font size=-1>";
 		$cur_headers .= "<a href=setup_headers.php?lang_id=" . $row['LANGUAGE_ID'] . ">Edit</a>";
@@ -155,7 +155,7 @@ else
 	//are editing something
 	if(isset($edit_headers))
 	{
-		$sub_headers = split(":", $edit_headers);
+		$sub_headers = explode(":", $edit_headers);
 		echo "	  <tr bgcolor=\"$data_bg_color1\">";
 		echo "		<td valign=top>Headers </td>";
 		echo "		<td><textarea rows=10 name='edit_headers'>";

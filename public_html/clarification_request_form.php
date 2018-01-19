@@ -26,12 +26,15 @@
 
 	    $sql  = "INSERT ";
 	    $sql .= "INTO CLARIFICATION_REQUESTS ";
-	    $sql .= "    (TEAM_ID, PROBLEM_ID, QUESTION, SUBMIT_TS) ";
+	    $sql .= "    (TEAM_ID, PROBLEM_ID, QUESTION, SUBMIT_TS, RESPONSE) ";
 	    $sql .= " VALUES ";
-	    $sql .= "    ('$team_id', '$problem_id', '".mysqli_real_escape_string($link, $question)."', '".time()."')";
-	    mysqli_query($link, $sql);
+	    $sql .= "    ('$team_id', '$problem_id', '".mysqli_real_escape_string($link, $question)."', '".time()."', '')";
+	    $result = mysqli_query($link, $sql);
+	    if(!$result){
+		echo mysqli_error($link);
+		exit;
+	    }
 	}
-
 	echo "<br>\n";
 	echo "<form action=clarification_request_form.php method=post>\n";
 	echo "<table align=center bgcolor=#000000 cellpadding=0 cellspacing=0 border=0><tr><td>";

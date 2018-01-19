@@ -26,15 +26,15 @@ if ($_GET)
 		if($edit_id != -1)
 		{
 			$sql = "select * from CATEGORIES WHERE CATEGORY_ID = '$edit_id'";
-			$result = mysql_query($sql);
+			$result = mysqli_query($link, $sql);
 			if(!$result)
 			{
-				$error_msg = "Error: " . mysql_error();
+				$error_msg = "Error: " . mysqli_error($link);
 				$error_msg .= "<br>SQL: $sql";
 			}
 			else
 			{
-				$row = mysql_fetch_assoc($result);
+				$row = mysqli_fetch_assoc($result);
 				$edit_category_name = $row['CATEGORY_NAME'];
 			}
 		}
@@ -46,13 +46,13 @@ if ($_GET)
 		//delete the offending category if no teams are in it
 		$sql = "select * from TEAMS, CATEGORY_TEAM where TEAMS.TEAM_ID ";
 		$sql .= "= CATEGORY_TEAM.TEAM_ID AND CATEGORY_TEAM.CATEGORY_ID = $remove_id";
-		$result = mysql_query($sql);
+		$result = mysqli_query($link, $sql);
 		if(!$result)
 		{
-			$error_msg = "Error: " . mysql_error();
+			$error_msg = "Error: " . mysqli_error($link);
 			$error_msg .= "<br>SQL: $sql";
 		}
-		if($result && mysql_num_rows($result) > 0)
+		if($result && mysqli_num_rows($result) > 0)
 		{
 			$error_msg .= "Sorry, there are teams in that category, you must move them to a differant category";
 			$error_msg .= " before you can delete this category";
@@ -60,10 +60,10 @@ if ($_GET)
 		else
 		{
 			$sql="delete from CATEGORIES where CATEGORY_ID = $remove_id";
-			$result = mysql_query($sql);
+			$result = mysqli_query($link, $sql);
 			if(!$result)
 			{
-				$error_msg = "Error: " . mysql_error();
+				$error_msg = "Error: " . mysqli_error($link);
 				$error_msg .= "<br>SQL: $sql";
 			}
 			else
@@ -83,10 +83,10 @@ else if($_POST)
 		{
 			$sql = "update CATEGORIES set CATEGORY_NAME = '" . $_POST['category_name'];
 			$sql .= "' where CATEGORY_ID = " . $_SESSION['edit_category'];
-			$result = mysql_query($sql);
+			$result = mysqli_query($link, $sql);
 			if(!$result)
 			{
-				$error_msg = "Error: " . mysql_error();
+				$error_msg = "Error: " . mysqli_error($link);
 				$error_msg = "<br>SQL: $sql";
 			}
 			else
@@ -99,14 +99,14 @@ else if($_POST)
 		{		
 			//adding a new person
 			$sql = "insert into CATEGORIES (CATEGORY_NAME) values('" . $_POST['category_name'] . "')";
-			$result = mysql_query($sql);
+			$result = mysqli_query($link, $sql);
 			if($result)
 			{
 				$error_msg = "Successfull: New category created";
 			}
 			else
 			{
-				$error_msg = "Error:" . mysql_error();
+				$error_msg = "Error:" . mysqli_error($link);
 				$error_msg = "<br>SQL: $sql";
 			}
 		}
@@ -123,12 +123,12 @@ if(!isSet($action))
 $cur_categories = "";
 //get all the current categories
 $sql = "select * from CATEGORIES";
-$result = mysql_query($sql);
-if(mysql_num_rows($result) > 0) {
+$result = mysqli_query($link, $sql);
+if(mysqli_num_rows($result) > 0) {
 	$cur_categories = "<a href=setup_categories.php><font size=+1>Add New Category</font></a><br>";
 	$cur_categories .= "<br><table>";
 	$cur_categories .= "<tr><td><font size=+1><b>Edit Current Categories</b></font></td></tr>";
-	while($row = mysql_fetch_assoc($result)){
+	while($row = mysqli_fetch_assoc($result)){
 		$cur_categories .= "<tr><td>" . $row['CATEGORY_NAME']; 
 		$cur_categories .= " </td><td><font size=-1>";
 		$cur_categories .= "<a href=setup_categories.php?edit_id=" . $row['CATEGORY_ID'] . ">Edit</a>";

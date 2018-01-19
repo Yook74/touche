@@ -13,14 +13,18 @@
 	include("lib/data.inc");
 	include("lib/session.inc");
 
+$num_errors = 0;
 if ($_POST)
 {
 	$failed = false;
 	$host_name = $_POST['contest_host'];
 	$contest_name = $_POST['contest_name'];
-	$contest_month = $_POST['contest_month'];
-	$contest_day = $_POST['contest_day'];
-	$contest_year = $_POST['contest_year'];
+
+# Unused 'month', 'day, 'year'. Giving default values.
+	$contest_month = '01';	#$_POST['contest_month'];
+	$contest_day = '01';	#$_POST['contest_day'];
+	$contest_year = '2001';	#$_POST['contest_year'];
+
 	$freeze_hour = $_POST['freeze_hour'];
 	$freeze_minute = $_POST['freeze_minute'];
 	$freeze_second = $_POST['freeze_second'];
@@ -28,7 +32,13 @@ if ($_POST)
 	$end_minute = $_POST['end_minute'];
 	$end_second = $_POST['end_second'];
 	$username = $_POST['username'];
-	$password = $_POST['password'];
+	if(isset($_POST['password'])){
+		$password = $_POST['password'];
+	}else{
+		$error[$num_errors] = "You must provide a judge password.";
+		$num_errors++;
+		$failed=true;
+	}
 	$base_directory = $_POST['base_directory'];
 	
 	//if the three checkboxes are not checked, they are submitted
@@ -94,27 +104,29 @@ if ($_POST)
 	else {
 		$headers_python = 0;
 	}
-	$num_problems = $_POST['num_problems'];
-	
-	$i = 0;
+	if (isset($_POST['num_problems'])){
+		$num_problems = $_POST['num_problems'];
+	}else{
+		$num_problems = 0;
+	}
 	if ( !$host_name ) {
-		$error[$i] = "You forgot to give a contest host name.<br>";
-		$i++;
+		$error[$num_errors] = "You forgot to give a contest host name.<br>";
+		$num_errors++;
 		$failed=true;
 	}
 	if ( !$contest_name ) {
-		$error[$i] = "You forgot to give the contest a name.<br>";
-		$i++;
+		$error[$num_errors] = "You forgot to give the contest a name.<br>";
+		$num_errors++;
 		$failed=true;
 	}
 	if ( !$freeze_hour ) {
-		$error[$i] = "You forgot to give the contest a freeze hour.<br>";
-		$i++;
+		$error[$num_errors] = "You forgot to give the contest a freeze hour.<br>";
+		$num_errors++;
 		$failed=true;
 	}
 	if ( !$end_hour ) {
-		$error[$i] = "You forgot to give the contest an end hour.<br>";
-		$i++;
+		$error[$num_errors] = "You forgot to give the contest an end hour.<br>";
+		$num_errors++;
 		$failed=true;
 	}
 /*	if (!date_validate($contest_month, $contest_day, $contest_year)) {
@@ -128,8 +140,8 @@ if ($_POST)
 	}*/
 
 	if ( !$base_directory ) {
-		$error[$i] = "You forgot to give the contest a base directory.<br>";
-		$i++;
+		$error[$num_errors] = "You forgot to give the contest a base directory.<br>";
+		$num_errors++;
 		$failed=true;
 	}
 	if($failed){
@@ -139,17 +151,17 @@ if ($_POST)
 		exit;
 	}
 
-	$contest_exists = mysql_query("SELECT * FROM CONTEST_CONFIG");
+	$contest_exists = mysqli_query($link, "SELECT * FROM CONTEST_CONFIG");
 #		echo mysql_num_rows($contest_exists);
 	$save_ts = 0;
 	$save_hs = 0;
 	$save_start = 0;
-	if (mysql_num_rows($contest_exists) > 0) {
-		$row = mysql_fetch_assoc($contest_exists);
+	if (mysqli_num_rows($contest_exists) > 0) {
+		$row = mysqli_fetch_assoc($contest_exists);
 		$save_ts = $row['START_TS'];
 		$save_hs = $row['HAS_STARTED'];
 		$save_start = $row['START_TIME'];
-		$delete = mysql_query("DELETE FROM CONTEST_CONFIG");
+		$delete = mysqli_query($link, "DELETE FROM CONTEST_CONFIG");
 		if (!$delete) {
 			echo "<font color=\"#ff0000\"> Error!  Contest";
 			echo "creation failed.  Contact administrator.</font>";
@@ -169,7 +181,7 @@ if ($_POST)
 	$sql.= "VALUES ( '$host_name', '$contest_name', '$num_problems', '$contest_date', ";
 	$sql.= "	     '$save_start', '$freeze_delay', '$contest_delay', ";
 	$sql.= "	     '$base_directory', '$ignore_stderr', '$username', '$password', '$show_team_names', '$save_ts', '$save_hs') ";
-	$success = mysql_query($sql);
+	$success = mysqli_query($link, $sql);
 	if ($success) {
 		if ($forbidden_c == 1 || $forbidden_cpp == 1 || $forbidden_java == 1 || $forbidden_python == 1) {
 			$forbidden = true;
@@ -196,10 +208,10 @@ if ($_POST)
 		$insert_sql_python = "UPDATE LANGUAGE SET REPLACE_HEADERS = '$headers_python',";
 		$insert_sql_python.= "                    CHECK_BAD_WORDS = '$forbidden_python' ";
 		$insert_sql_python.= "WHERE LANGUAGE_NAME = 'Python'";
-		$insert_c_success = mysql_query($insert_sql_c);
-		$insert_cpp_success = mysql_query($insert_sql_cpp);
-		$insert_java_success= mysql_query($insert_sql_java);
-		$insert_python_success = mysql_query($insert_sql_python);
+		$insert_c_success = mysqli_query($link, $insert_sql_c);
+		$insert_cpp_success = mysqli_query($link, $insert_sql_cpp);
+		$insert_java_success= mysqli_query($link, $insert_sql_java);
+		$insert_python_success = mysqli_query($link, $insert_sql_python);
 		if (!$insert_c_success || !$insert_cpp_success || !$insert_java_success || !$insert_python_success) {
 			echo "Error!  Couldn't update the language sets<br />";
 			echo "Please contact an administrator.";
@@ -219,27 +231,22 @@ End of POST section
 *******************************************************/
 	include("lib/header.inc");
 
-	$link = mysql_connect($db_host, $db_user, $db_pass);
+	$link = mysqli_connect($db_host, $db_user, $db_pass, $db_name);
 	if(!$link){
 		print "Sorry.  Database connect failed.  Check your internet connection.";
 		exit;
 	}
-	$connect_good = mysql_select_db($db_name);
-	if (!$connect_good) {
-		print "Sorry.  Couldn't select the database name $db_name. Exiting...";
-		exit;
-	}
 
-	$sql = mysql_query("SELECT * FROM CONTEST_CONFIG");
+	$sql = mysqli_query($link, "SELECT * FROM CONTEST_CONFIG");
 	if (!$sql) {
 		print "Could not tell if a contest has been created.  bailing out.";
 		exit;
 		#die or break
 	}
-	if (mysql_num_rows($sql) > 0) {
+	if (mysqli_num_rows($sql) > 0) {
 	//a contest is already set up!  allow user to edit
 		$contest=true;
-		$row = mysql_fetch_assoc($sql);
+		$row = mysqli_fetch_assoc($sql);
 		echo "<center>\n";
 	
 		# Print out any errors
@@ -291,12 +298,12 @@ End of POST section
 		else {
 			$stderr_checked = "";
 		}
-		$language_specifics = mysql_query("SELECT * FROM LANGUAGE");
+		$language_specifics = mysqli_query($link, "SELECT * FROM LANGUAGE");
 		if (!$language_specifics) {
 			echo "Could not find language specific info<br />";
 			echo "Please contact an administrator.";
 		}
-		while ($lang_row = mysql_fetch_assoc($language_specifics)) {
+		while ($lang_row = mysqli_fetch_assoc($language_specifics)) {
 			if ($lang_row['LANGUAGE_NAME'] == 'C') {
 				$headers_c_checked = $lang_row['REPLACE_HEADERS'];
 				$forbidden_c_checked = $lang_row['CHECK_BAD_WORDS'];

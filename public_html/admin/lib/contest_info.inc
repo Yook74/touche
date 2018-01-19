@@ -10,14 +10,14 @@
 # arch-tag: lib/contest_info.inc
 #
 
-$contest_info = mysql_query("SELECT * FROM CONTEST_CONFIG");
+$contest_info = mysqli_query($link, "SELECT * FROM CONTEST_CONFIG");
 if (!$contest_info) {
     print "Sorry.  Database request (CONTEST_CONFIG) failed.  Retrying...";
     exit;
 }
 
-$row = mysql_fetch_assoc($contest_info);
-    if (mysql_num_rows($contest_info) < 1) {
+$row = mysqli_fetch_assoc($contest_info);
+    if (mysqli_num_rows($contest_info) < 1) {
         print "Sorry.  No contest configuration information exists.<br /> ";
         print "Please contact a system administrator.";
         #exit;

@@ -25,21 +25,21 @@ if($_POST)
 		$_SESSION['edit_problem'] = $problem_id;
 		$error_msg = "Successfull: New data set created";
 		$sql = "select * from PROBLEMS WHERE PROBLEM_ID = '$problem_id'";
-		$result = mysql_query($sql);
+		$result = mysqli_query($link, $sql);
 		if(!$result)
 		{
-			$error_msg = "Error: " . mysql_error();
+			$error_msg = "Error: " . mysqli_error($link);
 			$error_msg .= "<br>SQL: $sql";
 		}
 		else
 		{
-			if(mysql_num_rows($result)==0)
+			if(mysqli_num_rows($result)==0)
 			{
 				$error_msg = "<br>No rows returned: SQL: $sql";
 			}
 			else
 			{			
-				$row = mysql_fetch_assoc($result);
+				$row = mysqli_fetch_assoc($result);
 				$edit_problem_name = $row['PROBLEM_NAME'];
 			}
 		}
@@ -64,7 +64,7 @@ if($_POST)
 				$data_dir . $_POST['problem_id'] . "_" . $_FILES['data_set_in']['name'] . $in_suffix);
 		if(!$result)
 		{
-			print "Failed to upload in file";
+			print "$data_dir Failed to upload in file";
 			$error_msg = "Failed to upload 'in' file";
 		}
 		//copy over the destination out file name so when we glob the directory later
@@ -89,21 +89,21 @@ else if ($_GET)
 		if($problem_id != -1)
 		{
 			$sql = "select * from PROBLEMS WHERE PROBLEM_ID = '$problem_id'";
-			$result = mysql_query($sql);
+			$result = mysqli_query($link, $sql);
 			if(!$result)
 			{
-				$error_msg = "Error: " . mysql_error();
+				$error_msg = "Error: " . mysqli_error($link);
 				$error_msg .= "<br>SQL: $sql";
 			}
 			else
 			{
-				if(mysql_num_rows($result)==0)
+				if(mysqli_num_rows($result)==0)
 				{
 					$error_msg = "<br>No rows returned: SQL: $sql";
 				}
 				else
 				{			
-					$row = mysql_fetch_assoc($result);
+					$row = mysqli_fetch_assoc($result);
 					$edit_problem_name = $row['PROBLEM_NAME'];
 				}
 			}
@@ -137,12 +137,12 @@ if(!isSet($action))
 $cur_data_sets = "";
 //get all the current data sets
 $sql = "select * from PROBLEMS ORDER BY 'PROBLEM_ID'";
-$result = mysql_query($sql);
-if(mysql_num_rows($result) > 0) {
+$result = mysqli_query($link, $sql);
+if(mysqli_num_rows($result) > 0) {
 	$cur_data_sets = "<font size=+1>&nbsp</a></font><br>";
 	$cur_data_sets .= "<br><table>";
 	$cur_data_sets .= "<tr><td><font size=+1><b>Edit Data Sets</b></font></td></tr>";
-	while($row = mysql_fetch_assoc($result)){
+	while($row = mysqli_fetch_assoc($result)){
 		$cur_data_sets .= "<tr><td>" . $row['PROBLEM_NAME']; 
 		$cur_data_sets .= "</td><td><font size=-1><a href=setup_data_sets.php?problem_id";
 		$cur_data_sets .= "=" . $row['PROBLEM_ID'] . ">Add new data set</a></font></td></tr>";
@@ -150,7 +150,7 @@ if(mysql_num_rows($result) > 0) {
 		$cur_data_sets .= "<tr><td align=right><table>";
 		foreach ($fs_parse as $file)
 		{
-			$file_names = split("/", $file);
+			$file_names = explode("/", $file);
 			$file_name = $file_names[count($file_names)-1];
 			$data_set_name = preg_replace("/\.in$/", "",$file_name);
 			$cur_data_sets .= "<tr><td><font size=-1> $data_set_name</font></td>";

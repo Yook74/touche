@@ -15,8 +15,8 @@ if ($_POST) {
         $ext_second = $_POST['ext_second'];
 
 
-        $sql = mysql_query("SELECT * FROM CONTEST_CONFIG");
-	$row = mysql_fetch_assoc($sql);	
+        $sql = mysqli_query($link, "SELECT * FROM CONTEST_CONFIG");
+	$row = mysqli_fetch_assoc($sql);	
 	$contest_np = $row['CONTEST_NAME'];
 	$freeze_hour = (int)($row['FREEZE_DELAY']/3600);
         $freeze_minute = ((int)($row['FREEZE_DELAY']/60))%60;
@@ -36,7 +36,7 @@ if(isSet($_POST['B1'])) {
 		$sql .= "SET FREEZE_DELAY = '$freeze_delay',";
 		$sql .= "    CONTEST_END_DELAY = '$contest_delay' ";
 		$sql .= "WHERE CONTEST_NAME = '$contest_name'";
-		$good = mysql_query($sql);
+		$good = mysqli_query($link, $sql);
 		if(!$good) {
 			echo "There was an error and the contest was not extended!!!";
 		}
@@ -46,24 +46,24 @@ if(isSet($_POST['B1'])) {
     	}
 }
 elseif(isSet($_POST['B2'])) {
-#$delete = mysql_query("UPDATE CONTEST_CONFIG SET FREEZE_DELAY = '0', CONTEST_END_DELAY = '0', START_TS = '0', HAS_STARTED = '0' WHERE CONTEST_NAME = '$contest_name'");
-$delete = mysql_query("UPDATE CONTEST_CONFIG SET START_TS = '0', HAS_STARTED = '0' WHERE CONTEST_NAME = '$contest_name'");
+#$delete = mysqli_query($link, "UPDATE CONTEST_CONFIG SET FREEZE_DELAY = '0', CONTEST_END_DELAY = '0', START_TS = '0', HAS_STARTED = '0' WHERE CONTEST_NAME = '$contest_name'");
+$delete = mysqli_query($link, "UPDATE CONTEST_CONFIG SET START_TS = '0', HAS_STARTED = '0' WHERE CONTEST_NAME = '$contest_name'");
 if(!$delete) {
    echo "Error! could not clear the info!!!";
 }
-$delete = mysql_query("DELETE FROM CLARIFICATION_REQUESTS");
+$delete = mysqli_query($link, "DELETE FROM CLARIFICATION_REQUESTS");
 if(!$delete) {
    echo "Error! could not clear the info!!!";
 }
-$delete = mysql_query("DELETE FROM JUDGED_SUBMISSIONS");
+$delete = mysqli_query($link, "DELETE FROM JUDGED_SUBMISSIONS");
 if(!$delete) {
    echo "Error! could not clear the info!!!";
 }
-$delete = mysql_query("DELETE FROM QUEUED_SUBMISSIONS");
+$delete = mysqli_query($link, "DELETE FROM QUEUED_SUBMISSIONS");
 if(!$delete) {
    echo "Error! could not clear the info!!!";
 }
-$delete = mysql_query("UPDATE SITE SET START_TS = '0', HAS_STARTED = '0'");
+$delete = mysqli_query($link, "UPDATE SITE SET START_TS = '0', HAS_STARTED = '0'");
 if(!$delete) {
    echo "Error! could not clear the info!!!";
 } else {
@@ -181,24 +181,19 @@ echo "<p>Creating Database . . . ";
    system($cmd3, $result);
    $cmd3 = "mysql --password=$mypwd -u root $db_clone_name < $db_clone_name.sql";
    system($cmd3, $result);
-$link = mysql_connect($db_host, $db_user, $db_pass);
+$link = mysqli_connect($db_host, $db_user, $db_pass, $db_clone_name);
 if (!$link) {
     print "Sorry.  Database connect failed.";
     exit;
 }
 
-$connect_good = mysql_select_db($db_clone_name);
-if (!$connect_good) {
-    print "Sorry.  Database selection failed.";
-    exit;
-}
-$base_dir = "/home/contest/$contest_clone_name";
-$contest_info = mysql_query("UPDATE CONTEST_CONFIG SET CONTEST_NAME = \"$contest_clone_name\", CONTEST_DATE = '0000-00-00', START_TIME='00:00:00', FREEZE_DELAY='14400', CONTEST_END_DELAY='18000', BASE_DIRECTORY=\"$base_dir\", START_TS='0', HAS_STARTED='0'");
+$base_dir = "/home/contest_skeleton/$contest_clone_name";
+$contest_info = mysqli_query($link, "UPDATE CONTEST_CONFIG SET CONTEST_NAME = \"$contest_clone_name\", CONTEST_DATE = '0000-00-00', START_TIME='00:00:00', FREEZE_DELAY='14400', CONTEST_END_DELAY='18000', BASE_DIRECTORY=\"$base_dir\", START_TS='0', HAS_STARTED='0'");
 if (!$contest_info) {
     print "Sorry.  Database request (UPDATE) failed.";
     exit;
 }
-$contest_info = mysql_query("UPDATE SITE SET START_TIME='00:00:00', START_TS='0', HAS_STARTED='0'");
+$contest_info = mysqli_query($link, "UPDATE SITE SET START_TIME='00:00:00', START_TS='0', HAS_STARTED='0'");
 if (!$contest_info) {
     print "Sorry.  Database request (UPDATE) failed.";
     exit;
@@ -241,7 +236,7 @@ echo "<a href=\"http://jacob.css.tayloru.edu/~contest/$contest_clone_name/admin\
 
 }
 elseif($_POST['B4']) {
-	$sql = mysql_query("SELECT * FROM TEAMS ORDER BY TEAM_ID");
+	$sql = mysqli_query($link, "SELECT * FROM TEAMS ORDER BY TEAM_ID");
 	if(!$sql) {
 		print "Error! could not find any team information";
 		exit;
@@ -270,8 +265,8 @@ elseif($_POST['B4']) {
                         }
                 }
 		#$path = "../../../develop/judged/";
-		$num_teams = mysql_num_rows($sql);
-		while($row = mysql_fetch_assoc($sql)) {
+		$num_teams = mysqli_num_rows($sql);
+		while($row = mysqli_fetch_assoc($sql)) {
 			$team_id = $row['TEAM_ID'];
 			$command = "tar -cf - $path$team_id-*.cpp $path$team_id-*.c $path$team_id-*.java $data_path* | gzip -c > $path";
 			$command .= "Team$team_id.tar.gz";
@@ -308,27 +303,22 @@ elseif($_POST['B4']) {
 End of POST section
 *******************************************************/
 	include("lib/header.inc");
-	        $link = mysql_connect($db_host, $db_user, $db_pass);
+	        $link = mysqli_connect($db_host, $db_user, $db_pass, $db_name);
         if(!$link){
                 print "Sorry.  Database connect failed.  Check your internet connection.";
                 exit;
         }
-        $connect_good = mysql_select_db($db_name);
-        if (!$connect_good) {
-                print "Sorry.  Couldn't select the database name $db_name. Exiting...";
-                exit;
-        }
 
-        $sql = mysql_query("SELECT * FROM CONTEST_CONFIG");
+        $sql = mysqli_query($link, "SELECT * FROM CONTEST_CONFIG");
         if (!$sql) {
                 print "Could not tell if a contest has been created.  bailing out.";
                 exit;
                 #die or break
         }
-        if (mysql_num_rows($sql) > 0) {
+        if (mysqli_num_rows($sql) > 0) {
         //a contest is already set up!
                 $contest=true;
-                $row = mysql_fetch_assoc($sql);
+                $row = mysqli_fetch_assoc($sql);
                 echo "<center>\n";
 
                 # Print out any errors
@@ -416,7 +406,7 @@ End of POST section
         echo "          </tr>";
         echo "  </form>";
 
-        if(!mysql_num_rows( mysql_query("SHOW TABLES LIKE 'JUDGED_SUBMISSIONS_COPY'"))){
+        if(!mysqli_num_rows( mysqli_query($link, "SHOW TABLES LIKE 'JUDGED_SUBMISSIONS_COPY'"))){
                 echo "  <form action='rejudge.php' method='POST'>\n";
                 echo "          <tr bgcolor=\"$hd_bg_color2\">";
                 echo "                  <td colspan=2>recalculate responses</td>";
