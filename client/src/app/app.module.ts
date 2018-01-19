@@ -13,6 +13,7 @@ import { FieldDirective } from './components/data_table/field.directive';
 import { TableFieldComponent } from './components/data_table/table_field.component';
 import { CreateContestComponent } from './create_contest/create_contest.component';
 import { ContestComponent } from './contest/contest.component';
+import { ConfirmComponent } from './components/confirm/confirm.component';
 
 import { ContestLiveComponent } from './contest/contest_live/contest_live.component';
 import { LiveSideNavComponent } from './contest/contest_live/sidenav/sidenav.component';
@@ -93,6 +94,7 @@ import { TeamService } from './services/model_services/team.service';
     TableComponent,
     CreateContestComponent,
     ContestComponent,
+    ConfirmComponent,
     ContestLiveComponent,
     LiveSideNavComponent,
     LiveContestDetailComponent,
@@ -181,6 +183,7 @@ import { TeamService } from './services/model_services/team.service';
     TeamService
   ],
   entryComponents: [
+      ConfirmComponent,
     LiveProblemAttachmentsComponent,
     LiveProblemSubmitComponent,
     LiveClarificationDetailsComponent,

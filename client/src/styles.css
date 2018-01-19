@@ -415,6 +415,19 @@ input, button {
 }
 
 
+.confirm {
+    min-width: 17rem;
+}
+.confirm .title {
+    font-size: 1.4rem;
+    color: #484848;
+    margin-bottom: 1rem;
+}
+.confirm .message {
+    font-size: 1rem;
+    color: #8f8f8f;
+    padding-bottom: 4rem;
+}
 
 @media all and (max-width: 1000px) and (min-width: 50px) {
     .grid {
