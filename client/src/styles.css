@@ -360,6 +360,11 @@ input, button {
     margin-bottom: 2rem !important;
     text-align: center;
 }
+.grid-heading {
+    display: grid;
+    grid-template-columns: 13rem 1fr;
+    grid-gap: 1rem;
+}
 .box {
     background: #fff;
     border-bottom: 1px solid rgba(0,0,0,0.12);
@@ -386,6 +391,10 @@ input, button {
         display: grid;
         grid-template-columns: 1fr;
         grid-gap: 1rem;
-        //grid-auto-rows: minmax(500px, auto);
+    }
+    .grid-heading {
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-gap: 1rem;
     }
 }
