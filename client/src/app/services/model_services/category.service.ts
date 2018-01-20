@@ -6,11 +6,11 @@ import { Team } from '../../models/team';
 const mockCategories: Category[] = [
     {
         id: 1,
-        name: 'Good Teams'
+        name: 'Winners'
     },
     {
         id: 2,
-        name: 'Bad Teams'
+        name: 'Losers'
     }
 ];
 
@@ -47,7 +47,7 @@ const mockTeams: Team[] = [
 export class CategoryService {
     constructor(private baseService: BaseService) { }
 
-    getMockCategories() {
+    getMockData() {
         return mockCategories;
     }
 

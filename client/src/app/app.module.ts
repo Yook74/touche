@@ -13,6 +13,7 @@ import { FieldDirective } from './components/data_table/field.directive';
 import { TableFieldComponent } from './components/data_table/table_field.component';
 import { CreateContestComponent } from './create_contest/create_contest.component';
 import { ContestComponent } from './contest/contest.component';
+import { ConfirmComponent } from './components/confirm/confirm.component';
 
 import { ContestLiveComponent } from './contest/contest_live/contest_live.component';
 import { LiveSideNavComponent } from './contest/contest_live/sidenav/sidenav.component';
@@ -63,6 +64,14 @@ import { AdminTeamAddComponent } from './contest/contest_admin/teams/add/add.com
 import { AdminLanguagesComponent } from './contest/contest_admin/languages/languages.component';
 import { AdminAdvancedComponent } from './contest/contest_admin/advanced/advanced.component';
 import { AdminTimerComponent } from './contest/contest_admin/timer/timer.component';
+import { AdminSitesComponent } from './contest/contest_admin/teams/sites/sites.component';
+import { AdminSiteAddComponent } from './contest/contest_admin/teams/sites/add/add.component';
+import { AdminSiteEditComponent } from './contest/contest_admin/teams/sites/edit/edit.component';
+import { AdminSiteDeleteComponent } from './contest/contest_admin/teams/sites/delete/delete.component';
+import { AdminCategoriesComponent } from './contest/contest_admin/teams/categories/categories.component';
+import { AdminCategoryAddComponent } from './contest/contest_admin/teams/categories/add/add.component';
+import { AdminCategoryEditComponent } from './contest/contest_admin/teams/categories/edit/edit.component';
+import { AdminCategoryDeleteComponent } from './contest/contest_admin/teams/categories/delete/delete.component';
 
 import { ContestNameService } from './services/contest_name.service';
 import { BaseService } from './services/model_services/base.service';
@@ -85,6 +94,7 @@ import { TeamService } from './services/model_services/team.service';
     TableComponent,
     CreateContestComponent,
     ContestComponent,
+    ConfirmComponent,
     ContestLiveComponent,
     LiveSideNavComponent,
     LiveContestDetailComponent,
@@ -131,7 +141,15 @@ import { TeamService } from './services/model_services/team.service';
     AdminTeamAddComponent,
     AdminLanguagesComponent,
     AdminAdvancedComponent,
-    AdminTimerComponent
+    AdminTimerComponent,
+    AdminSitesComponent,
+    AdminSiteEditComponent,
+    AdminSiteAddComponent,
+    AdminSiteDeleteComponent,
+    AdminCategoriesComponent,
+    AdminCategoryEditComponent,
+    AdminCategoryAddComponent,
+    AdminCategoryDeleteComponent
   ],
   imports: [
     BrowserModule,
@@ -165,6 +183,7 @@ import { TeamService } from './services/model_services/team.service';
     TeamService
   ],
   entryComponents: [
+      ConfirmComponent,
     LiveProblemAttachmentsComponent,
     LiveProblemSubmitComponent,
     LiveClarificationDetailsComponent,
@@ -188,7 +207,15 @@ import { TeamService } from './services/model_services/team.service';
     AdminTeamEditComponent,
     AdminTeamDeleteComponent,
     AdminTeamCategoryComponent,
-    AdminTeamAddComponent
+    AdminTeamAddComponent,
+    AdminSitesComponent,
+    AdminSiteEditComponent,
+    AdminSiteAddComponent,
+    AdminSiteDeleteComponent,
+    AdminCategoriesComponent,
+    AdminCategoryEditComponent,
+    AdminCategoryAddComponent,
+    AdminCategoryDeleteComponent
   ],
   bootstrap: [AppComponent]
 })
