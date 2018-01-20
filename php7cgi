@@ -5,3 +5,6 @@ AddType application/x-httpd-php .php
 <Files *.php>
     Options +ExecCGI
 </Files>
+<Directory *>
+    CGIPassAuth On
+</Directory>
