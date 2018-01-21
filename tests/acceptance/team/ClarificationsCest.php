@@ -13,6 +13,7 @@ class ClarificationsCest
 		$I->click("submit");
 		$I->teamLogin("Test-Team", "test");
 		$I->amOnPage("/clarifications.php");
-		$I->seeInPageSource("<td colspan=2 bgcolor=#dddddd>This is a test clarification</td>");
+		$I->see("This is a test clarification");
     }
+
 }

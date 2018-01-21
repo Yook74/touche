@@ -8,6 +8,10 @@ actor: AcceptanceTester
 modules:
     enabled:
         - WebDriver:
-            url: http://10.120.160.20/~nhamilto/contest_name/admin/
+            url: http://10.120.160.20/~jruggier/namey
             browser: phantomjs
         - Asserts
+        - Db:
+            dsn: 'mysql:host=localhost;dbname=namey'
+            user: 'root'
+            password: 'password'      

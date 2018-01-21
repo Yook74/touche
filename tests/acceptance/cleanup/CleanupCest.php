@@ -16,8 +16,6 @@ class CleanupCest
 		
 		//Admin Cleanup
 		$I->adminLogin("admin", "password");
-        $I->amOnPage("/admin/setup_categories");
-		$I->click( Locator::href("setup_categories.php?remove_id=$categoryID" ));
 		$I->amOnPage("/admin/setup_teams");
         $I->click( Locator::href("setup_teams.php?remove_id=$teamID" )); 
 		$I->amOnPage("/admin/setup_site");
