@@ -22,6 +22,7 @@ import { AdminProblemsComponent } from './contest/contest_admin/problems/problem
 import { AdminTeamsComponent } from './contest/contest_admin/teams/teams.component';
 import { AdminLanguagesComponent } from './contest/contest_admin/languages/languages.component';
 import { AdminAdvancedComponent } from './contest/contest_admin/advanced/advanced.component';
+import { ContestLiveLogin } from './contest/contest_live/login/login.component';
 
 const appRoutes: Routes = [
     { path: 'create-contest', component: CreateContestComponent },
@@ -56,6 +57,7 @@ const appRoutes: Routes = [
                     { path: '', redirectTo: 'contest-detail', pathMatch: 'full' }
                 ]
             },
+            { path: 'teamLogin', component: ContestLiveLogin }
         ]
     },
     { path: '', redirectTo: '/create-contest', pathMatch: 'full' }

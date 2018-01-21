@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { ContestNameService } from '../contest_name.service';
+import { CookieService } from 'ngx-cookie-service';
 
 const baseURL: string = 'http://localhost:8000/~contest-skeleton';
 const httpOptions = {
@@ -10,10 +11,12 @@ const httpOptions = {
 @Injectable()
 export class BaseService {
 
-    constructor(private http: HttpClient, private contestNameService: ContestNameService) { }
+    constructor(private http: HttpClient, private contestNameService: ContestNameService, private cookieService: CookieService) {
+        httpOptions.headers.append('Authorization', this.cookieService.get('Token'));
+    }
 
     get(route: string) {
-        return this.http.get(`${baseURL}/${this.contestNameService.getContestName()}/${route}.php`);
+        return this.http.get(`${baseURL}/${this.contestNameService.getContestName()}/${route}.php`, httpOptions);
     }
 
     post(route: string, data) {
@@ -25,6 +28,6 @@ export class BaseService {
     }
 
     delete(route: string) {
-        return this.http.delete(`${baseURL}/${this.contestNameService.getContestName()}/${route}.php`);
+        return this.http.delete(`${baseURL}/${this.contestNameService.getContestName()}/${route}.php`, httpOptions);
     }
 }

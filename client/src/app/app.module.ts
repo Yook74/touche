@@ -6,6 +6,7 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { FlexLayoutModule } from '@angular/flex-layout';
+import { CookieService } from 'ngx-cookie-service';
 
 import { AppComponent } from './app.component';
 import { TableComponent } from './components/data_table/table.component';
@@ -16,6 +17,7 @@ import { ContestComponent } from './contest/contest.component';
 import { ConfirmComponent } from './components/confirm/confirm.component';
 
 import { ContestLiveComponent } from './contest/contest_live/contest_live.component';
+import { ContestLiveLogin } from './contest/contest_live/login/login.component';
 import { LiveSideNavComponent } from './contest/contest_live/sidenav/sidenav.component';
 import { LiveContestDetailComponent } from './contest/contest_live/contest_detail/contest_detail.component';
 import { LiveClarificationsComponent } from './contest/contest_live/clarifications/clarifications.component';
@@ -84,6 +86,7 @@ import { StandingService } from './services/model_services/standing.service';
 import { SubmissionService } from './services/model_services/submission.service';
 import { SiteService } from './services/model_services/site.service';
 import { TeamService } from './services/model_services/team.service';
+import { AuthenticationService } from './services/authentication.service';
 
 
 @NgModule({
@@ -96,6 +99,7 @@ import { TeamService } from './services/model_services/team.service';
     ContestComponent,
     ConfirmComponent,
     ContestLiveComponent,
+    ContestLiveLogin,
     LiveSideNavComponent,
     LiveContestDetailComponent,
     LiveClarificationsComponent,
@@ -180,10 +184,12 @@ import { TeamService } from './services/model_services/team.service';
     StandingService,
     SubmissionService,
     SiteService,
-    TeamService
+    TeamService,
+    AuthenticationService,
+    CookieService
   ],
   entryComponents: [
-      ConfirmComponent,
+    ConfirmComponent,
     LiveProblemAttachmentsComponent,
     LiveProblemSubmitComponent,
     LiveClarificationDetailsComponent,
