@@ -11,7 +11,7 @@
     include_once("lib/judge.inc");
     include_once("lib/header.inc");
 #
-judge_header(0);
+judge_header(0, $link);
 echo "<center>Please select an option.</center>";
 
 

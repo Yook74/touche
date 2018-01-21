@@ -13,7 +13,6 @@
 	include("lib/data.inc");
 	include("lib/session.inc");
 
-$num_errors = 0;
 if ($_POST)
 {
 	$failed = false;
@@ -35,8 +34,8 @@ if ($_POST)
 	if(isset($_POST['password'])){
 		$password = $_POST['password'];
 	}else{
-		$error[$num_errors] = "You must provide a judge password.";
-		$num_errors++;
+		$error[$i] = "You must provide a judge password.";
+		$i++;
 		$failed=true;
 	}
 	$base_directory = $_POST['base_directory'];
@@ -109,24 +108,25 @@ if ($_POST)
 	}else{
 		$num_problems = 0;
 	}
+	$i = 0;
 	if ( !$host_name ) {
-		$error[$num_errors] = "You forgot to give a contest host name.<br>";
-		$num_errors++;
+		$error[$i] = "You forgot to give a contest host name.<br>";
+		$i++;
 		$failed=true;
 	}
 	if ( !$contest_name ) {
-		$error[$num_errors] = "You forgot to give the contest a name.<br>";
-		$num_errors++;
+		$error[$i] = "You forgot to give the contest a name.<br>";
+		$i++;
 		$failed=true;
 	}
 	if ( !$freeze_hour ) {
-		$error[$num_errors] = "You forgot to give the contest a freeze hour.<br>";
-		$num_errors++;
+		$error[$i] = "You forgot to give the contest a freeze hour.<br>";
+		$i++;
 		$failed=true;
 	}
 	if ( !$end_hour ) {
-		$error[$num_errors] = "You forgot to give the contest an end hour.<br>";
-		$num_errors++;
+		$error[$i] = "You forgot to give the contest an end hour.<br>";
+		$i++;
 		$failed=true;
 	}
 /*	if (!date_validate($contest_month, $contest_day, $contest_year)) {
@@ -140,8 +140,8 @@ if ($_POST)
 	}*/
 
 	if ( !$base_directory ) {
-		$error[$num_errors] = "You forgot to give the contest a base directory.<br>";
-		$num_errors++;
+		$error[$i] = "You forgot to give the contest a base directory.<br>";
+		$i++;
 		$failed=true;
 	}
 	if($failed){
@@ -181,6 +181,7 @@ if ($_POST)
 	$sql.= "VALUES ( '$host_name', '$contest_name', '$num_problems', '$contest_date', ";
 	$sql.= "	     '$save_start', '$freeze_delay', '$contest_delay', ";
 	$sql.= "	     '$base_directory', '$ignore_stderr', '$username', '$password', '$show_team_names', '$save_ts', '$save_hs') ";
+echo $sql;
 	$success = mysqli_query($link, $sql);
 	if ($success) {
 		if ($forbidden_c == 1 || $forbidden_cpp == 1 || $forbidden_java == 1 || $forbidden_python == 1) {
