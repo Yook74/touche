@@ -9,5 +9,5 @@ service apache2 start
 service cron start
 cd /etc/skel/src/client
 npm install
-ng serve --host 0.0.0.0 --port 80
+#ng serve --host 0.0.0.0 --port 80
 /bin/bash
