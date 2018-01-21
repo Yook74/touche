@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { ContestNameService } from '../contest_name.service';
 
-const baseURL: string = 'http://localhost:8000';
+const baseURL: string = 'http://localhost:8000/~contest-skeleton';
 const httpOptions = {
     headers: new HttpHeaders({ 'Content-Type': 'application/json' })
 };

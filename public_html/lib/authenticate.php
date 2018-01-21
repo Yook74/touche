@@ -1,9 +1,11 @@
 <?php
 include_once("token.php");
 $headers = getallheaders();
-$userRole = "";
-echo json_encode($headers);
+$userRole = null;
+$userId = null;
 if(isset($headers['Authorization'])) {
     $tokenData = DecodeToken($headers['Authorization']);
+    $userRole = $tokenData['role'];
+    $userId = $tokenData['id'];
 }
 ?>

@@ -17,6 +17,8 @@ export class JudgeProblemsComponent implements OnInit {
     constructor(private service: ProblemService) { }
 
     ngOnInit() {
-        this.problems = this.service.getMockData();
+        this.service.getProblems().subscribe((data: Problem[]) => {
+            this.problems = data;
+        });
     }
 }

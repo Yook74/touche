@@ -32,7 +32,7 @@ export class ProblemService {
     }
 
     getProblems() {
-        return this.baseService.get('');
+        return this.baseService.get('problems.php');
     }
 
     createProblem(problem: Problem) {
