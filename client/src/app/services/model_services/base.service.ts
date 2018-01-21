@@ -4,7 +4,7 @@ import { ContestNameService } from '../contest_name.service';
 import { CookieService } from 'ngx-cookie-service';
 import * as data from '../../../assets/config.json';
 
-const baseURL: string = `${data['serverUrl']}/~contest-skeleton`;
+const baseURL: string = `${data['serverUrl']}/~contest_skeleton`;
 const httpOptions = {
     headers: new HttpHeaders({ 'Content-Type': 'application/json' })
 };
