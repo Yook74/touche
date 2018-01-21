@@ -2,8 +2,9 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { ContestNameService } from '../contest_name.service';
 import { CookieService } from 'ngx-cookie-service';
+import * as data from '../../../assets/config.json';
 
-const baseURL: string = 'http://localhost:8000/~contest-skeleton';
+const baseURL: string = `${data['serverUrl']}/~contest-skeleton`;
 const httpOptions = {
     headers: new HttpHeaders({ 'Content-Type': 'application/json' })
 };

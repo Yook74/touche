@@ -7,18 +7,19 @@ import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 })
 export class ConfirmComponent {
 
-    title: string = data.title;
-    message: string = data.message;
+    title: string;
+    message: string;
 
     response: boolean = false;
 
-    constructor (
-      public dialogRef: MatDialogRef<ConfirmComponent>,
-      @Inject(MAT_DIALOG_DATA) public data: any) {
-
-        }
+    constructor(
+        public dialogRef: MatDialogRef<ConfirmComponent>,
+        @Inject(MAT_DIALOG_DATA) public data: any) {
+        this.title = this.data.title;
+        this.message = this.data.message;
+    }
 
     onNoClick(): void {
-      this.dialogRef.close(this.response);
+        this.dialogRef.close(this.response);
     }
 }

@@ -7,7 +7,7 @@ import { Router } from '@angular/router';
 @Component({
     templateUrl: 'login.component.html'
 })
-export class ContestLiveLogin implements OnInit {
+export class ContestAdminLogin implements OnInit {
     username: string = '';
     password: string = '';
     contestName: string;
@@ -28,10 +28,10 @@ export class ContestLiveLogin implements OnInit {
 
     login() {
         this.loginFailed = false;
-        this.authenticationService.teamLogin(this.username, this.password).subscribe((jwt: string) => {
+        this.authenticationService.adminLogin(this.username, this.password).subscribe((jwt: string) => {
             this.cookieService.set('Token', jwt);
-            this.cookieService.set('Team-Token', jwt);
-            this.router.navigate(['contest', this.contestName]);
+            this.cookieService.set('Admin-Token', jwt);
+            this.router.navigate(['contest', this.contestName, 'admin']);
         }, () => {
             this.loginFailed = true;
         });

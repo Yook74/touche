@@ -1,31 +1,32 @@
-<div fxLayout="column" fxFlexFill>
-    <mat-toolbar class="topbar box--shadow flexbox column flex--ver--center flex--end">
-        <mat-toolbar-row>
-            <button mat-icon-button (click)="toggleMenu()" class="flexbox">
-                <mat-icon>menu</mat-icon>
-            </button>
-            <div class="flexbox flex--end">
-                <span class="role">{{routeName === 'judge' ? 'Judge' : routeName === 'admin' ? 'Admin' : 'User'}}</span>
-                <button mat-button class="font--uppercase font--green no--hover">Sign Out</button>
-            </div>
-        </mat-toolbar-row>
-    </mat-toolbar>
-    <mat-sidenav-container fxFlexFill class="flexbox row full--height">
-        <mat-sidenav mode="side" [(opened)]="opened" class="flexbox column sidebar background--dark flex--vertical">
-            <div class="nav">
-                <live-sidenav *ngIf="routeName === 'live'"></live-sidenav>
-                <judge-sidenav *ngIf="routeName === 'judge'"></judge-sidenav>
-                <admin-sidenav *ngIf="routeName === 'admin'"></admin-sidenav>
-            </div>
-            <div class="timer background--darker">
-                <div class="contest-name font--light">{{ contestName }}</div>
-                <live-timer *ngIf="routeName === 'live'"></live-timer>
-                <judge-timer *ngIf="routeName === 'judge'"></judge-timer>
-                <admin-timer *ngIf="routeName === 'admin'"></admin-timer>
-            </div>
-        </mat-sidenav>
-        <mat-sidenav-content class="content background--light">
-            <router-outlet></router-outlet>
-        </mat-sidenav-content>
-    </mat-sidenav-container>
+<div fxLayout="column" fxFlexFill *ngIf="routeName !== 'login'">
+  <mat-toolbar class="topbar box--shadow flexbox column flex--ver--center flex--end">
+    <mat-toolbar-row>
+      <button mat-icon-button (click)="toggleMenu()" class="flexbox">
+        <mat-icon>menu</mat-icon>
+      </button>
+      <div class="flexbox flex--end">
+        <span class="role">{{routeName === 'judge' ? 'Judge' : routeName === 'admin' ? 'Admin' : 'User'}}</span>
+        <button mat-button class="font--uppercase font--green no--hover">Sign Out</button>
+      </div>
+    </mat-toolbar-row>
+  </mat-toolbar>
+  <mat-sidenav-container fxFlexFill class="flexbox row full--height">
+    <mat-sidenav mode="side" [(opened)]="opened" class="flexbox column sidebar background--dark flex--vertical">
+      <div class="nav">
+        <live-sidenav *ngIf="routeName === 'live'"></live-sidenav>
+        <judge-sidenav *ngIf="routeName === 'judge'"></judge-sidenav>
+        <admin-sidenav *ngIf="routeName === 'admin'"></admin-sidenav>
+      </div>
+      <div class="timer background--darker">
+        <div class="contest-name font--light">{{ contestName }}</div>
+        <live-timer *ngIf="routeName === 'live'"></live-timer>
+        <judge-timer *ngIf="routeName === 'judge'"></judge-timer>
+        <admin-timer *ngIf="routeName === 'admin'"></admin-timer>
+      </div>
+    </mat-sidenav>
+    <mat-sidenav-content class="content background--light">
+      <router-outlet></router-outlet>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
 </div>
+<router-outlet *ngIf="routeName === 'login'"></router-outlet>

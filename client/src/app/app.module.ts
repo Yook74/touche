@@ -87,6 +87,11 @@ import { SubmissionService } from './services/model_services/submission.service'
 import { SiteService } from './services/model_services/site.service';
 import { TeamService } from './services/model_services/team.service';
 import { AuthenticationService } from './services/authentication.service';
+import { TeamAuthenticatedService } from './services/team_authenticated.service';
+import { AdminAuthenticatedService } from './services/admin_authenticated.service';
+import { JudgeAuthenticatedService } from './services/judge_authenticated.service';
+import { ContestJudgeLogin } from './contest/contest_judge/login/login.component';
+import { ContestAdminLogin } from './contest/contest_admin/login/login.component';
 
 
 @NgModule({
@@ -113,6 +118,7 @@ import { AuthenticationService } from './services/authentication.service';
     LiveStandingFinalScoreComponent,
     LiveTimerComponent,
     ContestJudgeComponent,
+    ContestJudgeLogin,
     JudgeSideNavComponent,
     JudgeContestDetailComponent,
     JudgeContestDetailTeamsComponent,
@@ -130,6 +136,7 @@ import { AuthenticationService } from './services/authentication.service';
     JudgeStandingProblemsComponent,
     JudgeTimerComponent,
     ContestAdminComponent,
+    ContestAdminLogin,
     AdminSideNavComponent,
     AdminContestDetailComponent,
     AdminProblemsComponent,
@@ -186,7 +193,10 @@ import { AuthenticationService } from './services/authentication.service';
     SiteService,
     TeamService,
     AuthenticationService,
-    CookieService
+    CookieService,
+    TeamAuthenticatedService,
+    AdminAuthenticatedService,
+    JudgeAuthenticatedService
   ],
   entryComponents: [
     ConfirmComponent,

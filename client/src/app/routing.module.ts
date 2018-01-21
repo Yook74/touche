@@ -23,13 +23,18 @@ import { AdminTeamsComponent } from './contest/contest_admin/teams/teams.compone
 import { AdminLanguagesComponent } from './contest/contest_admin/languages/languages.component';
 import { AdminAdvancedComponent } from './contest/contest_admin/advanced/advanced.component';
 import { ContestLiveLogin } from './contest/contest_live/login/login.component';
+import { TeamAuthenticatedService } from './services/team_authenticated.service';
+import { AdminAuthenticatedService } from './services/admin_authenticated.service';
+import { JudgeAuthenticatedService } from './services/judge_authenticated.service';
+import { ContestJudgeLogin } from './contest/contest_judge/login/login.component';
+import { ContestAdminLogin } from './contest/contest_admin/login/login.component';
 
 const appRoutes: Routes = [
     { path: 'create-contest', component: CreateContestComponent },
     {
         path: 'contest/:contestName', component: ContestComponent, children: [
             {
-                path: 'judge', component: ContestJudgeComponent, data: { route: 'judge' }, children: [
+                path: 'judge', component: ContestJudgeComponent, canActivate: [JudgeAuthenticatedService], data: { route: 'judge' }, children: [
                     { path: 'contest-detail', component: JudgeContestDetailComponent },
                     { path: 'submissions', component: JudgeSubmissionsComponent },
                     { path: 'clarifications', component: JudgeClarificationsComponent },
@@ -39,7 +44,7 @@ const appRoutes: Routes = [
                 ]
             },
             {
-                path: 'admin', component: ContestAdminComponent, data: { route: 'admin' }, children: [
+                path: 'admin', component: ContestAdminComponent, canActivate: [AdminAuthenticatedService], data: { route: 'admin' }, children: [
                     { path: 'contest-detail', component: AdminContestDetailComponent },
                     { path: 'problems', component: AdminProblemsComponent },
                     { path: 'teams', component: AdminTeamsComponent },
@@ -49,7 +54,7 @@ const appRoutes: Routes = [
                 ]
             },
             {
-                path: '', component: ContestLiveComponent, data: { route: 'live' }, children: [
+                path: '', component: ContestLiveComponent, canActivate: [TeamAuthenticatedService], data: { route: 'live' }, children: [
                     { path: 'contest-detail', component: LiveContestDetailComponent },
                     { path: 'clarifications', component: LiveClarificationsComponent },
                     { path: 'problems', component: LiveProblemsComponent },
@@ -57,7 +62,9 @@ const appRoutes: Routes = [
                     { path: '', redirectTo: 'contest-detail', pathMatch: 'full' }
                 ]
             },
-            { path: 'teamLogin', component: ContestLiveLogin }
+            { path: 'team-login', component: ContestLiveLogin, data: { route: 'login' } },
+            { path: 'judge-login', component: ContestJudgeLogin, data: { route: 'login' } },
+            { path: 'admin-login', component: ContestAdminLogin, data: { route: 'login' } }
         ]
     },
     { path: '', redirectTo: '/create-contest', pathMatch: 'full' }
