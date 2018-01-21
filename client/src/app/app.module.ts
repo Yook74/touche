@@ -92,6 +92,8 @@ import { AdminAuthenticatedService } from './services/admin_authenticated.servic
 import { JudgeAuthenticatedService } from './services/judge_authenticated.service';
 import { ContestJudgeLogin } from './contest/contest_judge/login/login.component';
 import { ContestAdminLogin } from './contest/contest_admin/login/login.component';
+import { PageNotFoundComponent } from './page_not_found/page_not_found.component';
+import { ContestDoesNotExist } from './contest_does_not_exist/contest_does_not_exist.component';
 
 
 @NgModule({
@@ -160,7 +162,9 @@ import { ContestAdminLogin } from './contest/contest_admin/login/login.component
     AdminCategoriesComponent,
     AdminCategoryEditComponent,
     AdminCategoryAddComponent,
-    AdminCategoryDeleteComponent
+    AdminCategoryDeleteComponent,
+    PageNotFoundComponent,
+    ContestDoesNotExist
   ],
   imports: [
     BrowserModule,
