@@ -3,4 +3,6 @@ export class Problem {
     name: string;
     location: string;
     note: string;
+    hasHTML: boolean;
+    hasPDF: boolean;
 }

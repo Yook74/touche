@@ -11,7 +11,7 @@ if ($method === 'POST') {
     $query = mysqli_query($link, "SELECT * FROM CONTEST_CONFIG");
     $row = mysqli_fetch_assoc($query);
     if ($request['username'] === $row['JUDGE_USER'] && $request['password'] === $row['JUDGE_PASS']) {
-        $token = EncodeToken(array('role' => 'user', 'id' => $teamId));
+        $token = EncodeToken(array('role' => 'judge'));
         $response = $token;
     }
     else {

@@ -17,7 +17,7 @@ if($USE_JSON) {
             $problem = array(
                 'id' => $row['PROBLEM_ID'],
                 'name' => $row['PROBLEM_NAME'],
-                'loc' => $row['PROBLEM_LOC'],
+                'location' => $row['PROBLEM_LOC'],
                 'note' => $row['PROBLEM_NOTE'],
                 'hasHTML' => file_exists("problems/".$row['PROBLEM_LOC']."/".$row['PROBLEM_NAME'].".html"),
                 'hasPDF' => file_exists("problems/".$row['PROBLEM_LOC']."/".$row['PROBLEM_NAME'].".pdf")
@@ -25,6 +25,30 @@ if($USE_JSON) {
             array_push($problems, $problem);
         }
         $response = $problems;
+    }
+    else if ($method === 'POST') {
+        if ($userRole !== 'admin') {
+            header("HTTP/1.1 401 Unauthorized");
+            exit;
+        }
+        $request = file_get_contents('php://input');
+        $request = json_decode($request, true);
+    }
+    else if ($method === 'PUT') {
+        if ($userRole !== 'admin') {
+            header("HTTP/1.1 401 Unauthorized");
+            exit;
+        }
+        $request = file_get_contents('php://input');
+        $request = json_decode($request, true);
+    }
+    else if ($method === 'DELETE') {
+        if ($userRole !== 'admin') {
+            header("HTTP/1.1 401 Unauthorized");
+            exit;
+        }
+        $request = file_get_contents('php://input');
+        $request = json_decode($request, true);
     }
     echo json_encode($response);
 } else {

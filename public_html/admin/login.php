@@ -10,7 +10,7 @@ if ($method === 'POST') {
     $request = file_get_contents('php://input');
     $request = json_decode($request, true);
     if ($request['username'] === $admin_user && $request['password'] === $admin_pass) {
-        $token = EncodeToken(array('role' => 'user', 'id' => $teamId));
+        $token = EncodeToken(array('role' => 'admin'));
         $response = $token;
     }
     else {
