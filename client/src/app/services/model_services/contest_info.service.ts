@@ -7,6 +7,7 @@ const mockData: ContestInfo = {
     name: 'Fake Contest',
     startDate: '2019-01-08',
     startTime: '07:39',
+    startTS: 0,
     freezeDelay: 2000,
     contestEndDelay: 3000,
     ignoreStandardError: true,
@@ -26,7 +27,7 @@ export class ContestInfoService {
     }
 
     getContestInfo() {
-        return this.baseService.get('');
+        return this.baseService.get('contest_info');
     }
 
     updateContestInfo(contestInfo: ContestInfo) {

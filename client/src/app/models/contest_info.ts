@@ -3,12 +3,10 @@ export class ContestInfo {
     name: string;
     startDate: string;
     startTime: string;
+    startTS: number;
     freezeDelay: number;
     contestEndDelay: number;
     baseDirectory: string;
-    // queueDirectory: string;
-    // judgeDirectory: string;
-    // dataDirectory: string;
     ignoreStandardError: boolean;
     hasStarted: boolean;
     judgeUsername: string;

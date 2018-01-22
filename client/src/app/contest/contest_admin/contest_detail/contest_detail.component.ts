@@ -7,12 +7,11 @@ import { ContestInfoService } from '../../../services/model_services/contest_inf
 })
 export class AdminContestDetailComponent implements OnInit {
 
-    //contest: ContestInfo[];
+    contest: ContestInfo;
 
-    //constructor(private service: ContestInfoService) { }
-    constructor() { }
+    constructor(private service: ContestInfoService) { }
 
     ngOnInit() {
-        //this.contest = this.service.getMockData();
+        this.contest = this.service.getMockData();
     }
 }
