@@ -1,16 +1,18 @@
-<div fxLayout="column" fxFlexFill *ngIf="routeName !== 'login'">
+<div fxLayout="column" fxFlexFill>
+
   <mat-toolbar class="topbar box--shadow flexbox column flex--ver--center flex--end">
     <mat-toolbar-row>
-      <button mat-icon-button (click)="toggleMenu()" class="flexbox">
+      <button mat-icon-button (click)="toggleMenu()" class="flexbox" *ngIf="routeName !== 'login'">
         <mat-icon>menu</mat-icon>
       </button>
       <div class="flexbox flex--end">
-        <span class="role">{{routeName === 'judge' ? 'Judge' : routeName === 'admin' ? 'Admin' : 'User'}}</span>
-        <button mat-button class="font--uppercase font--green no--hover">Sign Out</button>
+        <span class="role">{{routeName === 'judge' ? 'Judge' : routeName === 'admin' ? 'Admin' : routeName === 'login' ? 'Sign In' : 'User'}}</span>
+        <button mat-button class="font--uppercase font--green no--hover"  *ngIf="routeName !== 'login'">Sign Out</button>
       </div>
     </mat-toolbar-row>
   </mat-toolbar>
-  <mat-sidenav-container fxFlexFill class="flexbox row full--height">
+
+  <mat-sidenav-container fxFlexFill class="flexbox row full--height"  *ngIf="routeName !== 'login'">
     <mat-sidenav mode="side" [(opened)]="opened" class="flexbox column sidebar background--dark flex--vertical">
       <div class="nav">
         <live-sidenav *ngIf="routeName === 'live'"></live-sidenav>
@@ -25,8 +27,10 @@
       </div>
     </mat-sidenav>
     <mat-sidenav-content class="content background--light">
-      <router-outlet></router-outlet>
+        <router-outlet></router-outlet>
     </mat-sidenav-content>
   </mat-sidenav-container>
+
+  <router-outlet *ngIf="routeName === 'login'"></router-outlet>
+
 </div>
-<router-outlet *ngIf="routeName === 'login'"></router-outlet>

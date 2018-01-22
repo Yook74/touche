@@ -1,13 +1,21 @@
-<h1>{{contestName}} - Judge Login</h1>
-<div fxLayout="column">
-  <form (ngSubmit)="login()">
-    <mat-form-field>
-      <input matInput placeholder="Username" [(value)]="username">
-    </mat-form-field>
-    <mat-form-field>
-      <input matInput type="password" placeholder="Password" [(value)]="password">
-    </mat-form-field>
-    <button type="submit" mat-raised-button>Login</button>
-  </form>
-  <span *ngIf="loginFailed">Invalid Login</span>
+<div fxFlexFill class="content login background--light full--height">
+    <div class="box login text--center">
+        <div class="role-login">Judge</div>
+        <div class="section-logo">
+            <img class="logo" alt="Touche" src="/assets/touche.svg">
+            <div class="contest">{{ contestName }}</div>
+        </div>
+
+        <form (ngSubmit)="login()" class="form-login">
+            <mat-form-field>
+              <input matInput placeholder="Username" [(value)]="username" class="width--input">
+            </mat-form-field><br>
+            <mat-form-field>
+              <input matInput type="password" placeholder="Password" [(value)]="password" class="width--input">
+            </mat-form-field><br>
+            <button color="primary" class="button-primary width--button" mat-raised-button>Log In</button>
+        </form>
+
+        <span *ngIf="loginFailed" class="error">Invalid Log In</span>
+    </div>
 </div>
