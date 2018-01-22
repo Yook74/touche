@@ -7,19 +7,25 @@ const mockProblems: Problem[] = [
         id: 1,
         name: 'Problem the First',
         location: 'oneproblem',
-        note: 'F#'
+        note: 'Laaaaa',
+        hasHTML: true,
+        hasPDF: true
     },
     {
         id: 2,
         name: 'Problem the Second',
         location: 'twoproblem',
-        note: 'A noteworthy note'
+        note: 'A noteworthy note',
+        hasHTML: true,
+        hasPDF: false
     },
     {
         id: 3,
         name: 'Problem the Third',
         location: 'threeproblem',
-        note: 'A notable note'
+        note: 'A notable note',
+        hasHTML: false,
+        hasPDF: true
     }
 ]
 
