@@ -1,3 +1,4 @@
 develop/*_jail
 .*.swp
 lockFile.lock
+lib/auth.inc
