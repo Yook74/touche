@@ -85,12 +85,12 @@ elseif(isSet($_POST['B3'])) {
     clear_directories($clone_private_dir);
     make_jail_directories($clone_private_dir, $clone_name_escaped);
 
-    echo "<p>Creating Database . . . ";
+    echo "<p>Creating Database . . . <br />";
     clone_database($source_db_name, $clone_db_name, $sql_root_pass);
     update_database($clone_private_dir, $clone_name_escaped, $clone_db_name, $db_host, $db_user, $db_pass);
     echo "Finished.</p>";
 
-    echo "<p>Editing Settings . . . ";
+    echo "<p>Editing Settings . . . <br />";
     replace_in_file($clone_public_dir . "/lib/database.inc",
         "/$db_name/", $clone_db_name);
     replace_in_file($clone_private_dir . "/chroot_wrapper.c",
@@ -99,7 +99,7 @@ elseif(isSet($_POST['B3'])) {
     echo "Finished.</p>";
 
     echo "<p>To finish setting up the contest go to: <a href=" .
-        get_contest_url($_SERVER[SERVER_NAME], $linux_user, $clone_name_raw) . "/admin'>Administration setup</a></p>";
+        get_contest_url($_SERVER[SERVER_NAME], $linux_user, $clone_name_raw) . "/admin>Administration setup</a></p>";
 }
 elseif($_POST['B4']) {
 	$sql = mysqli_query($link, "SELECT * FROM TEAMS ORDER BY TEAM_ID");

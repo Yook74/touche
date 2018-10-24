@@ -7,10 +7,10 @@
     * @return array public base directory, private base directory, contest name with escaped spaces and database name
     */
     function get_curr_contest_info(){
-        $public_dir = realpath(getcwd() . "../");
+        $public_dir = realpath(getcwd() . "/..");
         $name_escaped = substr($public_dir, strrpos($public_dir, '/') + 1);
         $db_name = preg_replace("/\\\\ /", "_", $name_escaped);
-        $private_dir = realpath("$public_dir/../$name_escaped");
+        $private_dir = realpath("$public_dir/../../$name_escaped");
 
         return array($public_dir, $private_dir, $name_escaped, $db_name);
     }
