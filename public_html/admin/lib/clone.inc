@@ -1,5 +1,5 @@
 <?php
-    include_once("../../../lib/create.inc");
+    include_once("../../lib/create.inc");
 
     /**
     * Extracts information about the current contest from the working directory
@@ -19,7 +19,7 @@
     * Creates and populates the contest's private and public directories and returns their paths
     * @param string $clone_name_escaped the name of the clone with escaped spaces
     * @param string $linux_user the name of the user that hosts this contest.
-     * @param string $source_private_dir the private directory of the source contest
+    * @param string $source_private_dir the private directory of the source contest
     * @param string $source_public_dir the public directory of the source contest
     * @param boolean $silent true if you want to silence the status messages
     * @return array that contains the paths to the public and private clone directories (in that order)
@@ -44,7 +44,7 @@
     * Clones the source database
     * @param string $source_db_name the name of the source database. Usually the contest name with underscores
     * @param string $clone_db_name the name of the clone database.
-    * @param string $sql_root_pass the root passqord for mysql. (defined in auth.inc)
+    * @param string $sql_root_pass the root password for mysql. (defined in auth.inc)
     * @param boolean $silent true if you want to silence the status messages
     */
     function clone_database($source_db_name, $clone_db_name, $sql_root_pass, $silent = true) {
