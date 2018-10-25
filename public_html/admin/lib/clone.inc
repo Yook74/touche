@@ -59,7 +59,7 @@
     }
 
     /**
-    * Seeds an empty database for a new contest.
+    * Clears and resets some parts of the database.
     * @param string $clone_private_dir the directory that contains the clone's backend
     * @param string $clone_name_escaped the name of the clone with escaped spaces
     * @param string $db_name the name of the database. Usually the contest name with underscores
@@ -75,27 +75,29 @@
             exit;
         }
 
-        $query_result = mysqli_query($link,
+        $queries = array(
             "UPDATE CONTEST_CONFIG SET CONTEST_NAME = \"$clone_name_escaped\", 
-            CONTEST_DATE = '0001-01-01', 
-            START_TIME='00:00:00', 
-            FREEZE_DELAY=" . FREEZE_DELAY. ", 
-            CONTEST_END_DELAY= " . END_DELAY . ", 
-            BASE_DIRECTORY=\"$clone_private_dir\", 
-            START_TS='0', 
-            HAS_STARTED='0'");
-        if (!$query_result) {
-            print "Sorry.  Database request (UPDATE) failed.";
-            exit;
-        }
+                CONTEST_DATE = '0001-01-01', 
+                START_TIME='00:00:00', 
+                FREEZE_DELAY=" . FREEZE_DELAY. ", 
+                CONTEST_END_DELAY= " . END_DELAY . ", 
+                BASE_DIRECTORY=\"$clone_private_dir\", 
+                START_TS='0', 
+                HAS_STARTED='0'",
 
-        $query_result = mysqli_query($link,
-            "UPDATE SITE SET START_TIME='00:00:00', START_TS='0', HAS_STARTED='0'");
-        if (!$query_result) {
-            print "Sorry.  Database request (UPDATE) failed.";
-            exit;
-        }
+            "UPDATE SITE SET START_TIME='00:00:00', START_TS='0', HAS_STARTED='0'",
 
+            "TRUNCATE QUEUED_SUBMISSIONS",
+            "TRUNCATE AUTO_RESPONSES",
+            "TRUNCATE JUDGED_SUBMISSIONS");
+
+        foreach($queries as $query){
+            $query_result = mysqli_query($link, $query);
+            if (!$query_result) {
+                print "Sorry. query $query failed.";
+                exit;
+            }
+        }
         mysqli_close($link);
     }
 
