@@ -51,10 +51,11 @@
     * Empties a contest by deleting all of the data it has accrued from submissions etc.
     * Does not remove any of the contest's code
     * @param string $private_contest_dir the directory that contains the contest's backend
+    * @param string $linux_user the name of the user that hosts this contest.
     * @param boolean $clear_data set to true to clear the contents of the data directory (recommend false for cloning)
     * @param boolean $silent true if you want to silence the status messages
     */
-    function clear_directories($private_contest_dir, $clear_data = true, $silent = false) {
+    function clear_directories($private_contest_dir, $linux_user, $clear_data = true, $silent = false) {
         if (!$silent) echo "<p>Clearing directories . . . <br />";
 
         $dirs_to_clear = array(
@@ -66,7 +67,7 @@
         if ($clear_data) array_push($dirs_to_clear, "data");
 
         foreach(SUPPORTED_LANGUAGES as $language){
-            array_push($dirs_to_clear, $language . "_jail/home/contest");
+            array_push($dirs_to_clear, $language . "_jail/home/$linux_user");
         }
 
         foreach ($dirs_to_clear as $dir){
@@ -78,11 +79,13 @@
 
     /**
     * Creates the /data and /judged directories in each jail
+    * If not already present, the function will also create home/<username> in each jail
     * @param string $private_contest_dir the directory that contains the contest's backend
     * @param string $c_name_escaped the name of the contest with escaped spaces
+    * @param string $linux_user the name of the user that hosts this contest.
     * @param boolean $silent true if you want to silence the status messages
     */
-    function make_jail_directories($private_contest_dir, $c_name_escaped, $silent = false) {
+    function make_jail_directories($private_contest_dir, $c_name_escaped, $linux_user, $silent = false) {
         if (!$silent) echo "<p>Making Directories . . . <br />";
 
         $sub_dirs = array(
@@ -92,7 +95,7 @@
 
         foreach (SUPPORTED_LANGUAGES as $language){
             foreach($sub_dirs as $sub_dir){
-                $cmd = "mkdir -p $private_contest_dir/$language" . "_jail/home/contest/$c_name_escaped/$sub_dir";
+                $cmd = "mkdir -p $private_contest_dir/$language" . "_jail/home/$linux_user/$c_name_escaped/$sub_dir";
                 exec_and_check($cmd, !$silent);
             }
         }

@@ -41,8 +41,8 @@ $contest_url = get_contest_url($_SERVER[SERVER_NAME], ~$linux_user, $c_name_raw)
 echo "<p>As $linux_user . . .</p>\n";
 list($public_contest_dir, $private_contest_dir) = copy_from_develop($c_name_escaped, $linux_user);
 
-clear_directories($private_contest_dir);
-make_jail_directories($private_contest_dir, $c_name_escaped);
+clear_directories($private_contest_dir, $linux_user);
+make_jail_directories($private_contest_dir, $c_name_escaped, $linux_user);
 
 echo "<p>Creating Database . . . <br />";
 create_database($db_name, $sql_root_pass);

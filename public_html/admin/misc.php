@@ -82,8 +82,8 @@ elseif(isSet($_POST['B3'])) {
     list($clone_public_dir, $clone_private_dir) =
         clone_files($clone_name_escaped, $source_public_dir, $source_private_dir, $linux_user);
 
-    clear_directories($clone_private_dir, false);
-    make_jail_directories($clone_private_dir, $clone_name_escaped);
+    clear_directories($clone_private_dir, $linux_user, false);
+    make_jail_directories($clone_private_dir, $clone_name_escaped, $linux_user);
 
     echo "<p>Creating Database . . . <br />";
     clone_database($source_db_name, $clone_db_name, $sql_root_pass);
