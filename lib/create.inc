@@ -225,11 +225,13 @@
     * TODO this is a truly horrendus way to parameterize something
     * @param string $private_contest_dir the directory that contains the contest's public files
     * @param string $c_name_escaped the name of the contest with escaped spaces
+    * @param string $linux_user name of the hosting linux user
     */
-    function fill_in_chroot_wrapper($private_contest_dir, $c_name_escaped){
+    function fill_in_chroot_wrapper($private_contest_dir, $c_name_escaped, $linux_user){
         $path = "$private_contest_dir/chroot_wrapper.c";
 
         replace_in_file($path, "/develop/", $c_name_escaped);
+        replace_in_file($path, "/contest/", $linux_user);
     }
 
     /**

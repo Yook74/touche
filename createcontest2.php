@@ -52,7 +52,7 @@ echo "Finished.</p>";
 
 echo "<p>Editing Settings . . . <br />";
 fill_in_database_inc($public_contest_dir, $db_name, $db_host, $sql_username, $db_pass);
-fill_in_chroot_wrapper($private_contest_dir, $c_name_escaped);
+fill_in_chroot_wrapper($private_contest_dir, $c_name_escaped, $linux_user);
 compile_chroot_wrapper($private_contest_dir);
 set_contest_perms($public_contest_dir);
 echo "Finished.</p>";
