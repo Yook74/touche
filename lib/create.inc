@@ -51,17 +51,19 @@
     * Empties a contest by deleting all of the data it has accrued from submissions etc.
     * Does not remove any of the contest's code
     * @param string $private_contest_dir the directory that contains the contest's backend
+    * @param boolean $clear_data set to true to clear the contents of the data directory (recommend false for cloning)
     * @param boolean $silent true if you want to silence the status messages
     */
-    function clear_directories($private_contest_dir, $silent = false) {
+    function clear_directories($private_contest_dir, $clear_data = true, $silent = false) {
         if (!$silent) echo "<p>Clearing directories . . . <br />";
 
         $dirs_to_clear = array(
-            "data",
             "judged",
             "queue",
             "test_compile",
         );
+
+        if ($clear_data) array_push($dirs_to_clear, "data");
 
         foreach(SUPPORTED_LANGUAGES as $language){
             array_push($dirs_to_clear, $language . "_jail/home/contest");
