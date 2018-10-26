@@ -250,13 +250,12 @@
     }
 
     /**
-    * Sets the permission of the public contest directory.
-    * Geisler does not know why this is necessary so I sure as heck don't
+    * Sets the permissions of the public contest directory to make SuExec happy.
     * @param string $public_contest_dir the directory that contains the contest's public files
     * @param boolean $silent true if you want to silence the status messages
     */
     function set_contest_perms($public_contest_dir, $silent = false){
-        $cmd = "sudo chmod -R go+rx $public_contest_dir";
+        $cmd = "sudo chmod -R 755 $public_contest_dir";
         exec_and_check($cmd, !$silent);
     }
 
