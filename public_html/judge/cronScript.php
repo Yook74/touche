@@ -250,7 +250,7 @@ while($submits = mysqli_fetch_assoc($submits_result)) {
 							$tmp_cmd = $problem_handle['copy_cmd']();
 							system($tmp_cmd, $result);
 							echo "\n\nsys 265: $tmp_cmd\n\n";
-							if(!$result)
+							if($result)
 							{
 								print "Something went wrong with copying the executable to the chroot jail<br>";
 								print "Cmd: $tmp_cmd<br>";
