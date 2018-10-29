@@ -36,7 +36,7 @@ if($_POST['B1'] == "Submit") {
 $db_name = preg_replace("/ /", "_", $c_name_raw);
 $c_name_escaped = preg_replace("/ /", "\ ", $c_name_raw);
 $linux_user = get_current_user();
-$contest_url = get_contest_url($_SERVER[SERVER_NAME], ~$linux_user, $c_name_raw);
+$contest_url = get_contest_url($_SERVER[SERVER_NAME], $linux_user, $c_name_raw);
 
 echo "<p>As $linux_user . . .</p>\n";
 list($public_contest_dir, $private_contest_dir) = copy_from_develop($c_name_escaped, $linux_user);
