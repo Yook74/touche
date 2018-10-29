@@ -10,7 +10,7 @@ mkdir ./java_jail/bin
 mkdir ./java_jail/lib64
 mkdir ./java_jail/lib
 mkdir ./java_jail/lib/x86_64-linux-gnu
-mkdir /usr/lib/jvm/java-6-openjdk-amd64
+mkdir ./java_jail/usr/lib/jvm/java-6-openjdk-amd64
 mkdir ./java_jail/usr/lib/jvm/java-1.8.0-openjdk-amd64
 cp /bin/sh ./java_jail/bin/sh
 cp /lib/x86_64-linux-gnu/libpthread.so.0 ./java_jail/lib/x86_64-linux-gnu/
