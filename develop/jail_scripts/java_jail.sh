@@ -5,13 +5,13 @@ fi
 
 for dir in "usr" "usr/bin" "usr/lib" "usr/lib/jvm" "bin" "lib64" "lib" "lib/x86_64-linux-gnu" "opt" "proc"
 do
-    mkdir ./java_jail/ $dir
+    mkdir ./java_jail/$dir
 done
 
 
-for lib in "libpthread.so.0" "libdl.so.2" "libc.so.6" "libm.so.6" "libnsk.so.1" "libz.so.1"
+for lib in "libpthread.so.0" "libdl.so.2" "libc.so.6" "libm.so.6" "libnsl.so.1" "libz.so.1"
 do
-    cp -lp /lib/x86_64-linux-gnu/ $lib ./java_jail/lib/x86_64-linux-gnu/
+    cp -lp /lib/x86_64-linux-gnu/$lib ./java_jail/lib/x86_64-linux-gnu/
 done
 
 # This weird path for java is not ideal but it is the path referenced in judge/Lang/JAVA.inc
