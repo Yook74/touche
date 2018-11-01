@@ -2,11 +2,12 @@
 
 include_once("lib/session.inc");
 include_once("lib/create.inc");
+include_once("lib/auth.inc");
 if($_POST['B1'] == "Submit") {
-   $contest = $_POST['contest_name'];
-   $dbhost = $_POST['dbhost'];
-   $dbpw = $_POST['dbpassword'];
-   $HOST = $_POST['contest_host'];
+   $c_name_raw = $_POST['contest_name'];
+   $db_host = $_POST['dbhost'];
+   $db_pass = $_POST['dbpassword'];
+   $contest_host = $_POST['contest_host'];
 }
 ?>
 <html>
@@ -32,213 +33,32 @@ if($_POST['B1'] == "Submit") {
                                 <td bgcolor="#ffffff" colspan="2">
 				<center><b>
 <?php
-$db_name = preg_replace("/ /", "_", $contest);
-$contest_noesc = $contest;
-$contest = preg_replace("/ /", "\ ", $contest);
-$contest_dir = "../$contest";
-$whoami = `whoami`;
-echo "<p>As $whoami . . .</p>\n";
-echo "<p>Creating contest folder (takes a while) . . . \n";
-   $cmd = "cp -pr ../develop/ ";
-   $cmd .= $contest_dir;
-echo "<br />[$cmd]<br />";
-   system($cmd, $result);
-echo "Finished.</p>\n";
-echo "<p>Clearing folders . . . ";
-   $cmd2 = "rm -rf ";
-   $cmd2 .= $contest_dir;
-   $cmd2 .= "/data/*";
-   system($cmd2, $result);
-   $cmd2 = "rm -rf ";
-   $cmd2 .= $contest_dir;
-   $cmd2 .= "/judged/*";
-   system($cmd2, $result);
-   $cmd2 = "rm -rf ";
-   $cmd2 .= $contest_dir;
-   $cmd2 .= "/queue/*";
-   system($cmd2, $result);
-   $cmd2 = "rm -rf ";
-   $cmd2 .= $contest_dir;
-   $cmd2 .= "/test_compile/*";
-   system($cmd2, $result);
-   $cmd2 = "rm -rf ";
-   $cmd2 .= $contest_dir;
-   $cmd2 .= "/c_jail/home/contest/*";
-   system($cmd2, $result);
-   $cmd2 = "rm -rf ";
-   $cmd2 .= $contest_dir;
-   $cmd2 .= "/cpp_jail/home/contest/*";
-   system($cmd2, $result);
-   $cmd2 = "rm -rf ";
-   $cmd2 .= $contest_dir;
-   $cmd2 .= "/java_jail/home/contest/*";
-   system($cmd2, $result);
-   $cmd2 = "rm -rf ";
-   $cmd2 .= $contest_dir;
-   $cmd2 .= "/python2_jail/home/contest/*";
-   system($cmd2, $result);
-   $cmd2 = "rm -rf ";
-   $cmd2 .= $contest_dir;
-   $cmd2 .= "/python3_jail/home/contest/*";
-   system($cmd2, $result);
-echo"Finished.</p>\n";
-echo "<p>Making Directories . . . ";
-   $cmd2 = "mkdir -p ";
-   $cmd2 .= $contest_dir;
-   $cmd2 .= "/c_jail/home/contest/";
-   $cmd2 .= $contest;
-   $cmd2 .= "/judged";
-echo "<br />[$cmd2]";
-   system($cmd2, $result);
-   $cmd2 = "mkdir -p ";
-   $cmd2 .= $contest_dir;
-   $cmd2 .= "/c_jail/home/contest/";
-   $cmd2 .= $contest;
-   $cmd2 .= "/data";
-echo "<br />[$cmd2]";
-   system($cmd2, $result);
-   $cmd2 = "mkdir -p ";
-   $cmd2 .= $contest_dir;
-   $cmd2 .= "/cpp_jail/home/contest/";
-   $cmd2 .= $contest;
-   $cmd2 .= "/judged";
-echo "<br />[$cmd2]";
-   system($cmd2, $result);
-   $cmd2 = "mkdir -p ";
-   $cmd2 .= $contest_dir;
-   $cmd2 .= "/cpp_jail/home/contest/";
-   $cmd2 .= $contest;
-   $cmd2 .= "/data";
-echo "<br />[$cmd2]";
-   system($cmd2, $result);
-   $cmd2 = "mkdir -p ";
-   $cmd2 .= $contest_dir;
-   $cmd2 .= "/java_jail/home/contest/";
-   $cmd2 .= $contest;
-   $cmd2 .= "/judged";
-echo "<br />[$cmd2]";
-   system($cmd2, $result);
-   $cmd2 = "mkdir -p ";
-   $cmd2 .= $contest_dir;
-   $cmd2 .= "/java_jail/home/contest/";
-   $cmd2 .= $contest;
-   $cmd2 .= "/data";
-echo "<br />[$cmd2]";
-   system($cmd2, $result);
-   $cmd2 = "mkdir -p ";
-   $cmd2 .= $contest_dir;
-   $cmd2 .= "/python2_jail/home/contest/";
-   $cmd2 .= $contest;
-   $cmd2 .= "/judged";
-echo "<br />[$cmd2]";
-   system($cmd2, $result);
-   $cmd2 = "mkdir -p ";
-   $cmd2 .= $contest_dir;
-   $cmd2 .= "/python2_jail/home/contest/";
-   $cmd2 .= $contest;
-   $cmd2 .= "/data";
-echo "<br />[$cmd2]<br />";
-   system($cmd2, $result);
-   $cmd2 = "mkdir -p ";
-   $cmd2 .= $contest_dir;
-   $cmd2 .= "/python3_jail/home/contest/";
-   $cmd2 .= $contest;
-   $cmd2 .= "/judged";
-echo "<br />[$cmd2]";
-   system($cmd2, $result);
-   $cmd2 = "mkdir -p ";
-   $cmd2 .= $contest_dir;
-   $cmd2 .= "/python3_jail/home/contest/";
-   $cmd2 .= $contest;
-   $cmd2 .= "/data";
-echo "<br />[$cmd2]<br />";
-   system($cmd2, $result);
-echo"Finished.</p>\n";
-echo "<p>Creating Database . . . ";
-   $mypwd = "password";
-   $cmd3 = "mysqladmin --password=$mypwd -u root create $db_name";
-echo "<br />[$cmd3]<br />";
-   system($cmd3, $result);
-   $cmd3 = "mysql --password=$mypwd -u root $db_name < dbcreate.sql";
-echo "<br />[$cmd3]<br />";
-   system($cmd3, $result);
-   $cmd4 = "cp -r develop/ ./";
-   $cmd4 .= $contest;
-echo "<br />[$cmd4]<br />";
-   system($cmd4, $result);
-$dbU = "contest_skeleton";
-$link = mysqli_connect($dbhost, $dbU, $dbpw, $db_name);
-if (!$link) {
-    print "Sorry.  Database connect failed.";
-    exit;
-}
+$db_name = preg_replace("/ /", "_", $c_name_raw);
+$c_name_escaped = preg_replace("/ /", "\ ", $c_name_raw);
+$linux_user = get_current_user();
+$contest_url = get_contest_url($_SERVER[SERVER_NAME], $linux_user, $c_name_raw);
 
-$base_dir = "/home/contest/$contest";
-$contest_info = mysqli_query($link, "INSERT INTO CONTEST_CONFIG (HOST, CONTEST_NAME, FREEZE_DELAY, CONTEST_END_DELAY, BASE_DIRECTORY, JUDGE_USER) VALUES ('$HOST', '$contest', '14400', '18000', '$base_dir', 'judge')");
-if (!$contest_info) {
-    print "Sorry.  Database request (INSERT) failed.";
-    exit;
-}
-echo"Finished.</p>";
-#-----------editing database.inc----------------------------------
-echo "<p>Editing Settings . . . ";
-$fhdl = fopen("$contest_noesc/lib/database.inc", "r") OR die("Error with opening file");
-$file = fread($fhdl, filesize("$contest_noesc/lib/database.inc"));
-$file = preg_replace("/YOUR.DB.HOST/", $dbhost, $file);
-$file = preg_replace("/YOUR_PASSWORD_HERE/", "$dbpw", $file);
-$file = preg_replace("/CONTEST_DATABASE_HERE/", "$db_name", $file);
-fclose($fhdl);
-$fhdl = fopen("$contest_noesc/lib/database.inc", "w") OR die("Error with opening file");
-$chk = fwrite($fhdl, $file);
-fclose($fhdl);
-#-------------------edit cron start-------------------------------
-$fhdl = fopen("../$contest_noesc/start_contest.crontab", "r") OR dir("Error opening start crontab");
-$file = fread($fhdl, filesize("../$contest_noesc/start_contest.crontab"));
-$file = preg_replace("/CHANGE/", "$contest", $file);
-fclose($fhdl);
-$fhdl = fopen("../$contest_noesc/start_contest.crontab", "w") OR die("Error opening start crontab");
-$chk = fwrite($fhdl, $file);
-fclose($fhdl);
-#---------editing chroot_wrapper.c--------------------------------
-$fhdl = fopen("../$contest_noesc/chroot_wrapper.c", "r") OR die("Error with opening file");
-$file = fread($fhdl, filesize("../$contest_noesc/chroot_wrapper.c"));
-$file = preg_replace("/develop/", "$contest", $file);
-fclose($fhdl);
-$fhdl = fopen("../$contest_noesc/chroot_wrapper.c", "w") OR die("Error with opening file");
-$chk = fwrite($fhdl, $file);
-fclose($fhdl);
-$cmd5 = "gcc -o ../$contest_noesc/chroot_wrapper.exe ../$contest_noesc/chroot_wrapper.c";
-system($cmd5, $result);
-if($result) {
-echo "Something happened<br>";
-}
-$cmd5 = "sudo chown root:root ../$contest_noesc/chroot_wrapper.exe";
-system($cmd5, $result);
-if($result) {
-echo "Unable to set root permissions on chroot wrapper<br>";
-}
-$cmd5 = "sudo chmod +xs ../$contest_noesc/chroot_wrapper.exe";
-system($cmd5, $result);
-if($result) {
-echo "Unable to set chroot wrapper setuid<br>";
-}
-$cmd5 = "sudo chmod -R go+rx $contest_noesc";
-system($cmd5, $result);
-if ($result) {
-echo "Unable to set contest directory permissions<br />";
-}
+echo "<p>As $linux_user . . .</p>\n";
+list($public_contest_dir, $private_contest_dir) = copy_from_develop($c_name_escaped, $linux_user);
+
+clear_directories($private_contest_dir, $linux_user);
+make_jail_directories($private_contest_dir, $c_name_escaped, $linux_user);
+
+echo "<p>Creating Database . . . <br />";
+create_database($db_name, $sql_root_pass);
+seed_database($private_contest_dir, $c_name_escaped, $contest_host, $db_name, $db_host, $sql_username, $db_pass);
 echo "Finished.</p>";
-#-------------------------edit readme-----------------------------
-$fhdl = fopen("develop/readme/inst.html", "r") OR die("Error with opening file");
-$file = fread($fhdl, filesize("develop/readme/inst.html"));
-$file = preg_replace("/URLHERE/", "http://jacob.cse.taylor.edu/~contest/$contest", $file);
-fclose($fhdl);
-$fhdl = fopen("$contest_noesc/readme/inst.html", "w") OR die("Error with opening file");
-$chk = fwrite($fhdl, $file);
-fclose($fhdl);
-#-----------------------------------------------------------------
-$username = get_current_user();
-echo "<p>To finish setting up the contest go to: <a href='http://$_SERVER[SERVER_NAME]/~$username/$contest_noesc/admin'>Administration setup</a></p>";
+
+
+echo "<p>Editing Settings . . . <br />";
+fill_in_database_inc($public_contest_dir, $db_name, $db_host, $sql_username, $db_pass);
+fill_in_chroot_wrapper($private_contest_dir, $c_name_escaped, $linux_user);
+compile_chroot_wrapper($private_contest_dir);
+set_contest_perms($public_contest_dir);
+echo "Finished.</p>";
+
+//fill_in_readme($public_contest_dir, $contest_url);
+echo "<p>To finish setting up the contest go to: <a href='$contest_url/admin'>Administration setup</a></p>";
 ?>
 </center></b></td></tr>
 </body>

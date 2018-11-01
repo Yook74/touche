@@ -8,7 +8,7 @@
 # arch-tag: lib/config.inc
 #
 	$db_host = "YOUR.DB.HOST";
-	$db_user = "contest_skeleton";
+	$db_user = "YOUR_USERNAME_HERE";
 	$db_pass = "YOUR_PASSWORD_HERE";
 	$db_name = "CONTEST_DATABASE_HERE";
 ?>
