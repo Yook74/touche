@@ -87,7 +87,7 @@ if($_GET){
     $sql .= "FROM AUTO_RESPONSES AR INNER JOIN RESPONSES R ON R.RESPONSE_ID = AR.AUTO_RESPONSE ";
     $sql .= "WHERE AR.JUDGED_ID = $_GET[judged_id]";
 
-    $sql_result = mysqli_query($sql);
+    $sql_result = mysqli_query($link, $sql);
     if(!$sql_result)
         sql_error($sql);
 
@@ -240,7 +240,7 @@ if($_GET){
     $sql = "SELECT * ";
     $sql .= "FROM RESPONSES ";
 
-    $sql_result = mysqli_query($link, $sql);
+    $sql_result = mysqli_query($link, $sql); //TODO link should be closed
 
     if(!$sql_result)
         sql_error($sql);

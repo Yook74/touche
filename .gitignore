@@ -2,3 +2,5 @@ develop/*_jail
 .*.swp
 lockFile.lock
 .vscode
+lib/auth.inc
+.idea

@@ -12,7 +12,7 @@
 	include_once ("config.inc");
 	include_once ("judge.inc");
 
-function judge_header($refresh_time){
+function judge_header($refresh_time, $link){
 global $contest_name, $contest_host, $page_bg_color, $title_bg_color, 
 $contest_freeze_ts, $site_start_offset, $contest_end_ts, $num_queued, $num_clarifications;
 	#some sql stuff we'll use a bit later

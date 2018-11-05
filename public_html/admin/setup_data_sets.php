@@ -59,12 +59,11 @@ if($_POST)
 			$in_suffix = "";
 			$out_file_name = preg_replace("/\.in$/", "", $_FILES['data_set_in']['name']) . ".out";
 		}
-		
 		$result = move_uploaded_file($_FILES['data_set_in']['tmp_name'], 
 				$data_dir . $_POST['problem_id'] . "_" . $_FILES['data_set_in']['name'] . $in_suffix);
 		if(!$result)
 		{
-			print "$data_dir Failed to upload in file";
+			print "( $out_file_name )Failed to upload in file";
 			$error_msg = "Failed to upload 'in' file";
 		}
 		//copy over the destination out file name so when we glob the directory later
@@ -184,7 +183,6 @@ else
 	$http_form = "";
 	$problem_id = -1;
 }
-
 
 //must be a http GET
 	echo " <table align=center bgcoloer=#ffffff cellpadding=0 cellspacing=0 border=0 width=100%>";

@@ -8,6 +8,8 @@
         include("lib/admin_config.inc");
         include("lib/data.inc");
         include("lib/session.inc");
+        include_once("lib/clone.inc");
+        include_once("../../lib/auth.inc");
 
 if ($_POST) {
         $ext_hour = $_POST['ext_hour'];
@@ -71,169 +73,33 @@ if(!$delete) {
   }
 }
 elseif(isSet($_POST['B3'])) {
-#Clone the contest here
-$contest_clone_name = $_POST['clone_name'];
-$db_clone_name = preg_replace("/ /", "_", $contest_clone_name);
-$contest_clone_es = preg_replace("/ /", "\ ", $contest_clone_name);
-$contest_dir = "../../../$contest_clone_es";
-echo "Creating clone folder . . . ";
-   $cmd = "cp -pr ~contest/$db_name ";
-   $cmd .= $contest_dir;
-   system($cmd, $result);
-echo"Finished.</p>";
-echo "<p>Clearing folders . . . ";
-   $cmd2 = "rm -rf ";
-   $cmd2 .= $contest_dir;
-   $cmd2 .= "/data/*";
-   system($cmd2, $result);
-   $cmd2 = "rm -rf ";
-   $cmd2 .= $contest_dir;
-   $cmd2 .= "/judged/*";
-   system($cmd2, $result);
-   $cmd2 = "rm -rf ";
-   $cmd2 .= $contest_dir;
-   $cmd2 .= "/queue/*";
-   system($cmd2, $result);
-   $cmd2 = "rm -rf ";
-   $cmd2 .= $contest_dir;
-   $cmd2 .= "/test_compile/*";
-   system($cmd2, $result);
-   $cmd2 = "rm -rf ";
-   $cmd2 .= $contest_dir;
-   $cmd2 .= "/c_jail/home/contest/*";
-   system($cmd2, $result);
-   $cmd2 = "rm -rf ";
-   $cmd2 .= $contest_dir;
-   $cmd2 .= "/cpp_jail/home/contest/*";
-   system($cmd2, $result);
-   $cmd2 = "rm -rf ";
-   $cmd2 .= $contest_dir;
-   $cmd2 .= "/java_jail/home/contest/*";
-   system($cmd2, $result);
-echo"Finished.</p>";
-echo "<p>Making Directories . . . ";
-   $cmd2 = "mkdir -p ";
-   $cmd2 .= $contest_dir;
-   $cmd2 .= "/c_jail/home/contest/";
-   $cmd2 .= $contest_clone_es;
-   $cmd2 .= "/judged";
-   system($cmd2, $result);
-   $cmd2 = "mkdir -p ";
-   $cmd2 .= $contest_dir;
-   $cmd2 .= "/c_jail/home/contest/";
-   $cmd2 .= $contest_clone_es;
-   $cmd2 .= "/data";
-   system($cmd2, $result);
-   $cmd2 = "mkdir -p ";
-   $cmd2 .= $contest_dir;
-   $cmd2 .= "/cpp_jail/home/contest/";
-   $cmd2 .= $contest_clone_es;
-   $cmd2 .= "/judged";
-   system($cmd2, $result);
-   $cmd2 = "mkdir -p ";
-   $cmd2 .= $contest_dir;
-   $cmd2 .= "/cpp_jail/home/contest/";
-   $cmd2 .= $contest_clone_es;
-   $cmd2 .= "/data";
-   system($cmd2, $result);
-   $cmd2 = "mkdir -p ";
-   $cmd2 .= $contest_dir;
-   $cmd2 .= "/java_jail/home/contest/";
-   $cmd2 .= $contest_clone_es;
-   $cmd2 .= "/judged";
-   system($cmd2, $result);
-   $cmd2 = "mkdir -p ";
-   $cmd2 .= $contest_dir;
-   $cmd2 .= "/java_jail/home/contest/";
-   $cmd2 .= $contest_clone_es;
-   $cmd2 .= "/data";
-   system($cmd2, $result);
-   $cmd2 = "mkdir -p ";
-   $cmd2 .= $contest_dir;
-   $cmd2 .= "/python2_jail/home/contest/";
-   $cmd2 .= $contest_clone_es;
-   $cmd2 .= "/judged";
-   system($cmd2, $result);
-   $cmd2 = "mkdir -p ";
-   $cmd2 .= $contest_dir;
-   $cmd2 .= "/python2_jail/home/contest/";
-   $cmd2 .= $contest_clone_es;
-   $cmd2 .= "/data";
-   system($cmd2, $result);
-   $cmd2 = "mkdir -p ";
-   $cmd2 .= $contest_dir;
-   $cmd2 .= "/python3_jail/home/contest/";
-   $cmd2 .= $contest_clone_es;
-   $cmd2 .= "/judged";
-   system($cmd2, $result);
-   $cmd2 = "mkdir -p ";
-   $cmd2 .= $contest_dir;
-   $cmd2 .= "/python3_jail/home/contest/";
-   $cmd2 .= $contest_clone_es;
-   $cmd2 .= "/data";
-   system($cmd2, $result);
-echo"Finished.</p>";
-echo "<p>Creating Database . . . ";
-   $mypwd = "pc2bgone";
-   $cmd3 = "mysqldump --password=$mypwd -u root $db_name > $db_clone_name.sql";
-   system($cmd3, $result);
-   $cmd3 = "mysqladmin --password=$mypwd -u root create $db_clone_name";
-   system($cmd3, $result);
-   $cmd3 = "mysql --password=$mypwd -u root $db_clone_name < $db_clone_name.sql";
-   system($cmd3, $result);
-$link = mysqli_connect($db_host, $db_user, $db_pass, $db_clone_name);
-if (!$link) {
-    print "Sorry.  Database connect failed.";
-    exit;
-}
+    $clone_name_raw = $_POST['clone_name'];
+    $clone_db_name = preg_replace("/ /", "_", $clone_name_raw);
+    $clone_name_escaped = preg_replace("/ /", "\ ", $clone_name_raw);
+    $linux_user = get_current_user();
 
-$base_dir = "/home/contest/$contest_clone_name";
-$contest_info = mysqli_query($link, "UPDATE CONTEST_CONFIG SET CONTEST_NAME = \"$contest_clone_name\", CONTEST_DATE = '0000-00-00', START_TIME='00:00:00', FREEZE_DELAY='14400', CONTEST_END_DELAY='18000', BASE_DIRECTORY=\"$base_dir\", START_TS='0', HAS_STARTED='0'");
-if (!$contest_info) {
-    print "Sorry.  Database request (UPDATE) failed.";
-    exit;
-}
-$contest_info = mysqli_query($link, "UPDATE SITE SET START_TIME='00:00:00', START_TS='0', HAS_STARTED='0'");
-if (!$contest_info) {
-    print "Sorry.  Database request (UPDATE) failed.";
-    exit;
-}
+    list($source_public_dir, $source_private_dir, $source_name_escaped, $source_db_name) = get_curr_contest_info();
+    list($clone_public_dir, $clone_private_dir) =
+        clone_files($clone_name_escaped, $source_public_dir, $source_private_dir, $linux_user);
 
-#need to clean out some information------------------------------------
-   $cmd4 = "cp -r ~contest/public_html/$db_name ~contest/public_html/";
-   $cmd4 .= $contest_clone_name;
-   system($cmd4, $result);
-echo"Finished.</p>";
-#-----------editing database.inc----------------------------------
-echo "<p>Editing Settings . . . ";
-$fhdl = fopen("../../$contest_clone_name/lib/database.inc", "r") OR die("Error with opening file");
-$file = fread($fhdl, filesize("../../$contest_clone_name/lib/database.inc"));
-$file = preg_replace("/$db_name/", "$db_clone_name", $file);
-fclose($fhdl);
-$fhdl = fopen("../../$contest_clone_name/lib/database.inc", "w") OR die("Error with opening file");
-$chk = fwrite($fhdl, $file);
-fclose($fhdl);
-#---------editing chroot_wrapper.c--------------------------------
-$fhdl = fopen("../../../$contest_clone_name/chroot_wrapper.c", "r") OR die("Error with opening file");
-$file = fread($fhdl, filesize("../../../$contest_clone_name/chroot_wrapper.c"));
-$file = preg_replace("/$db_name/", "$contest_clone_name", $file);
-fclose($fhdl);
-$fhdl = fopen("../../../$contest_clone_name/chroot_wrapper.c", "w") OR die("Error with opening file");
-$chk = fwrite($fhdl, $file);
-fclose($fhdl);
-$cmd5 = "gcc -o ../../../$contest_clone_name/chroot_wrapper.exe ../../../$contest_clone_name/chroot_wrapper.c";
-system($cmd5, $result);
-$cmd5 = "sudo chown root:root ../../../$contest_clone_name/chroot_wrapper.exe";
-system($cmd5, $result);
-$cmd5 = "sudo chmod +s ../../../$contest_clone_name/chroot_wrapper.exe";
-system($cmd5, $result);
-echo "Finished.</p>";
-#what about readme for this???
-echo "<a href=\"http://jacob.css.tayloru.edu/~contest/$contest_clone_name/admin\">Click to go to setup for clone</a>";
+    clear_directories($clone_private_dir, $linux_user, false);
+    make_jail_directories($clone_private_dir, $clone_name_escaped, $linux_user);
 
+    echo "<p>Creating Database . . . <br />";
+    clone_database($source_db_name, $clone_db_name, $sql_root_pass);
+    update_database($clone_private_dir, $clone_name_escaped, $clone_db_name, $db_host, $db_user, $db_pass);
+    echo "Finished.</p>";
 
+    echo "<p>Editing Settings . . . <br />";
+    replace_in_file($clone_public_dir . "/lib/database.inc",
+        "/$db_name/", $clone_db_name);
+    replace_in_file($clone_private_dir . "/chroot_wrapper.c",
+        "/$source_name_escaped/", $clone_name_escaped);
+    compile_chroot_wrapper($clone_private_dir);
+    echo "Finished.</p>";
 
-
+    echo "<p>To finish setting up the contest go to: <a href=" .
+        get_contest_url($_SERVER[SERVER_NAME], $linux_user, $clone_name_raw) . "/admin>Administration setup</a></p>";
 }
 elseif($_POST['B4']) {
 	$sql = mysqli_query($link, "SELECT * FROM TEAMS ORDER BY TEAM_ID");
