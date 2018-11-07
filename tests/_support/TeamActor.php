@@ -16,7 +16,7 @@
  *
  * @SuppressWarnings(PHPMD)
 */
-class AcceptanceTester extends \Codeception\Actor
+class TeamActor extends \Codeception\Actor
 {
     // do not remove this line
 	use _generated\AcceptanceTesterActions;

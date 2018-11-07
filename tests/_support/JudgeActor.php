@@ -16,7 +16,7 @@
  *
  * @SuppressWarnings(PHPMD)
 */
-class AcceptanceTester extends \Codeception\Actor
+class JudgeActor extends \Codeception\Actor
 {
     // do not remove this line
 	use _generated\AcceptanceTesterActions;
@@ -25,7 +25,7 @@ class AcceptanceTester extends \Codeception\Actor
      * @param $username string username for the judge
      * @param $password string password for the judge
      */
-	public function login ($username, $password)
+	public function login($username, $password)
 	{
 		$I = $this;
 		$I->amOnPage('/judge/index.php');
@@ -67,10 +67,4 @@ class AcceptanceTester extends \Codeception\Actor
 	        $this->startSite($name);
         }
     }
-
-
-
-
-
-	
 }
