@@ -20,17 +20,19 @@ class AdminActor extends \Codeception\Actor
 {
     // do not remove this line
 	use _generated\AcceptanceTesterActions;
+    public $username = "Test-Admin";
+    public $password = "adminPass7!";
 
     /**
-     * @param $username string username of the admin
-     * @param $password string password for the admin
+     * Logs the admin in using the username and password declared above.
+     * If you want to use a different username and password, change those values.
      */
-	public function login($username, $password)
+	public function login()
 	{
 		$I = $this;
         $I->amOnPage('/admin/index.php');
-		$I->fillField('user',$username);
-		$I->fillField('password', $password);
+		$I->fillField('user', $this->username);
+		$I->fillField('password', $this->password);
 		$I->click('submit');
 		$I->seeInCurrentUrl("setup_contest.php");
 	}

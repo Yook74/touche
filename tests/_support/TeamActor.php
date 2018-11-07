@@ -20,18 +20,30 @@ class TeamActor extends \Codeception\Actor
 {
     // do not remove this line
 	use _generated\AcceptanceTesterActions;
+	public $username = "Test-Team";
+    public $password = "teamPass7!";
 
     /**
-     * @param $username string the username for the team
-     * @param $password string the password for the team
+     * Logs the team in using the username and password declared above.
+     * If you want to use a different username and password, change those values.
      */
-	public function login($username, $password)
+	public function login()
 	{
 		$I = $this;
 		$I->amOnPage('/');
-		$I->fillField('user', $username);
-		$I->fillField('password', $password);
+		$I->fillField('user', $this->username);
+		$I->fillField('password', $this->password);
 		$I->click('submit');
 		$I->seeCurrentUrlEquals('/main.php');
 	}
+
+    /**
+     * @param $clariText string the text we are looking for in a clarification
+     */
+    public function lookForClariText(string $clariText)
+    {
+        $I = $this;
+        $I->amOnPage("/clarifications.php");
+        $I->see($clariText);
+    }
 }

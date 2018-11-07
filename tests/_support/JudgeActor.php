@@ -20,17 +20,19 @@ class JudgeActor extends \Codeception\Actor
 {
     // do not remove this line
 	use _generated\AcceptanceTesterActions;
+    public $username = "Test-Judge";
+    public $password = "judgePass7!";
 
     /**
-     * @param $username string username for the judge
-     * @param $password string password for the judge
+     * Logs the judge in using the username and password declared above.
+     * If you want to use a different username and password, change those values.
      */
-	public function login($username, $password)
+	public function login()
 	{
 		$I = $this;
 		$I->amOnPage('/judge/index.php');
-		$I->fillField('user', $username);
-		$I->fillField('password', $password);
+		$I->fillField('user', $this->username);
+		$I->fillField('password', $this->password);
 		$I->click('submit');
 		$I->seeInCurrentUrl('main.php');
 	}
