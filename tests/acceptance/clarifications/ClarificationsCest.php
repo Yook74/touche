@@ -32,6 +32,12 @@ class ClarificationsCest
     public function requestClari(TeamActor $I)
     {
         $I->wantTo("Request a clarification");
+        $I->login();
+        $I->amOnPage("/clarifications.php");
+        $I->click('Request Clarification');
+        $I->fillField("question", self::$clariRequestText);
+        $I->click("submit");
+        $I->see(self::$clariRequestText);
     }
 
     /**
@@ -40,6 +46,13 @@ class ClarificationsCest
     public function respondToClariRequest(JudgeActor $I)
     {
         $I->wantTo("Respond to the request for clarification made by a team");
+        $I->login();
+        $I->amOnPage("/judge/clarifications.php");
+        $I->see(self::$clariRequestText);
+        $I->click( 'Respond to Clarification');
+        $I->fillField("response", self::$specificClariText);
+        $I->click('submit');
+        $I->see(self::$specificClariText);
     }
 
     /**
@@ -48,5 +61,7 @@ class ClarificationsCest
     public function lookForClariResponse(TeamActor $I)
     {
         $I->wantTo("See the response of the judge to my response");
+        $I->login();
+        $I->lookForClariText(self::$specificClariText);
     }
 }
