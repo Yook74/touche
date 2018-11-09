@@ -19,20 +19,31 @@
 class JudgeActor extends \Codeception\Actor
 {
     // do not remove this line
-	use _generated\AcceptanceTesterActions;
-    public $username = "Test-Judge";
-    public $password = "judgePass7!";
+    use _generated\AcceptanceTesterActions;
+
+    public static $default_user= "Test-Judge";
+    public static $default_pass= "judgePass7!";
 
     /**
-     * Logs the judge in using the username and password declared above.
-     * If you want to use a different username and password, change those values.
+     * AdminActor constructor.
+     * Creating an JudgeActor object automatically logs you in.
+     * This is kind of an odd choice, but it saves the class'es user from repeated calls to login
      */
-	public function login()
-	{
+    function __construct()
+    {
+        $this->login(self::$default_user, self::$default_pass);
+    }
+
+    /**
+     * Logs this judge in with the given credentials
+     * This is automatically invoked in the constructor, but if you want to log in again you can call this
+     */
+    public function login($username, $password)
+    {
 		$I = $this;
 		$I->amOnPage('/judge/index.php');
-		$I->fillField('user', $this->username);
-		$I->fillField('password', $this->password);
+		$I->fillField('user', $username);
+		$I->fillField('password', $password);
 		$I->click('submit');
 		$I->seeInCurrentUrl('main.php');
 	}
