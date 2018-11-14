@@ -46,7 +46,6 @@ class AdminActor extends \Codeception\Actor
 		$I->fillField('user', $username);
 		$I->fillField('password', $password);
 		$I->click('submit');
-		$I->seeInCurrentUrl("setup_contest.php");
 	}
 
     /**
@@ -79,7 +78,6 @@ class AdminActor extends \Codeception\Actor
         $I->fillField('email', $email);
         $I->fillField('coach_name', $coach);
         $I->click('submit');
-        $I->see($teamName);
 	}
 
     /**
@@ -91,6 +89,5 @@ class AdminActor extends \Codeception\Actor
 		$I->amOnPage('/admin/setup_site.php');
         $I->fillField('site_name', $siteName);
         $I->click('submit');
-        $I->see($siteName);
 	}
 }

@@ -47,7 +47,6 @@ class TeamActor extends \Codeception\Actor
 		$I->fillField('user', $username);
 		$I->fillField('password', $password);
 		$I->click('submit');
-		$I->seeCurrentUrlEquals('/main.php');
 	}
 
     /**
