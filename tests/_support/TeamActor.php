@@ -28,9 +28,11 @@ class TeamActor extends \Codeception\Actor
      * AdminActor constructor.
      * Creating an TeamActor object automatically logs you in.
      * This is kind of an odd choice, but it saves the class'es user from repeated calls to login
+     * @param $scenario Codeception\Scenario is an opaque object that gets passed through
      */
-    function __construct()
+    function __construct(Codeception\Scenario $scenario)
     {
+        parent::__construct($scenario);
         $this->login(self::$default_user, self::$default_pass);
     }
 
