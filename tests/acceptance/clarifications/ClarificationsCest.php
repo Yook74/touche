@@ -11,6 +11,7 @@ class ClarificationsCest
     {
         $I->wantTo("Create a general clarification without prompting");
         $I->createGeneralClari(self::$generalClariText);
+        $I->click("All");
         $I->see(self::$generalClariText);
     }
 
@@ -28,7 +29,6 @@ class ClarificationsCest
     {
         $I->wantTo("Request a clarification");
         $I->requestClari(self::$clariRequestText);
-        $I->see(self::$clariRequestText);
     }
 
     /**
@@ -40,6 +40,7 @@ class ClarificationsCest
         $I->amOnPage("/judge/clarifications.php");
         $I->see(self::$clariRequestText);
         $I->respondToClariRequest(self::$specificClariText);
+        $I->click("All");
         $I->see(self::$specificClariText);
     }
 
