@@ -49,12 +49,14 @@ class TeamActor extends \Codeception\Actor
 	}
 
     /**
-     * @param $clariText string the text we are looking for in a clarification
+     * @param string $clariText string the text to put into the clarification
      */
-    public function lookForClariText(string $clariText)
+    public function requestClari(string $clariText)
     {
         $I = $this;
         $I->amOnPage("/clarifications.php");
-        $I->see($clariText);
+        $I->click('Request Clarification');
+        $I->fillField("question", $clariText);
+        $I->click("submit");
     }
 }

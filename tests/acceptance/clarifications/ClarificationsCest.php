@@ -10,12 +10,7 @@ class ClarificationsCest
     public function createGeneralClari(JudgeActor $I)
     {
         $I->wantTo("Create a general clarification without prompting");
-        $I->login();
-        $I->amOnPage("/judge/clarifications.php");
-        $I->click("Make new Clarification");
-        $I->fillField("response", self::$generalClariText);
-        $I->click("submit");
-        $I->click("Make new Clarification");
+        $I->createGeneralClari(self::$generalClariText);
         $I->see(self::$generalClariText);
     }
 
@@ -25,18 +20,14 @@ class ClarificationsCest
     public function lookForGeneralClari(TeamActor $I)
     {
         $I->wantTo("Look for the general clarification made by the judge");
-        $I->login();
-        $I->lookForClariText(self::$generalClariText);
+        $I->amOnPage("/clarifications.php");
+        $I->see(self::$generalClariText);
     }
 
     public function requestClari(TeamActor $I)
     {
         $I->wantTo("Request a clarification");
-        $I->login();
-        $I->amOnPage("/clarifications.php");
-        $I->click('Request Clarification');
-        $I->fillField("question", self::$clariRequestText);
-        $I->click("submit");
+        $I->requestClari(self::$clariRequestText);
         $I->see(self::$clariRequestText);
     }
 
@@ -46,12 +37,9 @@ class ClarificationsCest
     public function respondToClariRequest(JudgeActor $I)
     {
         $I->wantTo("Respond to the request for clarification made by a team");
-        $I->login();
         $I->amOnPage("/judge/clarifications.php");
         $I->see(self::$clariRequestText);
-        $I->click( 'Respond to Clarification');
-        $I->fillField("response", self::$specificClariText);
-        $I->click('submit');
+        $I->respondToClariRequest(self::$specificClariText);
         $I->see(self::$specificClariText);
     }
 
@@ -61,7 +49,7 @@ class ClarificationsCest
     public function lookForClariResponse(TeamActor $I)
     {
         $I->wantTo("See the response of the judge to my response");
-        $I->login();
-        $I->lookForClariText(self::$specificClariText);
+        $I->amOnPage("/clarifications.php");
+        $I->see(self::$specificClariText);
     }
 }

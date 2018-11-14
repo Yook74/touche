@@ -49,6 +49,32 @@ class JudgeActor extends \Codeception\Actor
 	}
 
     /**
+     * Creates a general clarification; that is, a clarification that is not in response to a question made by a team
+     * @param $clariText string the text of the clarification
+     */
+	public function createGeneralClari(string $clariText)
+    {
+        $I = $this;
+        $I->amOnPage("/judge/clarifications.php");
+        $I->click("Make new Clarification");
+        $I->fillField("response", $clariText);
+        $I->click("submit");
+    }
+
+    /**
+     * Responds to the first clarification it sees
+     * @param string $responseText the text to respond to the clarification with
+     */
+    public function respondToClariRequest(string $responseText)
+    {
+        $I = $this;
+        $I->amOnPage("/judge/clarifications.php");
+        $I->click( 'Respond to Clarification');
+        $I->fillField("response", $responseText);
+        $I->click('submit');
+    }
+
+    /**
      * Starts the contest but does not start all the sites
      */
 	public function startContest(){
