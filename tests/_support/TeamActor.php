@@ -16,46 +16,26 @@
  *
  * @SuppressWarnings(PHPMD)
 */
-class TeamActor extends \Codeception\Actor
+class TeamActor extends AcceptanceTester
 {
-    // do not remove this line
-    use _generated\AcceptanceTesterActions;
-
-    public static $default_user= "Test-Team";
-    public static $default_pass= "teamPass7!";
 
     /**
-     * AdminActor constructor.
-     * Creating an TeamActor object automatically logs you in.
-     * This is kind of an odd choice, but it saves the class'es user from repeated calls to login
-     * @param $scenario Codeception\Scenario is an opaque object that gets passed through
+     * TeamActor constructor.
+     * @param \Codeception\Scenario $scenario an opaque object that codeception will automatically pass in
      */
     function __construct(Codeception\Scenario $scenario)
     {
-        parent::__construct($scenario);
-        $this->login(self::$default_user, self::$default_pass);
+        parent::__construct($scenario, "teamAttr.ini");
     }
 
     /**
-     * Logs this team in with the given credentials
-     * This is automatically invoked in the constructor, but if you want to log in again you can call this
-     */
-    public function login($username, $password)
-    {
-		$I = $this;
-		$I->amOnPage('/');
-		$I->fillField('user', $username);
-		$I->fillField('password', $password);
-		$I->click('submit');
-	}
-
-    /**
+     * Requests a general clarification
      * @param string $clariText string the text to put into the clarification
      */
     public function requestClari(string $clariText)
     {
         $I = $this;
-        $I->amOnPage("/clarifications.php");
+        $I->amOnMyPage("clarifications.php");
         $I->click('Request Clarification');
         $I->fillField("question", $clariText);
         $I->click("submit");

@@ -16,38 +16,16 @@
  *
  * @SuppressWarnings(PHPMD)
 */
-class JudgeActor extends \Codeception\Actor
+class JudgeActor extends AcceptanceTester
 {
-    // do not remove this line
-    use _generated\AcceptanceTesterActions;
-
-    public static $default_user= "Test-Judge";
-    public static $default_pass= "judgePass7!";
-
     /**
-     * AdminActor constructor.
-     * Creating an JudgeActor object automatically logs you in.
-     * This is kind of an odd choice, but it saves the class'es user from repeated calls to login
-     * @param $scenario Codeception\Scenario is an opaque object that gets passed through
+     * JudgeActor constructor.
+     * @param \Codeception\Scenario $scenario an opaque object that codeception will automatically pass in
      */
     function __construct(Codeception\Scenario $scenario)
     {
-        parent::__construct($scenario);
-        $this->login(self::$default_user, self::$default_pass);
+        parent::__construct($scenario, "judgeAttr.ini");
     }
-
-    /**
-     * Logs this judge in with the given credentials
-     * This is automatically invoked in the constructor, but if you want to log in again you can call this
-     */
-    public function login($username, $password)
-    {
-		$I = $this;
-		$I->amOnPage('/judge/index.php');
-		$I->fillField('user', $username);
-		$I->fillField('password', $password);
-		$I->click('submit');
-	}
 
     /**
      * Creates a general clarification; that is, a clarification that is not in response to a question made by a team
@@ -56,7 +34,7 @@ class JudgeActor extends \Codeception\Actor
 	public function createGeneralClari(string $clariText)
     {
         $I = $this;
-        $I->amOnPage("/judge/clarifications.php");
+        $I->amOnMyPage("clarifications.php");
         $I->click("Make new Clarification");
         $I->fillField("response", $clariText);
         $I->click("submit");
@@ -69,7 +47,7 @@ class JudgeActor extends \Codeception\Actor
     public function respondToClariRequest(string $responseText)
     {
         $I = $this;
-        $I->amOnPage("/judge/clarifications.php");
+        $I->amOnMyPage("clarifications.php");
         $I->click( 'Respond to Clarification');
         $I->fillField("response", $responseText);
         $I->click('submit');
@@ -80,7 +58,7 @@ class JudgeActor extends \Codeception\Actor
      */
 	public function startContest(){
 		$I = $this;
-        $I->amOnPage("/judge/start.php");
+        $I->amOnMyPage("start.php");
 		$I->checkOption("input[value='contest']");
 		$I->click("submit");
 	}
@@ -90,7 +68,7 @@ class JudgeActor extends \Codeception\Actor
      */
 	public function startSite($siteName){
         $I = $this;
-        $I->amOnPage("/judge/start.php");
+        $I->amOnMyPage("start.php");
         $siteID = $I->grabFromDatabase('SITE', 'SITE_ID', array('SITE_NAME' => $siteName));
         $I->checkOption("input[value='$siteID']");
         $I->click("submit");
