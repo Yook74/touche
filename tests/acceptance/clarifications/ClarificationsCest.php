@@ -21,7 +21,7 @@ class ClarificationsCest
     public function lookForGeneralClari(TeamActor $I)
     {
         $I->wantTo("Look for the general clarification made by the judge");
-        $I->amOnPage("/clarifications.php");
+        $I->amOnPage("clarifications.php");
         $I->see(self::$generalClariText);
     }
 
@@ -37,7 +37,7 @@ class ClarificationsCest
     public function respondToClariRequest(JudgeActor $I)
     {
         $I->wantTo("Respond to the request for clarification made by a team");
-        $I->amOnPage("/judge/clarifications.php");
+        $I->amOnPage("clarifications.php");
         $I->see(self::$clariRequestText);
         $I->respondToClariRequest(self::$specificClariText);
         $I->click("All");
