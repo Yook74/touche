@@ -7,3 +7,4 @@ lib/auth.inc
 node_modules
 vendor
 composer*
+*_generated*
