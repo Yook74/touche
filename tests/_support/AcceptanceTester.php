@@ -27,6 +27,7 @@ class AcceptanceTester extends \Codeception\Actor
      * @param $scenario Codeception\Scenario is an opaque object that gets passed through
      * @param $iniPath string path to a .ini file that contains information like the username of the actor.
      * This parameter is pretty important to making the whole thing work properly but it is not strictly necessary
+     * Leave it as null if you don't want to log in as anybody
      */
     function __construct(Codeception\Scenario $scenario, $iniPath = null)
     {
@@ -35,7 +36,7 @@ class AcceptanceTester extends \Codeception\Actor
             $this->attr = parse_ini_file($iniPath);
             $this->login($this->attr['username'], $this->attr['password']);
         }
-        # Otherwise play dumb
+        # Otherwise be dumb
     }
 
     /**
@@ -60,5 +61,15 @@ class AcceptanceTester extends \Codeception\Actor
     {
         $contestName = parse_ini_file("creatorAttr.ini")["contest_name"];
         $this->amOnPage($contestName . $this->attr['base_page'] . "/" .$page);
+    }
+
+    /**
+     * Similar to the fillField method, but this automatically accesses the attr associative array
+     * @param $field string which field to fill
+     * @param $attrName string the name of the attr to fill it with
+     */
+    public function fillFieldWithAttr($field, $attrName)
+    {
+        $this->fillField($field, $this->attr[$attrName]);
     }
 }
