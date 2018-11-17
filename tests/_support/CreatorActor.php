@@ -26,4 +26,20 @@ class CreatorActor extends AcceptanceTester
     {
         parent::__construct($scenario, "creatorAttr.ini");
     }
+
+    /**
+     * Creates a contest and waits for the creation process to finish
+     */
+    function createContest()
+    {
+        $I = $this;
+        $I->fillFieldWithAttr("contest_host", "contest_host");
+        $I->fillFieldWithAttr("contest_name", "contest_name");
+        $I->assertNotEquals($this->attr["db_root_password"], "",
+            "You must fill out the db_root_password in tests/_support/creatorAttr.ini");
+
+        $I->fillFieldWithAttr("dbpassword", "db_root_password");
+        $I->waitForElement("#a[href*=\"admin\"]", 30);
+    }
+
 }
