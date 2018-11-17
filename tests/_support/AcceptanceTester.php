@@ -25,13 +25,17 @@ class AcceptanceTester extends \Codeception\Actor
      * Creating an AcceptanceTester object automatically logs you in.
      * This is kind of an odd choice, but it saves us from repeated calls to login
      * @param $scenario Codeception\Scenario is an opaque object that gets passed through
-     * @param $iniPath string path to a .ini file that contains information like the username of the actor
+     * @param $iniPath string path to a .ini file that contains information like the username of the actor.
+     * This parameter is pretty important to making the whole thing work properly but it is not strictly necessary
      */
-    function __construct(Codeception\Scenario $scenario, $iniPath = "teamAttr.ini")
+    function __construct(Codeception\Scenario $scenario, $iniPath = null)
     {
         parent::__construct($scenario);
-        $this->attr = parse_ini_file($iniPath);
-        $this->login($this->attr['username'], $this->attr['password']);
+        if ($iniPath == null) {
+            $this->attr = parse_ini_file($iniPath);
+            $this->login($this->attr['username'], $this->attr['password']);
+        }
+        # Otherwise play dumb
     }
 
     /**
