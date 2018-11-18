@@ -25,6 +25,7 @@ class JudgeActor extends AcceptanceTester
     function __construct(Codeception\Scenario $scenario)
     {
         parent::__construct($scenario, "judgeAttr.ini");
+        $this->amConnectedToDatabase("contest");
     }
 
     /**

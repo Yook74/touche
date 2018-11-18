@@ -25,6 +25,7 @@ class AdminActor extends AcceptanceTester
     public function __construct(\Codeception\Scenario $scenario)
     {
         parent::__construct($scenario, "adminAttr.ini");
+        $this->amConnectedToDatabase("contest");
     }
 
     /**

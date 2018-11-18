@@ -12,6 +12,11 @@ modules:
             browser: phantomjs
         - Asserts
         - Db:
-            dsn: 'mysql:host=localhost;dbname=test_contest'
+            dsn: 'mysql:host=localhost;dbname=placeholder'
             user: 'root'
-            password: 'password'      
+            password: 'password'
+            databases:
+              contest:
+                dsn: 'mysql:host=localhost;dbname=test_contest'
+                user: 'root'
+                password: 'password'
