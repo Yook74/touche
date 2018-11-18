@@ -56,4 +56,12 @@ class CreatorActor extends AcceptanceTester
         # It may be wise to put a waitforelement here, but the click() automatically does that
     }
 
+    /**
+     * A static method to get the contest name.
+     * @return string the name of the contest
+     */
+    public static function getContestName(){
+        return parse_ini_file("creatorAttr.ini")['contest_name'];
+    }
+
 }

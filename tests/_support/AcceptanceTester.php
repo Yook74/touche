@@ -29,7 +29,7 @@ class AcceptanceTester extends \Codeception\Actor
      * This parameter is pretty important to making the whole thing work properly but it is not strictly necessary
      * Leave it as null if you don't want to log in as anybody
      */
-    function __construct(Codeception\Scenario $scenario, $iniPath = null)
+    public function __construct(Codeception\Scenario $scenario, $iniPath = null)
     {
         parent::__construct($scenario);
         if ($iniPath != null) {
@@ -59,7 +59,7 @@ class AcceptanceTester extends \Codeception\Actor
      */
     public function amOnMyPage($page)
     {
-        $contestName = parse_ini_file("creatorAttr.ini")["contest_name"];
+        $contestName = CreatorActor::getContestName();
         $this->amOnPage($contestName . $this->attr['base_page'] . "/" .$page);
     }
 
