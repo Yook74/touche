@@ -21,11 +21,13 @@ class AdminActor extends AcceptanceTester
     /**
      * AdminActor constructor.
      * @param \Codeception\Scenario $scenario an opaque object that codeception will automatically pass in
+     * @param Helper\Acceptance $helper codeception will make this for us and we need it to connect to the DB
+     * @throws \Codeception\Exception\ModuleException
      */
-    public function __construct(\Codeception\Scenario $scenario)
+    public function __construct(\Codeception\Scenario $scenario, Helper\Acceptance $helper)
     {
         parent::__construct($scenario, "adminAttr.ini");
-        $this->amConnectedToDatabase("contest");
+        $helper->connectToDatabase(CreatorActor::getContestName());
     }
 
     /**
