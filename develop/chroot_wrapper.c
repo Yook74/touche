@@ -32,7 +32,7 @@
 // Ideally, all the "configurables" (uid, gid, judge home) will be parameterized. -sb
 const int JUDGE_UID = 5001;
 const int JUDGE_GID = 100;
-const char *JUDGE_HOME = "/home/contest/develop/logs/";
+const char *JUDGE_HOME = "/home/#USER-NAME/#CONTEST-NAME/logs/";
 
 const int MAX_OUTPUT_SIZE = 1000000;
 const int MAX_ARGS = 10;

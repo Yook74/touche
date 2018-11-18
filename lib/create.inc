@@ -230,8 +230,8 @@
     function fill_in_chroot_wrapper($private_contest_dir, $c_name_escaped, $linux_user){
         $path = "$private_contest_dir/chroot_wrapper.c";
 
-        replace_in_file($path, "/develop/", $c_name_escaped);
-        replace_in_file($path, "/contest/", $linux_user);
+        replace_in_file($path, "/#CONTEST-NAME/", $c_name_escaped);
+        replace_in_file($path, "/#USER-NAME/", $linux_user);
     }
 
     /**
