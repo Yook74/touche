@@ -22,7 +22,7 @@ class CreateCest
      */
     private function setAdminPassword(CreatorActor $I)
     {
-        $adminAttr = parse_ini_file("../../_support/adminAttr.ini");
+        $adminAttr = parse_ini_file("tests/_support/adminAttr.ini");
         $I->fillField("user", "admin");
         $I->fillField("password", "admin");
         $I->click("submit");
