@@ -43,7 +43,7 @@ class CreatorActor extends AcceptanceTester
     /**
      * Creates a contest and waits for the creation process to finish
      */
-    function createContest()
+    public function createContest()
     {
         $I = $this;
         $I->fillFieldWithAttr("contest_host", "contest_host");
@@ -54,6 +54,14 @@ class CreatorActor extends AcceptanceTester
         $I->fillFieldWithAttr("dbpassword", "db_root_password");
         $I->click("B1");
         # It may be wise to put a waitforelement here, but the click() automatically does that
+    }
+
+    public function deleteContest(\Helper\Acceptance $helper)
+    {
+        $name = self::getContestName();
+        system("rm -rf ~/public_html/$name");
+        system("sudo rm -rf ~/$name");
+        $helper->executeSQL("DROP DATABASE $name");
     }
 
     /**
