@@ -32,7 +32,7 @@ class AcceptanceTester extends \Codeception\Actor
     function __construct(Codeception\Scenario $scenario, $iniPath = null)
     {
         parent::__construct($scenario);
-        if ($iniPath == null) {
+        if ($iniPath != null) {
             $this->attr = parse_ini_file($iniPath);
             $this->login($this->attr['username'], $this->attr['password']);
         }

@@ -28,6 +28,19 @@ class CreatorActor extends AcceptanceTester
     }
 
     /**
+     * Special login function for Creators
+     * Uses amOnPage instead of amOnMyPage
+     * This is automatically invoked in the constructor, but if you want to log in again you can call this
+     */
+    public function login($username, $password)
+    {
+        $I = $this;
+        $I->amOnPage(""); #This is the only difference
+        $I->fillField('user', $username);
+        $I->fillField('password', $password);
+        $I->click('submit');
+    }
+    /**
      * Creates a contest and waits for the creation process to finish
      */
     function createContest()
@@ -39,7 +52,8 @@ class CreatorActor extends AcceptanceTester
             "You must fill out the db_root_password in tests/_support/creatorAttr.ini");
 
         $I->fillFieldWithAttr("dbpassword", "db_root_password");
-        $I->waitForElement("#a[href*=\"admin\"]", 30);
+        $I->click("B1");
+        # It may be wise to put a waitforelement here, but the click() automatically does that
     }
 
 }
