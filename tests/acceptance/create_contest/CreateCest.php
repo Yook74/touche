@@ -12,14 +12,12 @@ class CreateCest
         $I->dontSee("Error");
         $I->click("Administration setup");
         $I->see("Login");
-
-        $this->setAdminPassword($I);
     }
 
     /**
      * @depends createContest
      */
-    private function setAdminPassword(CreatorActor $I)
+    public function setAdminPassword(CreatorActor $I)
     {
         $I->wantTo("Set the admin password");
         $I->setAdminCredentials();
@@ -32,7 +30,7 @@ class CreateCest
     public function testAdminLogin(AdminActor $I)
     {
         $I->wantTo("Try to log in as admin");
-        $I->seeInCurrentUrl("main.php"); # Logged in with the constructor
+        $I->seeInCurrentUrl("setup_contest"); # Logged in with the constructor
     }
 
     /**

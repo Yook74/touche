@@ -44,7 +44,7 @@ class AdminActor extends AcceptanceTester
         $I->fillField('organization', 'Organization');
         $I->fillField('username', $teamAttr['username']);
         $I->fillField('password', $teamAttr['password']);
-        $I->selectOption('site_id', 0);
+        # Could fill site dropdown here
         $I->fillField('contestant_1_name', "Contestant One");
         $I->fillField('contestant_2_name', "Contestant Two");
         $I->fillField('contestant_3_name', "Contestant Three");
