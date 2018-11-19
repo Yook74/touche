@@ -72,4 +72,22 @@ class CreatorActor extends AcceptanceTester
         return parse_ini_file("creatorAttr.ini")['contest_name'];
     }
 
+    /**
+     * Sets the admin's credentials to the ones defined in adminAttr.ini
+     */
+    public function setAdminCredentials()
+    {
+        $I=$this;
+        $adminAttr = parse_ini_file("tests/_support/adminAttr.ini");
+        $I->amOnMyPage("/admin");
+
+        $I->fillField("user", "admin");
+        $I->fillField("password", "admin");
+        $I->click("submit");
+
+        $I->fillField("user", $adminAttr["username"]);
+        $I->fillField("password", $adminAttr["password"]);
+        $I->fillField("password2", $adminAttr["password"]);
+        $I->click("submit");
+    }
 }

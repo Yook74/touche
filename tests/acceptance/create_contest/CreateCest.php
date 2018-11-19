@@ -17,20 +17,67 @@ class CreateCest
     }
 
     /**
-     * This is a helper and not a test because I need the state that I have at the end of createContest
-     * @param CreatorActor $I needs to be actually passed in because I can't have it constructed twice
+     * @depends createContest
      */
     private function setAdminPassword(CreatorActor $I)
     {
-        $adminAttr = parse_ini_file("tests/_support/adminAttr.ini");
-        $I->fillField("user", "admin");
-        $I->fillField("password", "admin");
-        $I->click("submit");
-
-        $I->fillField("user", $adminAttr["username"]);
-        $I->fillField("password", $adminAttr["password"]);
-        $I->fillField("password2", $adminAttr["password"]);
-        $I->click("submit");
+        $I->wantTo("Set the admin password");
+        $I->setAdminCredentials();
         $I->seeInCurrentUrl("setup_contest");
+    }
+
+    /**
+     * @depends setAdminPassword
+     */
+    public function testAdminLogin(AdminActor $I)
+    {
+        $I->wantTo("Try to log in as admin");
+        $I->seeInCurrentUrl("main.php"); # Logged in with the constructor
+    }
+
+    /**
+     * @depends testAdminLogin
+     */
+    public function setJudgeCredentials(AdminActor $I)
+    {
+        $I->wantTo('Change Judge Credentials');
+        $I->setJudgeCredentials();
+    }
+
+    /**
+     * @depends setJudgeCredentials
+     */
+    public function testJudgeLogin(JudgeActor $I)
+    {
+        $I->wantTo('Try to log in as Judge');
+        $I->seeInCurrentUrl("main.php"); # Logged in with the constructor
+    }
+
+    /**
+     * @depends testAdminLogin
+     */
+    public function createSite(AdminActor $I)
+    {
+        $I->wantTo("Create a site");
+        $I->addSite();
+        $I->see($I->attr["site_name"]);
+    }
+
+    /**
+     * @depends createSite
+     */
+    public function createTeam(AdminActor $I)
+    {
+        $I->wantTo("Create a team");
+        $I->addTeam();
+    }
+
+    /**
+     * @depends createTeam
+     */
+    public function testTeamLogin(TeamActor $I)
+    {
+        $I->wantTo('Try to log in as Team');
+        $I->seeInCurrentUrl("main.php"); # Logged in with the constructor
     }
 }
