@@ -61,6 +61,7 @@ class CreatorActor extends AcceptanceTester
         $name = self::getContestName();
         system("rm -rf ~/public_html/$name");
         system("sudo rm -rf ~/$name");
+        system("sudo rm -rf ~/active-contests/$name");
         $helper->executeSQL("DROP DATABASE $name");
     }
 
