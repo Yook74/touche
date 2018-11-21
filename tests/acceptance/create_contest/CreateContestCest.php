@@ -1,7 +1,7 @@
 <?php
 
 
-class CreateCest
+class CreateContestCest
 {
     public function createContest(CreatorActor $I)
     {
@@ -27,15 +27,6 @@ class CreateCest
     /**
      * @depends setAdminPassword
      */
-    public function testAdminLogin(AdminActor $I)
-    {
-        $I->wantTo("Try to log in as admin");
-        $I->seeInCurrentUrl("setup_contest"); # Logged in with the constructor
-    }
-
-    /**
-     * @depends testAdminLogin
-     */
     public function setJudgeCredentials(AdminActor $I)
     {
         $I->wantTo('Change Judge Credentials');
@@ -43,16 +34,7 @@ class CreateCest
     }
 
     /**
-     * @depends setJudgeCredentials
-     */
-    public function testJudgeLogin(JudgeActor $I)
-    {
-        $I->wantTo('Try to log in as Judge');
-        $I->seeInCurrentUrl("main.php"); # Logged in with the constructor
-    }
-
-    /**
-     * @depends testAdminLogin
+     * @depends setAdminPassword
      */
     public function createSite(AdminActor $I)
     {
@@ -68,14 +50,5 @@ class CreateCest
     {
         $I->wantTo("Create a team");
         $I->addTeam();
-    }
-
-    /**
-     * @depends createTeam
-     */
-    public function testTeamLogin(TeamActor $I)
-    {
-        $I->wantTo('Try to log in as Team');
-        $I->seeInCurrentUrl("main.php"); # Logged in with the constructor
     }
 }
