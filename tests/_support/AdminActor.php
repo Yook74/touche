@@ -78,4 +78,12 @@ class AdminActor extends AcceptanceTester
         $I->fillField("password", $judgeAtr['password']);
         $I->click("B1");
     }
+
+    /**
+     * Create the problem described in adminAttr.ini
+     */
+    public function createProblem()
+    {
+        $I=$this;
+    }
 }
