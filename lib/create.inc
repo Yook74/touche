@@ -236,7 +236,7 @@
         $my_gid = getmygid();
         $my_uid = getmyuid();
         replace_in_file($path, "/JUDGE_UID = 5001/", "JUDGE_UID = $my_uid");
-        replace_in_file($path, "/JUDGE_GID = 100/", "JUDGE_UID = $my_gid");
+        replace_in_file($path, "/JUDGE_GID = 100/", "JUDGE_GID = $my_gid");
     }
 
     /**
