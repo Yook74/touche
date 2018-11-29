@@ -40,4 +40,16 @@ class TeamActor extends AcceptanceTester
         $I->fillField("question", $clariText);
         $I->click("submit");
     }
+
+    /**
+     * Submit a solution to the first problem
+     * @param $path string a path to the file to submit where the _data directory is the root
+     */
+    public function submitSolution(string $path)
+    {
+        $I = $this;
+        $I->amOnMyPage("submissions.php");
+        $I->attachFile("source_file", $path);
+        $I->click("Submit Solution");
+    }
 }

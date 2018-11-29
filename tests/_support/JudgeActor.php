@@ -88,4 +88,16 @@ class JudgeActor extends AcceptanceTester
 	        $this->startSite($name);
         }
     }
+
+    /**
+     * Rejects the first problem on the judging page with "Error (reason unknown)"
+     * In future, this should probably be able to pick which submission to reject
+     */
+    public function rejectSubmission(){
+        $I = $this;
+        $I->amOnMyPage("judge.php");
+        $I->click("judge submission");
+        $I->selectOption("result", "Error (Reason Unknown)");
+        $I->click("Submit Results");
+    }
 }
