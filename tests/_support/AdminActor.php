@@ -85,5 +85,22 @@ class AdminActor extends AcceptanceTester
     public function createProblem()
     {
         $I=$this;
+        $I->amOnMyPage("setup_problems.php");
+        $I->fillFieldWithAttr("problem_name", "problem_name");
+        $I->fillFieldWithAttr("problem_loc", "problem_location");
+        $I->click("Submit");
+    }
+
+    /**
+     * Add a dataset to the default problem
+     */
+    public function addDataset()
+    {
+        $I = $this;
+        $I->amOnMyPage("setup_data_sets.php");
+        $I->click("Add new data set"); //If more than one problem exists this may cause issues
+        $I->attachFile("data_set_in", $this->attr["data_in_path"]);
+        $I->attachFile("data_set_out", $this->attr["data_out_path"]);
+        $I->click("Submit");
     }
 }

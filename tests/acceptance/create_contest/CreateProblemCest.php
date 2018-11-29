@@ -7,6 +7,8 @@ class CreateProblemCest
     {
         $I->wantTo("Create a new problem [STUB]");
         $I->createProblem();
+
+        $I->addDataset();
     }
 
     /**
