@@ -5,7 +5,7 @@ class CreateProblemCest
 {
     public function createProblem(AdminActor $I)
     {
-        $I->wantTo("Create a new problem [STUB]");
+        $I->wantTo("Create a new problem");
         $I->createProblem();
         $I->see($I->attr["problem_name"]);
         $I->addDatasets();
