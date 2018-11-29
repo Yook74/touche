@@ -6,7 +6,7 @@ int main(int argc, char **argv){
     char arr[1];
     int idx = 0;
     while (true){
-        printf("%cA", arr[idx++]);
+        printf("%c", arr[idx++]);
         fflush(stdout);
     }
 }
