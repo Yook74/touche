@@ -49,6 +49,6 @@ class CreateContestCest
     public function createTeam(AdminActor $I)
     {
         $I->wantTo("Create a team");
-        $I->addTeam();
+        $I->addDefaultTeam();
     }
 }

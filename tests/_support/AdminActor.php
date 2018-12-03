@@ -34,7 +34,7 @@ class AdminActor extends AcceptanceTester
      * Adds the team described in teamAttr.ini
      * Some of these fields are hardcoded because I don't think they're used for anything
      */
-	public function addTeam()
+	public function addDefaultTeam()
 	{
 		$I = $this;
         $teamAttr = parse_ini_file("teamAttr.ini");
@@ -51,6 +51,20 @@ class AdminActor extends AcceptanceTester
         $I->fillField('alternate_name', "Alternate");
         $I->fillField('email', "email@example.com");
         $I->fillField('coach_name', "Dr. Coach");
+        $I->click('submit');
+	}
+
+    /**
+     * Adds a team with the given parameters
+     * Some of the fields are left blank and others are hardcoded
+     */
+	public function addSimpleTeam($name, $username, $password)
+	{
+		$I = $this;
+		$I->amOnMyPage("setup_teams.php");
+		$I->fillField('team_name', $name);
+        $I->fillField('username', $username);
+        $I->fillField('password', $password);
         $I->click('submit');
 	}
 
