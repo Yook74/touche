@@ -73,7 +73,7 @@ if ($_GET)
 		$result = mysqli_query($link, $sql);
 
 		if ($result) {
-			$sql = "DELETE FROM CATEGORY_TEAMS WHERE TEAM_ID = $remove_id";
+			$sql = "DELETE FROM CATEGORY_TEAM WHERE TEAM_ID = $remove_id";
 			$result2 = mysqli_query($link, $sql);
 		}
 
