@@ -69,6 +69,15 @@ class AdminActor extends AcceptanceTester
 	}
 
     /**
+     * Deletes the first team it sees because it is stupid
+     */
+	public function deleteTeam(){
+        $I = $this;
+        $I->amOnMyPage("setup_teams.php");
+        $I->click("Delete");
+    }
+
+    /**
      * Create a site described in adminAtr.ini
      */
 	public function addSite()

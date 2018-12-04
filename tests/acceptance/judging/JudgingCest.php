@@ -3,40 +3,109 @@ use Codeception\Util\Locator;
 
 class JudgingCest
 {
-
-    private static $simple_dirs = array(
+    # This describes all the source file directories and the results their code should give
+    private static $dir_judgement = array(
         "accepted" => "Accepted",
         "accepted_libraries" => "Accepted",
         "compile_error" => "Compile Error",
         "exceeds_time_limit" => "Exceeds Time Limit",
         "format_error" => "Format Error",
         "incorrect_output" => "Incorrect Output",
-        "runtime_error" => "Runtime Error"
-    ); # These directories can all be handled the same. The undefined_file_type and forbudden_word dirs need special logic.
+        "runtime_error" => "Runtime Error",
+        "forbidden_word" => "Forbidden Word in Source",
+        "undefined_file_type" => "Undefined File Type"
+    );
 
-    private static $src_extensions = array(".c", ".java", ".cpp"); # Valid source file extensions. Python support is WIP
+    # Valid source file extensions. If the contest supports python
+    private static $src_extensions = array("C" => ".c", "Java" => ".java", "C++" => ".cpp");
 
+    # Invalid file extensions. These exist in the forbidden_word directory
+    private static $bogus_extensions = array(".txt", ".o", ".bin");
+
+    # These languages are checked for forbidden words
+    private static $forbidden_word = array("C", "C++");
+
+    # All of the possible statuses and judgements
     private static $judgements = array("Accepted", "Compile Error", "Exceeds Time Limit", "Forbidden Word in Source",
         "Format Error", "Incorrect Output", "Runtime Error", "Undefined File Type", "Error (Reason Unknown)", "pending");
 
     private static $top_dir = "example_submissions";
 
-    /**
-     * Submits an array of paths all at once, waits, and then checks to see if they were all judged with the given judgement
-     * @param JudgeActor $judge similar to $team. Note that neither actor needs to be logged in
-     * @param TeamActor $team this is parameterized because I don't want to construct a new TeamActor for every test.
-     * @param array $paths the file paths to submit
-     * @param string $desired_judgement the judgment they should all receive
-     */
-    private function submitAndCheck(TeamActor $team, JudgeActor $judge, $paths, $desired_judgement){
-        $team->login($team->attr["username"], $team->attr["password"]);
-        foreach($paths as $path){
-            $team->submitSolution($path);
-            $team->see("Queued for judging");
-        }
+    # A list of teams that will be submitting problems. Populated in createTeams
+    private $teams;
 
+    /**
+     * Uses several of the constants declared above to populate the list of teams with TeamActors
+     * @param AdminActor $admin will be used to create the team in the contest
+     * @param \Codeception\Scenario $scenario Needed to construct TeamActors
+     */
+    private function createTeams(AdminActor $admin, \Codeception\Scenario $scenario){
+        $sat_counter = 0;
+        foreach (self::$src_extensions as $lang_name => $extension){
+            $admin->login($admin->attr["username"], $admin->attr["password"]);
+
+            $teamName = "$lang_name team";
+            $username = $lang_name;
+            $password = "password";
+            $admin->addSimpleTeam($teamName, $username, $password);
+
+            $team = new TeamActor($scenario);
+            $team->attr["name"] = $teamName;
+            $team->attr["username"] = $username;
+            $team->attr["password"] = $password;
+
+            $team->attr["extension"] = $extension; # The file extension this team submits
+            $team->attr["bogus_extension"] = self::$bogus_extensions[$sat_counter];
+            $team->attr["forbidden_word"] = in_array($lang_name, self::$forbidden_word);
+            # ^ True if this language is checked for forbidden words
+
+            array_push($this->teams, $team);
+
+            if ($sat_counter + 1 < count(self::$bogus_extensions))
+                $sat_counter++;
+        }
+    }
+
+    /**
+     * Deletes all the teams and re-creates the default team.
+     * @param AdminActor $admin some admin actor
+     */
+    private function deleteTeams(AdminActor $admin){
+        $admin->login($admin->attr["username"], $admin->attr["password"]);
+        foreach ($this->teams as $_){
+            $admin->deleteTeam();
+        }
+        $admin->deleteTeam();
+        $admin->addDefaultTeam();
+
+        $this->teams = array();
+    }
+
+    /**
+     * Wrapper around TeamActor->submitSolution
+     * @param TeamActor $I one of the elements of the $teams array
+     * @param string $sub_dir a subdirectory listed in dirs_results
+     * @param bool $use_bogus true if the bogus_extension should be used
+     */
+    private function submitSolution(TeamActor $I, $sub_dir, $use_bogus=false){
+        $I->login($I->attr["username"], $I->attr["password"]);
+        if($use_bogus)
+            $extension = $I->attr["bogus_extension"];
+        else
+            $extension = $I->attr['extension'];
+
+        $path = self::$top_dir . "/$sub_dir/src.$extension";
+        $I->submitSolution($path);
+        $I->see("Queued for judging");
+    }
+
+    /**
+     * Checks to see if the desired judgment is the only visible auto judgement
+     * @param JudgeActor $judge really any JudgeActor will do
+     * @param string $desired_judgement something like "Incorrect Output"
+     */
+    private function assertJudgmentsMatch(JudgeActor $judge, $desired_judgement){
         $judge->login($judge->attr["username"], $judge->attr["password"]);
-        $judge->wait(90);
 
         $judge->amOnMyPage("judge.php");
         foreach (self::$judgements as $judgement) {
@@ -45,37 +114,40 @@ class JudgingCest
             else
                 $judge->dontSee($judgement);
         }
-
-        foreach ($paths as $_)
-            $judge->rejectSubmission();
-
     }
 
-    public function testAutoJudging(TeamActor $team, JudgeActor $judge)
+    public function testAutoJudging(AdminActor $admin, JudgeActor $judge, \Codeception\Scenario $scenario)
     {
-        $judge -> wantTo("Check that the auto judging software makes correct judgements");
+        $judge -> wantTo("Check that the auto judging software makes correct judgements (takes a while)");
 
-        foreach (self::$simple_dirs as $dir => $judgement){
-            $paths = array();
-            foreach (self::$src_extensions as $extension){
-                $path = self::$top_dir . "/" . $dir . "/src" . $extension;
-                array_push($paths, $path);
+        $this->createTeams($admin, $scenario);
+
+        foreach (self::$dir_judgement as $dir => $judgement){
+            $num_submissions = 0;
+            foreach ($this->teams as $team){
+                if($judgement == "Undefined File Type"){
+                    $this->submitSolution($team, $dir, true);
+                    $num_submissions++;
+                }
+                elseif ($judgement == "Forbidden Word in Source"){
+                    if($team->attr["forbidden_word"]) {
+                        $this->submitSolution($team, $dir);
+                        $num_submissions++;
+                    }
+                }
+                else {
+                    $this->submitSolution($team, $dir);
+                    $num_submissions++;
+                }
             }
-            $this->submitAndCheck($team, $judge, $paths, $judgement);
+
+            $judge->wait(90);
+            $this->assertJudgmentsMatch($judge, $judgement);
+            for (; $num_submissions > 0; $num_submissions--){
+                $judge->rejectSubmission();
+            }
         }
 
-        $paths = array();
-        foreach (array(".c", ".cpp") as $extension){
-            $path = self::$top_dir . "/forbidden_word/src" . $extension;
-            array_push($paths, $path);
-        }
-        $this->submitAndCheck($team, $judge, $paths, "Forbidden Word in Source");
-
-        $paths = array();
-        foreach (array(".bin", ".o", ".txt") as $extension) {
-            $path = self::$top_dir . "/undefined_file_type/src" . $extension;
-            array_push($paths, $path);
-        }
-        $this->submitAndCheck($team, $judge, $paths, "Undefined File Type");
+        $this->deleteTeams($admin);
     }
 }
