@@ -107,8 +107,14 @@ class JudgeActor extends AcceptanceTester
      */
     public function waitForAutoJudging($expected_time = 7){
         $I = $this;
-        $I->amOnMyPage("judge.php");
-        $I->waitForText("judge submission", 65);
+        $I->amOnMyPage('judge.php');
+        if($this->attr['invoke_cronscript']){
+           $c_name = CreatorActor::getContestName();
+           $result = system("php ../public_html/$c_name/judge/cronScript.php");
+           if($result) throw new RuntimeException("Cronscript invocation failed");
+        } else {
+            $I->waitForText('judge submission', 65); #wait for cron to call the cronscript
+        }
         $I->wait($expected_time);
     }
 }
