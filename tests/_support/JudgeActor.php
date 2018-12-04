@@ -100,4 +100,15 @@ class JudgeActor extends AcceptanceTester
         $I->selectOption("result", "Error (Reason Unknown)");
         $I->click("Submit Results");
     }
+
+    /**
+     * Waits until any submission is ready for judging and then waits a little longer for the auto judgement to be made
+     * @param int $expected_time how long the auto judging should take
+     */
+    public function waitForAutoJudging($expected_time = 7){
+        $I = $this;
+        $I->amOnMyPage("judge.php");
+        $I->waitForText("judge submission", 65);
+        $I->wait($expected_time);
+    }
 }

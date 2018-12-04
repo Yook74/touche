@@ -101,18 +101,16 @@ class JudgingCest
 
     /**
      * Checks to see if the desired judgment is the only visible auto judgement
-     * @param JudgeActor $judge really any JudgeActor will do
+     * @param JudgeActor $I must be logged in
      * @param string $desired_judgement something like "Incorrect Output"
      */
-    private function assertJudgmentsMatch(JudgeActor $judge, $desired_judgement){
-        $judge->login($judge->attr["username"], $judge->attr["password"]);
-
-        $judge->amOnMyPage("judge.php");
+    private function assertJudgmentsMatch(JudgeActor $I, $desired_judgement){
+        $I->amOnMyPage("judge.php");
         foreach (self::$judgements as $judgement) {
             if ($judgement == $desired_judgement)
-                $judge->see($judgement);
+                $I->see($judgement);
             else
-                $judge->dontSee($judgement);
+                $I->dontSee($judgement);
         }
     }
 
@@ -155,8 +153,9 @@ class JudgingCest
                         break;
                 }
             }
-            $judge->waitForText("judge submission");
-            $judge->wait($wait_per_submission * $num_submissions);
+            $judge->login($judge->attr["username"], $judge->attr["password"]);
+            $judge->waitForAutoJudging($wait_per_submission * $num_submissions);
+
             $this->assertJudgmentsMatch($judge, $judgement);
             for (; $num_submissions > 0; $num_submissions--){
                 $judge->rejectSubmission();
