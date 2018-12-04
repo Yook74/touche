@@ -125,12 +125,12 @@ class JudgingCest
         $run_length_submitted = false; # we will only submit one run_length_exceeded file because it takes a long time
         foreach (self::$dir_judgement as $dir => $judgement){
             $num_submissions = 0;
-            $wait_time = 75;
+            $wait_per_submission = 7; # How long each submission takes to be judged
             foreach ($this->teams as $team){
                 switch ($judgement){
 
-                    case "Run Length Exceeded":
-                        $wait_time = 150;
+                    case "Exceeds Time Limit":
+                        $wait_per_submission = 80;
 
                         if ($run_length_submitted)
                             break;
@@ -155,8 +155,8 @@ class JudgingCest
                         break;
                 }
             }
-
-            $judge->wait($wait_time);
+            $judge->waitForText("judge submission");
+            $judge->wait($wait_per_submission * $num_submissions);
             $this->assertJudgmentsMatch($judge, $judgement);
             for (; $num_submissions > 0; $num_submissions--){
                 $judge->rejectSubmission();
