@@ -123,7 +123,7 @@ class JudgingCest
         $run_length_submitted = false; # we will only submit one run_length_exceeded file because it takes a long time
         foreach (self::$dir_judgement as $dir => $judgement){
             $num_submissions = 0;
-            $wait_per_submission = 7; # How long each submission takes to be judged
+            $wait_per_submission = 8.5; # How long each submission takes to be judged
             foreach ($this->teams as $team){
                 switch ($judgement){
 
