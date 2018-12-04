@@ -122,27 +122,38 @@ class JudgingCest
 
         $this->createTeams($admin, $scenario);
 
+        $run_length_submitted = false; # we will only submit one run_length_exceeded file because it takes a long time
         foreach (self::$dir_judgement as $dir => $judgement){
             $num_submissions = 0;
             $wait_time = 75;
             foreach ($this->teams as $team){
-                if($judgement == "Undefined File Type"){
-                    $this->submitSolution($team, $dir, true);
-                    $num_submissions++;
-                }
-                elseif ($judgement == "Forbidden Word in Source"){
-                    if($team->attr["forbidden_word"]) {
+                switch ($judgement){
+
+                    case "Run Length Exceeded":
+                        $wait_time = 150;
+
+                        if ($run_length_submitted)
+                            break;
+                        $run_length_submitted = true;
+
                         $this->submitSolution($team, $dir);
                         $num_submissions++;
-                    }
-                }
-                else {
-                    $this->submitSolution($team, $dir);
-                    $num_submissions++;
-                }
+                        break;
 
-                if ($judgement == "Run Length Exceeded")
-                    $wait_time = 120;
+                    case "Undefined File Type":
+                        $this->submitSolution($team, $dir, true);
+                        $num_submissions++;
+                        break;
+
+                    case "Forbidden Word in Source":
+                        if(!$team->attr["forbidden_word"])
+                            break;
+
+                    default:
+                        $this->submitSolution($team, $dir);
+                        $num_submissions++;
+                        break;
+                }
             }
 
             $judge->wait($wait_time);
