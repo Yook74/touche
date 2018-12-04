@@ -32,7 +32,7 @@ class JudgingCest
     private static $top_dir = "example_submissions";
 
     # A list of teams that will be submitting problems. Populated in createTeams
-    private $teams;
+    private $teams = array();
 
     /**
      * Uses several of the constants declared above to populate the list of teams with TeamActors
@@ -94,7 +94,7 @@ class JudgingCest
         else
             $extension = $I->attr['extension'];
 
-        $path = self::$top_dir . "/$sub_dir/src.$extension";
+        $path = self::$top_dir . "/$sub_dir/src$extension";
         $I->submitSolution($path);
         $I->see("Queued for judging");
     }
@@ -124,6 +124,7 @@ class JudgingCest
 
         foreach (self::$dir_judgement as $dir => $judgement){
             $num_submissions = 0;
+            $wait_time = 75;
             foreach ($this->teams as $team){
                 if($judgement == "Undefined File Type"){
                     $this->submitSolution($team, $dir, true);
@@ -139,9 +140,12 @@ class JudgingCest
                     $this->submitSolution($team, $dir);
                     $num_submissions++;
                 }
+
+                if ($judgement == "Run Length Exceeded")
+                    $wait_time = 120;
             }
 
-            $judge->wait(90);
+            $judge->wait($wait_time);
             $this->assertJudgmentsMatch($judge, $judgement);
             for (; $num_submissions > 0; $num_submissions--){
                 $judge->rejectSubmission();
