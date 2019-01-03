@@ -18,6 +18,8 @@
 */
 class AdminActor extends AcceptanceTester
 {
+    private $helper; // This object has access to all the acceptance helper methods
+
     /**
      * AdminActor constructor.
      * @param \Codeception\Scenario $scenario an opaque object that codeception will automatically pass in
@@ -28,6 +30,7 @@ class AdminActor extends AcceptanceTester
     {
         parent::__construct($scenario, "adminAttr.ini");
         $helper->connectToDatabase(CreatorActor::getContestName());
+        $this->helper = $helper;
     }
 
     /**

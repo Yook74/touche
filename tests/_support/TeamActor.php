@@ -29,14 +29,16 @@ class TeamActor extends AcceptanceTester
     }
 
     /**
-     * Requests a general clarification
-     * @param string $clariText string the text to put into the clarification
+     * Requests a clarification
+     * @param string $clariText the text to put into the clarification
+     * @param string $problemName the name of the problem which the clarification is for or "General".
      */
-    public function requestClari(string $clariText)
+    public function requestClari(string $clariText, string $problemName = "General")
     {
         $I = $this;
         $I->amOnMyPage("clarifications.php");
         $I->click('Request Clarification');
+        $I->selectOption("problem_id", $problemName);
         $I->fillField("question", $clariText);
         $I->click("submit");
     }
