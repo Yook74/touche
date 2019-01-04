@@ -3,9 +3,11 @@ use Codeception\Util\Locator;
 
 class LoginCest
 {
+    public static $changedPassword = "changedPassword123";
+
     public function correctAdminLogin(AdminActor $I)
     {
-        $I->wantTo("Try to log in as admin");
+        $I->wantTo("Try to log in as Admin");
         $I->seeInCurrentUrl("setup_contest"); # Logged in with the constructor
     }
 
@@ -23,33 +25,44 @@ class LoginCest
 
     public function incorrectAdminLogin(AdminActor $I)
     {
-        $I->wantTo("Get rejected when the Admin enters the wrong credentials [STUB]");
+        $I->wantTo("Get rejected when the Admin enters the wrong credentials");
+        $I->incorrectLogin();
+        $I->dontSee("Edit Contest Info");
     }
 
     public function incorrectJudgeLogin(JudgeActor $I)
     {
-        $I->wantTo("Get rejected when the Judge enters the wrong credentials [STUB]");
+        $I->wantTo("Get rejected when the Judge enters the wrong credentials");
+        $I->incorrectLogin();
+        $I->dontSee("Edit Contest Info");
     }
 
     public function incorrectTeamLogin(TeamActor $I)
     {
-        $I->wantTo("Get rejected when the Team enters the wrong credentials [STUB]");
+        $I->wantTo("Get rejected when the Team enters the wrong credentials");
+        $I->incorrectLogin();
+        $I->dontSee("Welcome");
     }
 
     /**
      * @depends correctTeamLogin
+     * @depends correctAdminLogin
      */
     public function changeTeamPassword(AdminActor $I)
     {
-        $I->wantTo("Change the team's password [STUB]");
+        $I->wantTo("Change the team's password");
+        $I->changeTeamPassword(self::$changedPassword);
+        $I->see("Team changed successfully");
     }
 
     /**
      * @depends correctJudgeLogin
+     * @depends correctAdminLogin
      */
     public function changeJudgePassword(AdminActor $I)
     {
-        $I->wantTo("Change the judge's password [STUB]");
+        $I->wantTo("Change the judge's password");
+        $I->changeJudgePassword(self::$changedPassword);
     }
 
     /**
@@ -57,7 +70,10 @@ class LoginCest
      */
     public function retryTeamLogin(TeamActor $I)
     {
-        $I->wantTo("Log in with the team's new username and password [STUB]");
+        $I->wantTo("Log in with the team's username and new password");
+        $I->dontSeeInCurrentUrl("main");
+        $I->retryLogin(self::$changedPassword);
+        $I->see("Welcome");
     }
 
     /**
@@ -65,7 +81,10 @@ class LoginCest
      */
     public function retryJudgeLogin(JudgeActor $I)
     {
-        $I->wantTo("Log in with the judge's new username and password [STUB]");
+        $I->wantTo("Log in with the judge's new username and password");
+        $I->dontSeeInCurrentUrl("main");
+        $I->retryLogin(self::$changedPassword);
+        $I->see("Please select an option.");
     }
 
     /**
@@ -73,7 +92,10 @@ class LoginCest
      */
     public function resetTeamPassword(AdminActor $I)
     {
-        $I->wantTo("Reset the team's password to default [STUB]");
+
+        $I->wantTo("Reset the team's password to default");
+        $I->resetTeamPassword();
+        $I->see("Team changed successfully");
     }
 
     /**
@@ -81,6 +103,7 @@ class LoginCest
      */
     public function resetJudgePassword(AdminActor $I)
     {
-        $I->wantTo("Reset the judge's password to default[STUB]");
+        $I->wantTo("Reset the judge's password to default");
+        $I->resetJudgePassword();
     }
 }

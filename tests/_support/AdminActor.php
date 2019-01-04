@@ -74,7 +74,8 @@ class AdminActor extends AcceptanceTester
     /**
      * Deletes the first team it sees because it is stupid
      */
-	public function deleteTeam(){
+	public function deleteTeam()
+    {
         $I = $this;
         $I->amOnMyPage("setup_teams.php");
         $I->click("Delete");
@@ -97,11 +98,11 @@ class AdminActor extends AcceptanceTester
 	public function setJudgeCredentials()
     {
         $I = $this;
-        $judgeAtr = parse_ini_file('judgeAttr.ini');
+        $judgeAttr = parse_ini_file('judgeAttr.ini');
 
         $I->amOnMyPage("setup_contest.php");
-        $I->fillField("username", $judgeAtr['username']);
-        $I->fillField("password", $judgeAtr['password']);
+        $I->fillField("username", $judgeAttr['username']);
+        $I->fillField("password", $judgeAttr['password']);
         $I->click("B1");
     }
 
@@ -131,5 +132,65 @@ class AdminActor extends AcceptanceTester
         $I->attachFile("data_set_in", $this->attr["data_in_path2"]);
         $I->attachFile("data_set_out", $this->attr["data_out_path2"]);
         $I->click("Submit");
+    }
+
+    /**
+     * Change the default team's password
+     */
+    public function changeTeamPassword($newPassword)
+    {
+        $I = $this;
+        $I->click("Teams");
+        $I->click("Edit");
+        $I->fillField("password",$newPassword);
+        $I->click("Submit");
+    }
+
+    /**
+     * Set the default team's password back
+     */
+    public function resetTeamPassword()
+    {
+        $I = $this;
+        $teamAttr = parse_ini_file('teamAttr.ini');
+
+        $I->click("Teams");
+        $I->click("Edit");
+        $I->fillField("password",$teamAttr['password']);
+        $I->click("Submit");
+    }
+
+    /**
+     * Change the default judge's password
+     */
+    public function changeJudgePassword($newPassword)
+    {
+        $I = $this;
+        $I->click("Edit contest details");
+        $I->fillField("password",$newPassword);
+        $I->click("Submit");
+    }
+
+    /**
+     * Set the default judge's password back
+     */
+    public function resetJudgePassword()
+    {
+        $I = $this;
+        $judgeAttr = parse_ini_file('judgeAttr.ini');
+
+        $I->click("Edit contest details");
+        $I->fillField("password",$judgeAttr['password']);
+        $I->click("Submit");
+    }
+
+    /**
+     * Log out as Admin and then incorrectly log back in
+     */
+    public function incorrectLogin()
+    {
+        $I = $this;
+        $I->amOnMyPage("");
+        $I->login($I->attr["username"],$I->attr["password"]."behat");
     }
 }
