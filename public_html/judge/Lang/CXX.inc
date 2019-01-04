@@ -38,10 +38,11 @@ function cxx_compile() {
     $command .= " -fno-asm -lm -w -o ";
     $command .= $problem_handle['judged_dir'];
     $command .= $problem_handle['file_name'];
-    $command .= " &> ";
+    $command .= " > ";
     $command .= $problem_handle['judged_dir'];
     $command .= $problem_handle['file_name'];
     $command .= ".err";
+    $command .= " 2>&1";
     return $command;
 }
 
