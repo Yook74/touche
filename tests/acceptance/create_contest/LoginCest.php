@@ -23,7 +23,7 @@ class LoginCest
         $I->seeInCurrentUrl("main.php"); # Logged in with the constructor
     }
 
-    public function incorrectLogin(AdminActor $I)
+    public function incorrectAdminLogin(AdminActor $I)
     {
         $I->wantTo("Get rejected when the Admin enters the wrong credentials");
         $I->incorrectLogin();
