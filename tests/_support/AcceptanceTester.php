@@ -34,7 +34,7 @@ class AcceptanceTester extends \Codeception\Actor
         parent::__construct($scenario);
         if ($iniPath != null) {
             $this->attr = parse_ini_file($iniPath);
-            $this->login($this->attr['username'], $this->attr['password']);
+            $this->attrLogin();
         }
         # Otherwise be dumb
     }
@@ -50,6 +50,23 @@ class AcceptanceTester extends \Codeception\Actor
         $I->fillField('user', $username);
         $I->fillField('password', $password);
         $I->click('submit');
+    }
+
+    /**
+     * Wrapper for login() that uses the username and password in attr.
+     * All actors are not guaranteed to have a username and password so this may not always work
+     */
+    public function attrLogin()
+    {
+        $this->login($this->attr['username'], $this->attr['password']);
+    }
+
+    /**
+     * Logs in incorrectly; should get rejected
+     */
+    public function incorrectLogin()
+    {
+        $this->login($this->attr['username'], $this->attr['password'] . "behat");
     }
 
     /**

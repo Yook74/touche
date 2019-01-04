@@ -33,11 +33,12 @@ class JudgeActor extends AcceptanceTester
         $this->helper = $helper;
     }
 
+/* Clarification Actions */
     /**
      * Creates an unprompted clarification; that is, a clarification that is not in response to a question made by a team
      * @param $clariText string the text of the clarification
      */
-	public function createUnpromptedClari(string $clariText)
+    public function createUnpromptedClari(string $clariText)
     {
         $I = $this;
         $I->amOnMyPage("clarifications.php");
@@ -60,19 +61,28 @@ class JudgeActor extends AcceptanceTester
     }
 
     /**
+     * Deletes all the clarifications
+     */
+    public function cleanupClari()
+    {
+        $this->helper->executeSQL("TRUNCATE CLARIFICATION_REQUESTS;");
+    }
+
+/* Contest timing actions */
+    /**
      * Starts the contest but does not start all the sites
      */
-	public function startContest(){
-		$I = $this;
+    public function startContest(){
+        $I = $this;
         $I->amOnMyPage("start.php");
-		$I->checkOption("input[value='contest']");
-		$I->click("submit");
-	}
+        $I->checkOption("input[value='contest']");
+        $I->click("submit");
+    }
 
     /**
      * @param $siteName string the name of the site to start
      */
-	public function startSite($siteName){
+    public function startSite($siteName){
         $I = $this;
         $I->amOnMyPage("start.php");
         $siteID = $I->grabFromDatabase('SITE', 'SITE_ID', array('SITE_NAME' => $siteName));
@@ -85,13 +95,14 @@ class JudgeActor extends AcceptanceTester
      */
     public function startAll(){
         $I = $this;
-	    $I->startContest();
+        $I->startContest();
         $siteNames = $I->grabColumnFromDatabase('SITE', 'SITE_NAME', array());
-	    foreach($siteNames as $name){
-	        $this->startSite($name);
+        foreach($siteNames as $name){
+            $this->startSite($name);
         }
     }
 
+/* Judging actions */
     /**
      * Rejects the first problem on the judging page with "Error (reason unknown)"
      * In future, this should probably be able to pick which submission to reject
@@ -119,33 +130,5 @@ class JudgeActor extends AcceptanceTester
             $I->waitForText('judge submission', 65); #wait for cron to call the cronscript
         }
         $I->wait($expected_time);
-    }
-
-    /**
-     * Log out as Judge and then incorrectly log back in
-     */
-    public function incorrectLogin()
-    {
-        $I = $this;
-        $I->amOnMyPage("");
-        $I->login($I->attr["username"],$I->attr["password"]."behat");
-    }
-
-    /**
-     * Retry judge login with new password
-     */
-    public function retryLogin($newPassword)
-    {
-        $I = $this;
-        $I->amOnMyPage("");
-        $I->login($I->attr["username"], $newPassword);
-    }
-
-    /**
-     * Deletes all the clarifications
-     */
-    public function cleanupClari()
-    {
-        $this->helper->executeSQL("TRUNCATE CLARIFICATION_REQUESTS;");
     }
 }

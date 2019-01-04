@@ -42,7 +42,7 @@ class JudgingCest
     private function createTeams(AdminActor $admin, \Codeception\Scenario $scenario){
         $sat_counter = 0;
         foreach (self::$src_extensions as $lang_name => $extension){
-            $admin->login($admin->attr["username"], $admin->attr["password"]);
+            $admin->attrLogin();
 
             $teamName = "$lang_name team";
             $username = $lang_name;
@@ -71,7 +71,7 @@ class JudgingCest
      * @param AdminActor $admin some admin actor
      */
     private function deleteTeams(AdminActor $admin){
-        $admin->login($admin->attr["username"], $admin->attr["password"]);
+        $admin->attrLogin();
         foreach ($this->teams as $_){
             $admin->deleteTeam();
         }
@@ -88,7 +88,7 @@ class JudgingCest
      * @param bool $use_bogus true if the bogus_extension should be used
      */
     private function submitSolution(TeamActor $I, $sub_dir, $use_bogus=false){
-        $I->login($I->attr["username"], $I->attr["password"]);
+        $I->attrLogin();
         if($use_bogus)
             $extension = $I->attr["bogus_extension"];
         else
@@ -153,7 +153,7 @@ class JudgingCest
                         break;
                 }
             }
-            $judge->login($judge->attr["username"], $judge->attr["password"]);
+            $judge->attrLogin();
             $judge->waitForAutoJudging($wait_per_submission * $num_submissions);
 
             $this->assertJudgmentsMatch($judge, $judgement);

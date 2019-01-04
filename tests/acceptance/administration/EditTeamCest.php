@@ -5,7 +5,6 @@ class EditTeamCest
 {
     public static $newTeamName = "John Luscombe";
     public static $username = "john";
-    public static $organization = "John Luscombe University";
     public static $password = "johnPass7!";
 
     public function addNewTeam(AdminActor $I)
@@ -27,7 +26,7 @@ class EditTeamCest
     public function cancelEdit(AdminActor $I)
     {
         $I->wantTo("Edit a team, cancel editing, and then add a new team");
-        $I->cancelEditing();
+        $I->teamEditCancel();
         $originalTeamName = parse_ini_file('tests/_support/teamAttr.ini')["name"];
         $I->see($originalTeamName);
     }
@@ -41,21 +40,19 @@ class EditTeamCest
     public function deletedLogin(TeamActor $I)
     {
         $I->wantTo("Get rejected when the team enters the deleted credentials");
-        $originalTeamName = parse_ini_file('tests/_support/teamAttr.ini')["username"];
-        $originalTeamPass = parse_ini_file('tests/_support/teamAttr.ini')["password"];
-        $I->login($originalTeamName, $originalTeamPass);
+        $I->attrLogin();
         $I->dontSeeInCurrentUrl("main");
     }
 
     public function duplicateTeams(AdminActor $I)
     {
         $I->wantTo("Create duplicate teams");
-        $I->addSimpleTeam(self::$newTeamName, self::$username, self::$organization, self::$password);
-        $I->addSimpleTeam(self::$newTeamName, self::$username, self::$organization, self::$password);
+        $I->addSimpleTeam(self::$newTeamName, self::$username,  self::$password);
+        $I->addSimpleTeam(self::$newTeamName, self::$username,  self::$password);
         $I->see(self::$newTeamName);
         $I->deleteTeam();
         $I->see(self::$newTeamName);
-        $I->addSimpleTeam(self::$newTeamName, self::$username, self::$organization, self::$password);
+        $I->addSimpleTeam(self::$newTeamName, self::$username, self::$password);
     }
 
     public function deleteDuplicateTeams(AdminActor $I)

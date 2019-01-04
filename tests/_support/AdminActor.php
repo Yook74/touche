@@ -33,17 +33,18 @@ class AdminActor extends AcceptanceTester
         $this->helper = $helper;
     }
 
+/* Team Actions */
     /**
      * Adds the team described in teamAttr.ini
      * Some of these fields are hardcoded because I don't think they're used for anything
      */
-	public function addDefaultTeam()
-	{
-		$I = $this;
+    public function addDefaultTeam()
+    {
+        $I = $this;
         $teamAttr = parse_ini_file("teamAttr.ini");
 
-		$I->amOnMyPage("setup_teams.php");
-		$I->fillField('team_name', $teamAttr['name']);
+        $I->amOnMyPage("setup_teams.php");
+        $I->fillField('team_name', $teamAttr['name']);
         $I->fillField('organization', 'Organization');
         $I->fillField('username', $teamAttr['username']);
         $I->fillField('password', $teamAttr['password']);
@@ -55,27 +56,27 @@ class AdminActor extends AcceptanceTester
         $I->fillField('email', "email@example.com");
         $I->fillField('coach_name', "Dr. Coach");
         $I->click('submit');
-	}
+    }
 
     /**
      * Adds a team with the given parameters
-     * Some of the fields are left blank and others are hardcoded
+     * Some of the fields are left blank
      */
-	public function addSimpleTeam($name, $username, $organization, $password)
-	{
-		$I = $this;
-		$I->amOnMyPage("setup_teams.php");
-		$I->fillField('team_name', $name);
+    public function addSimpleTeam($name, $username, $password)
+    {
+        $I = $this;
+        $I->amOnMyPage("setup_teams.php");
+        $I->fillField('team_name', $name);
         $I->fillField('username', $username);
         $I->fillField('organization', $organization);
         $I->fillField('password', $password);
         $I->click('submit');
-	}
+    }
 
     /**
      * Deletes the first team it sees because it is stupid
      */
-	public function deleteTeam()
+    public function deleteTeam()
     {
         $I = $this;
         $I->amOnMyPage("setup_teams.php");
@@ -83,20 +84,89 @@ class AdminActor extends AcceptanceTester
     }
 
     /**
-     * Create a site described in adminAtr.ini
+     * Change the default team's password
      */
-	public function addSite()
-	{	
-		$I = $this;
-		$I->amOnMyPage('setup_site.php');
-        $I->fillFieldWithAttr('site_name','site_name');
-        $I->click('submit');
-	}
+    public function changeTeamPassword($newPassword)
+    {
+        $I = $this;
+        $I->click("Teams");
+        $I->click("Edit");
+        $I->fillField("password",$newPassword);
+        $I->click("Submit");
+    }
+
+    /**
+     * Set the default team's password back
+     */
+    public function resetTeamPassword()
+    {
+        $I = $this;
+        $teamAttr = parse_ini_file('teamAttr.ini');
+
+        $I->click("Teams");
+        $I->click("Edit");
+        $I->fillField("password",$teamAttr['password']);
+        $I->click("Submit");
+    }
+
+    /**
+     * Edit a team's details
+     */
+    public function editTeam()
+    {
+        $I = $this;
+        $teamAttr = parse_ini_file('teamAttr.ini');
+
+        $I->click("Teams");
+        $I->click("Edit");
+        $I->fillField("team_name",$teamAttr["name"]);
+        $I->fillField("password",$teamAttr["password"]);
+        $I->fillField("username",$teamAttr["username"]);
+        $I->fillField("organization","");
+        $I->click("Submit");
+    }
+
+    /**
+     * Start to edit, stop, and then add a new team
+     */
+    public function teamEditCancel()
+    {
+        $I = $this;
+        $I->click("Teams");
+        $I->click("Edit");
+        $I->click("Teams");
+        $I->addSimpleTeam("Jeff Bezos Fan Club","jeff","Amazon","jeffPass7!");
+    }
+
+/* Judge Actions */
+    /**
+     * Change the default judge's password
+     */
+    public function changeJudgePassword($newPassword)
+    {
+        $I = $this;
+        $I->click("Edit contest details");
+        $I->fillField("password",$newPassword);
+        $I->click("Submit");
+    }
+
+    /**
+     * Set the default judge's password back
+     */
+    public function resetJudgePassword()
+    {
+        $I = $this;
+        $judgeAttr = parse_ini_file('judgeAttr.ini');
+
+        $I->click("Edit contest details");
+        $I->fillField("password",$judgeAttr['password']);
+        $I->click("Submit");
+    }
 
     /**
      * Set the judge's credentials to those described in judgeAttr.ini
      */
-	public function setJudgeCredentials()
+    public function setJudgeCredentials()
     {
         $I = $this;
         $judgeAttr = parse_ini_file('judgeAttr.ini');
@@ -107,25 +177,20 @@ class AdminActor extends AcceptanceTester
         $I->click("B1");
     }
 
+/* Problem Actions */
     /**
-     * Create the problem described in adminAttr.ini
+     * Adds a problem with the given parameters or takes them from adminAttr if not supplied
      */
-    public function createProblem()
-    {
-        $I=$this;
-        $I->amOnMyPage("setup_problems.php");
-        $I->fillFieldWithAttr("problem_name", "problem_name");
-        $I->fillFieldWithAttr("problem_loc", "problem_location");
-        $I->click("Submit");
-    }
-
-    /**
-     * Adds a problem with the given parameters
-     * Some of the fields are left blank and others are hardcoded
-     */
-    public function addSimpleProblem($name, $loc)
+    public function createProblem($name = null, $loc  = null)
     {
         $I = $this;
+        if ($name == null){
+            $name = $this->attr["problem_name"];
+        }
+        if ($loc == null){
+            $loc = $this->attr["problem_location"];
+        }
+
         $I->amOnMyPage("setup_problems.php");
         $I->fillField('problem_name', $name);
         $I->fillField('problem_loc', $loc);
@@ -145,9 +210,9 @@ class AdminActor extends AcceptanceTester
     }
 
     /**
-     * Start to edit and then navigate away
+     * Start to edit a problem and then navigate away
      */
-    public function editCancel()
+    public function problemEditCancel()
     {
         $I = $this;
         $I->amOnMyPage("setup_problems.php");
@@ -228,92 +293,15 @@ class AdminActor extends AcceptanceTester
         $I->click("Submit");
     }
 
+/* Site Actions */
     /**
-     * Change the default team's password
+     * Create a site described in adminAtr.ini
      */
-    public function changeTeamPassword($newPassword)
+    public function addSite()
     {
         $I = $this;
-        $I->click("Teams");
-        $I->click("Edit");
-        $I->fillField("password",$newPassword);
-        $I->click("Submit");
-    }
-
-    /**
-     * Set the default team's password back
-     */
-    public function resetTeamPassword()
-    {
-        $I = $this;
-        $teamAttr = parse_ini_file('teamAttr.ini');
-
-        $I->click("Teams");
-        $I->click("Edit");
-        $I->fillField("password",$teamAttr['password']);
-        $I->click("Submit");
-    }
-
-    /**
-     * Change the default judge's password
-     */
-    public function changeJudgePassword($newPassword)
-    {
-        $I = $this;
-        $I->click("Edit contest details");
-        $I->fillField("password",$newPassword);
-        $I->click("Submit");
-    }
-
-    /**
-     * Set the default judge's password back
-     */
-    public function resetJudgePassword()
-    {
-        $I = $this;
-        $judgeAttr = parse_ini_file('judgeAttr.ini');
-
-        $I->click("Edit contest details");
-        $I->fillField("password",$judgeAttr['password']);
-        $I->click("Submit");
-    }
-
-    /**
-     * Log out as Admin and then incorrectly log back in
-     */
-    public function incorrectLogin()
-    {
-        $I = $this;
-        $I->amOnMyPage("");
-        $I->login($I->attr["username"],$I->attr["password"]."behat");
-    }
-
-    /**
-     * Start to edit, stop, and then add a new team
-     */
-    public function cancelEditing()
-    {
-        $I = $this;
-        $I->click("Teams");
-        $I->click("Edit");
-        $I->click("Teams");
-        $I->addSimpleTeam("Jeff Bezos Fan Club","jeff","Amazon","jeffPass7!");
-    }
-
-    /**
-     * Edit a team's details
-     */
-    public function editTeam()
-    {
-        $I = $this;
-        $teamAttr = parse_ini_file('teamAttr.ini');
-
-        $I->click("Teams");
-        $I->click("Edit");
-        $I->fillField("team_name",$teamAttr["name"]);
-        $I->fillField("password",$teamAttr["password"]);
-        $I->fillField("username",$teamAttr["username"]);
-        $I->fillField("organization","");
-        $I->click("Submit");
+        $I->amOnMyPage('setup_site.php');
+        $I->fillFieldWithAttr('site_name','site_name');
+        $I->click('submit');
     }
 }

@@ -54,24 +54,4 @@ class TeamActor extends AcceptanceTester
         $I->attachFile("source_file", $path);
         $I->click("Submit Solution");
     }
-
-    /**
-     * Log out as a Team and then incorrectly log back in
-     */
-    public function incorrectLogin()
-    {
-        $I = $this;
-        $I->amOnMyPage("");
-        $I->login($I->attr["username"],$I->attr["password"]."behat");
-    }
-
-    /**
-     * Retry team login with new password
-     */
-    public function retryLogin($newPassword)
-    {
-        $I = $this;
-        $I->amOnMyPage("");
-        $I->login($I->attr["username"],$newPassword);
-    }
 }

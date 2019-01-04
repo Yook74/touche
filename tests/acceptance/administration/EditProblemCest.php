@@ -9,7 +9,7 @@ class EditProblemCest
     public function addNewProblem(AdminActor $I)
     {
         $I->wantTo("Create a new problem");
-        $I->addSimpleProblem(self::$newProblem, self::$problemLoc);
+        $I->createProblem(self::$newProblem, self::$problemLoc);
         $I->see("Successful: New problem created");
     }
 
@@ -23,8 +23,8 @@ class EditProblemCest
     public function cancelEdit(AdminActor $I)
     {
         $I->wantTo("Edit a problem, cancel editing, and then add a new problem");
-        $I->editCancel();
-        $I->addSimpleProblem(self::$newProblem, self::$problemLoc);
+        $I->problemEditCancel();
+        $I->createProblem(self::$newProblem, self::$problemLoc);
         $I->see("Successful: New problem created");
         $I->see($I->attr["problem_name"]);
     }

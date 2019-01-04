@@ -72,7 +72,7 @@ class LoginCest
     {
         $I->wantTo("Log in with the team's username and new password");
         $I->dontSeeInCurrentUrl("main");
-        $I->retryLogin(self::$changedPassword);
+        $I->login($I->attr["username"], self::$changedPassword);
         $I->seeInCurrentUrl("main");
     }
 
@@ -83,7 +83,7 @@ class LoginCest
     {
         $I->wantTo("Log in with the judge's new username and password");
         $I->dontSeeInCurrentUrl("main");
-        $I->retryLogin(self::$changedPassword);
+        $I->login($I->attr["username"], self::$changedPassword);
         $I->see("Please select an option.");
     }
 
