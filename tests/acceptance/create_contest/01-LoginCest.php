@@ -73,7 +73,7 @@ class LoginCest
         $I->wantTo("Log in with the team's username and new password");
         $I->dontSeeInCurrentUrl("main");
         $I->retryLogin(self::$changedPassword);
-        $I->see("Welcome");
+        $I->seeInCurrentUrl("main");
     }
 
     /**
