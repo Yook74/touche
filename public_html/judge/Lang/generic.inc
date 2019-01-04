@@ -23,10 +23,11 @@ function generic_post_process() {
     $command  = "strip --strip-all ";
     $command .= $problem_handle['judged_dir'];
     $command .= $problem_handle['file_name'];
-    $command .= " &> ";
+    $command .= " > ";
     $command .= $problem_handle['judged_dir'];
     $command .= $problem_handle['file_name'];
     $command .= ".err";
+    $command .= " 2>&1";
     return $command;
 }
 function generic_process_errors($errors, $orig_file_name) {

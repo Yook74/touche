@@ -52,10 +52,11 @@ function java_compile() {
     $command .= ".java -d ";
     $command .= $problem_handle['judged_dir'];
     $command .= $problem_handle['file_name'];
-    $command .= " &> ";
+    $command .= " > ";
     $command .= $problem_handle['judged_dir'];
     $command .= $problem_handle['file_name'];
     $command .= ".err";
+    $command .= " 2>&1";
     return $command;
 }
 
@@ -106,10 +107,11 @@ function java_post_process() {
     $command .= " $manifest_filename -C ";
     $command .= $problem_handle['judged_dir'];
     $command .= $problem_handle['file_name'];
-    $command .= "/ . &> ";
+    $command .= "/ . > ";
     $command .= $problem_handle['judged_dir'];
     $command .= $problem_handle['file_name'];
     $command .= ".err";
+    $command .= " 2>&1";
     return $command;
 }
 
