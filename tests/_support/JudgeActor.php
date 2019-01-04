@@ -117,4 +117,24 @@ class JudgeActor extends AcceptanceTester
         }
         $I->wait($expected_time);
     }
+
+    /**
+     * Log out as Judge and then incorrectly log back in
+     */
+    public function incorrectLogin()
+    {
+        $I = $this;
+        $I->amOnMyPage("");
+        $I->login($I->attr["username"],$I->attr["password"]."behat");
+    }
+
+    /**
+     * Retry judge login with new password
+     */
+    public function retryLogin($newPassword)
+    {
+        $I = $this;
+        $I->amOnMyPage("");
+        $I->login($I->attr["username"],$newPassword);
+    }
 }
