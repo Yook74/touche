@@ -18,6 +18,8 @@
 */
 class JudgeActor extends AcceptanceTester
 {
+    private $helper; // This object has access to all the acceptance helper methods
+
     /**
      * JudgeActor constructor.
      * @param \Codeception\Scenario $scenario an opaque object that codeception will automatically pass in
@@ -28,13 +30,14 @@ class JudgeActor extends AcceptanceTester
     {
         parent::__construct($scenario, "judgeAttr.ini");
         $helper->connectToDatabase(CreatorActor::getContestName());
+        $this->helper = $helper;
     }
 
     /**
-     * Creates a general clarification; that is, a clarification that is not in response to a question made by a team
+     * Creates an unprompted clarification; that is, a clarification that is not in response to a question made by a team
      * @param $clariText string the text of the clarification
      */
-	public function createGeneralClari(string $clariText)
+	public function createUnpromptedClari(string $clariText)
     {
         $I = $this;
         $I->amOnMyPage("clarifications.php");
@@ -135,6 +138,14 @@ class JudgeActor extends AcceptanceTester
     {
         $I = $this;
         $I->amOnMyPage("");
-        $I->login($I->attr["username"],$newPassword);
+        $I->login($I->attr["username"], $newPassword);
+    }
+
+    /**
+     * Deletes all the clarifications
+     */
+    public function cleanupClari()
+    {
+        $this->helper->executeSQL("TRUNCATE CLARIFICATION_REQUESTS;");
     }
 }
