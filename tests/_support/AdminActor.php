@@ -61,12 +61,13 @@ class AdminActor extends AcceptanceTester
      * Adds a team with the given parameters
      * Some of the fields are left blank and others are hardcoded
      */
-	public function addSimpleTeam($name, $username, $password)
+	public function addSimpleTeam($name, $username, $organization, $password)
 	{
 		$I = $this;
 		$I->amOnMyPage("setup_teams.php");
 		$I->fillField('team_name', $name);
         $I->fillField('username', $username);
+        $I->fillField('organization', $organization);
         $I->fillField('password', $password);
         $I->click('submit');
 	}
@@ -115,6 +116,99 @@ class AdminActor extends AcceptanceTester
         $I->amOnMyPage("setup_problems.php");
         $I->fillFieldWithAttr("problem_name", "problem_name");
         $I->fillFieldWithAttr("problem_loc", "problem_location");
+        $I->click("Submit");
+    }
+
+    /**
+     * Adds a problem with the given parameters
+     * Some of the fields are left blank and others are hardcoded
+     */
+    public function addSimpleProblem($name, $loc)
+    {
+        $I = $this;
+        $I->amOnMyPage("setup_problems.php");
+        $I->fillField('problem_name', $name);
+        $I->fillField('problem_loc', $loc);
+        $I->click("Submit");
+    }
+
+    /**
+     * Edit a problem
+     */
+    public function editProblem()
+    {
+        $I = $this;
+        $I->amOnMyPage("setup_problems.php");
+        $I->click("Edit");
+        $I->fillField("problem_note", "Hello, tester.");
+        $I->click("Submit");
+    }
+
+    /**
+     * Start to edit and then navigate away
+     */
+    public function editCancel()
+    {
+        $I = $this;
+        $I->amOnMyPage("setup_problems.php");
+        $I->click("Edit");
+        $I->fillField("problem_note", "Hello, tester.");
+        $I->click("Problems");
+    }
+
+    /**
+     * Delete a problem
+     */
+    public function deleteProblem()
+    {
+        $I = $this;
+        $I->amOnMyPage("setup_problems.php");
+        $I->click("Delete");
+    }
+
+    /**
+     * Upload a PDF for a problem
+     */
+    public function uploadPDF()
+    {
+        $I = $this;
+        $I->amOnMyPage("setup_problems.php");
+        $I->click("Edit");
+        $I->attachFile("pdf_file", $this->attr["pdf_data"]);
+        $I->click("Submit");
+    }
+
+    /**
+     * Upload a PDF for a problem
+     */
+    public function uploadHTML()
+    {
+        $I = $this;
+        $I->amOnMyPage("setup_problems.php");
+        $I->click("Edit");
+        $I->attachFile("html_file", $this->attr["html_data"]);
+        $I->click("Submit");
+    }
+
+    /**
+     * Create a problem with no location
+     */
+    public function createProblemNoLocation()
+    {
+        $I = $this;
+        $I->amOnMyPage("setup_problems.php");
+        $I->fillField("problem_name", "FailureIsAnOption");
+        $I->click("Submit");
+    }
+
+    /**
+     * Create a problem with no name
+     */
+    public function createProblemNoName()
+    {
+        $I = $this;
+        $I->amOnMyPage("setup_problems.php");
+        $I->fillField("problem_loc", "Upland");
         $I->click("Submit");
     }
 
@@ -192,5 +286,34 @@ class AdminActor extends AcceptanceTester
         $I = $this;
         $I->amOnMyPage("");
         $I->login($I->attr["username"],$I->attr["password"]."behat");
+    }
+
+    /**
+     * Start to edit, stop, and then add a new team
+     */
+    public function cancelEditing()
+    {
+        $I = $this;
+        $I->click("Teams");
+        $I->click("Edit");
+        $I->click("Teams");
+        $I->addSimpleTeam("Jeff Bezos Fan Club","jeff","Amazon","jeffPass7!");
+    }
+
+    /**
+     * Edit a team's details
+     */
+    public function editTeam()
+    {
+        $I = $this;
+        $teamAttr = parse_ini_file('teamAttr.ini');
+
+        $I->click("Teams");
+        $I->click("Edit");
+        $I->fillField("team_name",$teamAttr["name"]);
+        $I->fillField("password",$teamAttr["password"]);
+        $I->fillField("username",$teamAttr["username"]);
+        $I->fillField("organization","");
+        $I->click("Submit");
     }
 }
