@@ -17,7 +17,10 @@ class CreateProblemCest
      */
     public function checkJudgeForProblem(JudgeActor $I)
     {
-        $I->wantTo("Make sure the problem shows up properly for the judge [STUB]");
+        $I->wantTo("Make sure the problem shows up properly for the judge");
+        $I->click("Problems");
+        $problemName = parse_ini_file('tests/_support/adminAttr.ini')["problem_name"];
+        $I->see($problemName);
     }
 
     /**
@@ -25,7 +28,9 @@ class CreateProblemCest
      */
     public function checkTeamForProblem(TeamActor $I)
     {
-        $I->wantTo("Make sure the problem shows up properly for the team [STUB]");
-
+        $I->wantTo("Make sure the problem shows up properly for the team");
+        $I->click("Problems");
+        $problemName = parse_ini_file('tests/_support/adminAttr.ini')["problem_name"];
+        $I->see($problemName);
     }
 }
