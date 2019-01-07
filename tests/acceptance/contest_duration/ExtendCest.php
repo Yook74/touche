@@ -59,6 +59,6 @@ class ExtendCest
     {
         $I->wantTo("Reset the contest timer");
         $I->resetContestTime();
-        $I->see("Contest Sucessfully Edited");
+        $I->see("Contest Edited Successfully");
     }
 }

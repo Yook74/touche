@@ -6,7 +6,7 @@ class ContestEndCest
     {
         $I->wantTo("Make sure the contest ends when it should");
         $I->editContestLength(0,0,1);
-        $I->see("Contest successfully edited");
+        $I->see("Contest Edited Successfully");
     }
 
     public function noContestTeam(TeamActor $I)
@@ -34,6 +34,6 @@ class ContestEndCest
     {
         $I->wantTo("Reset the contest information back to normal");
         $I->resetContestTime();
-        $I->see("Contest edited successfully");
+        $I->see("Contest Edited Successfully");
     }
 }
