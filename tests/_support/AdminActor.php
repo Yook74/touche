@@ -303,4 +303,33 @@ class AdminActor extends AcceptanceTester
         $I->fillFieldWithAttr('site_name','site_name');
         $I->click('submit');
     }
+
+/* Contest Actions */
+    /**
+     * Should end a contest by setting the contest duration to one second
+     */
+    public function endContest()
+    {
+        $I = $this;
+        $I->amOnMyPage('setup_contest.php');
+        $I->fillField('end_hour', 0);
+        $I->fillField('end_second', 1);
+        $I->click("Submit");
+        $I->wait(1);
+    }
+
+    /**
+     * Clean up ContestEndCest by resetting time
+     */
+    public function resetContestTime()
+    {
+        $I = $this;
+        $I->amOnMyPage('setup_contest.php');
+        $I->fillField('end_hour', $I->attr["default_start_hour"]);
+        $I->fillField('end_minute', $I->attr["default_start_minute"]);
+        $I->fillField('end_second', $I->attr["default_start_second"]);
+        $I->click("Submit");
+        $I->wait(1);
+    }
+
 }
