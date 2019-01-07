@@ -31,7 +31,7 @@ class TimeExceededError(Exception):
         return self.message
 
 
-class RuntimeError(Exception):
+class ExternalRuntimeError(Exception):
     def __init__(self):
         self.message = "Your program produced a runtime error"
 
