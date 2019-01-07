@@ -52,7 +52,7 @@ class DBDriver:
         Fetches and generates paths to the base, queue, judged, and data directories
         """
         curs = self.__connection.cursor()  # would use a with block but it's not supported :(
-        curs.execute("""SELECT BASE_DIRECTORY FROM CONTEST_CONFIG""")
+        curs.execute('''SELECT BASE_DIRECTORY FROM CONTEST_CONFIG''')
         base_dir = curs.fetchone()[0]
         self.dirs = {'base': base_dir,
                      'queue': os.path.join(base_dir, QUEUE_DIR_NAME),
@@ -66,7 +66,7 @@ class DBDriver:
         Gets the forbidden words for the language with the given ID
         """
         curs = self.__connection.cursor()
-        curs.execute("""SELECT WORD FROM FORBIDDEN_WORDS WHERE  LANGUAGE_ID=%s""" % lang_id)
+        curs.execute('''SELECT WORD FROM FORBIDDEN_WORDS WHERE  LANGUAGE_ID=%s''' % lang_id)
         out = [tupl[0] for tupl in curs.fetchall()]
         curs.close()
         return out
@@ -76,7 +76,7 @@ class DBDriver:
         :return: The contents of the LANGUAGE table
         """
         curs = self.__connection.cursor()
-        curs.execute("""SELECT * FROM LANGUAGE""")
+        curs.execute('''SELECT * FROM LANGUAGE''')
         out = curs.fetchall()
         curs.close()
         return out
@@ -86,10 +86,10 @@ class DBDriver:
         :return: Information on all the queued submissions submitted before the contest ends
         """
         curs = self.__connection.cursor()
-        curs.execute("""SELECT QUEUE_ID, TEAM_ID, PROBLEM_ID, TS, ATTEMPT, SOURCE_FILE 
+        curs.execute('''SELECT QUEUE_ID, TEAM_ID, PROBLEM_ID, TS, ATTEMPT, SOURCE_FILE 
                         FROM QUEUED_SUBMISSIONS, CONTEST_CONFIG 
                         WHERE TS < (START_TS + CONTEST_END_DELAY) 
-                       ORDER BY TS""")
+                       ORDER BY TS''')
 
         out = curs.fetchall()
         curs.close()
@@ -102,16 +102,30 @@ class DBDriver:
         :return: the id of the inserted row
         """
         curs = self.__connection.cursor()
-        curs.execute("""INSERT INTO JUDGED_SUBMISSIONS (TEAM_ID,PROBLEM_ID,TS,ATTEMPT,SOURCE_FILE) 
-                        VALUES (%d, %d, %d, %d, %s)""" % one_submission_info[1:])
+        curs.execute('''INSERT INTO JUDGED_SUBMISSIONS (TEAM_ID,PROBLEM_ID,TS,ATTEMPT,SOURCE_FILE) 
+                        VALUES (%d, %d, %d, %d, %s)''' % one_submission_info[1:])
         row_id = curs.lastrowid
 
-        curs.execute("""DELETE FROM QUEUED_SUBMISSIONS WHERE QUEUE_ID = %d""" % one_submission_info[0])
+        curs.execute('''DELETE FROM QUEUED_SUBMISSIONS WHERE QUEUE_ID = %d''' % one_submission_info[0])
         curs.close()
         return row_id
 
-    def report_judgement():
-        pass
+    def report_judgement(self, judged_id, judgement_code, in_file, error_no=None):
+        """
+        Reports that the given submission has been judged and what the results of the judgement were
+        :param judged_id: returned by report_pending
+        :param judgement_code: a code that indicates which judgement was made
+        :param in_file: TODO seems to be used for a lot of things
+        :param error_no: the error number from a runtime or compile error
+        """
+        curs = self.__connection.cursor()
+        if error_no is not None:
+            curs.execute('''INSERT INTO AUTO_RESPONSES (JUDGED_ID, IN_FILE, AUTO_RESPONSE, ERROR_NO)
+                            VALUES (%d, '%s', %d, %d)''' % (judged_id, judgement_code, in_file, error_no))
+        else:
+            curs.execute('''INSERT INTO AUTO_RESPONSES (JUDGED_ID, IN_FILE, AUTO_RESPONSE)
+                            VALUES (%d, '%s', %d)''' % (judged_id, judgement_code, in_file))
+        curs.close()
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.__del__()
