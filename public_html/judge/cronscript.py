@@ -1,35 +1,13 @@
 import fcntl
 import os
 
-from mysql.connector.connection import MySQLConnection
+from py_lib.c_submission import CSubmission
+from py_lib.cpp_submission import CppSubmission
+from py_lib.java_submission import JavaSubmission
+from py_lib.python_submission import PythonSubmission
+from py_lib.db_driver import DBDriver
+from py_lib.exceptions import UndefinedFileTypeError
 
-
-class Submission:
-    max_cpu_time = None
-    chroot_dir = None
-    replace_headers = None
-    check_bad_words = None
-
-
-class JavaSubmission(Submission):
-    pass
-
-
-class PythonSubmission(Submission):
-    pass
-
-
-class CppSubmission(Submission):
-    pass
-
-
-class CSubmission(Submission):
-    pass
-
-
-QUEUE_DIR_NAME = 'queue'
-JUDGED_DIR_NAME = 'judged'
-DATA_DIR_NAME = 'data'
 
 EXTENSION_CLASS = {  # TODO .py2 extension? .C extension?
     '.c': CSubmission,
@@ -65,111 +43,76 @@ def release_lock(file_handle):
     fcntl.lockf(file_handle, fcntl.LOCK_UN)
 
 
-def read_db_info():
-    """
-    Reads lib/database.inc and extracts the database connection information
-    This assumes the strings in that file are double-quoted
-    but won't be bothered if there are special characters in the password or weird whitespace things.
-    :return: a dictionary containing the connection information
-    """
-    config_dict = {"db_host": None,
-                   "db_user": None,
-                   "db_pass": None,
-                   "db_name": None}
-
-    with open('lib/database.inc', 'r') as config_file:
-        for line in config_file:
-            for key in config_dict:
-                if key in line:
-                    value = line.split('"')[1]
-                    config_dict[key] = value
-
-    return config_dict
-
-
-def db_connect():
-    """
-    Connects to the db using read_db_info()
-    :return: a connection to the db. Remember to close it
-    """
-    connection_info = read_db_info()
-    return MySQLConnection(user=connection_info["db_user"],
-                           password=connection_info["db_pass"],
-                           host=connection_info["db_host"],
-                           database=connection_info["db_name"])
-
-
-def get_dirs(db_conn: MySQLConnection):
-    """
-    Fetches and generates paths to the base, queue, judged, and data directories
-    :param db_conn: a connection to the database which will be used to fetch the base dir
-    :return: dict containing the four paths
-    """
-    with db_conn.cursor() as curs:
-        curs.execute("""SELECT BASE_DIRECTORY FROM CONTEST_CONFIG""")
-        base_dir = curs.fetchone()[0]
-        return {'base': base_dir,
-                'queue': os.path.join(base_dir, QUEUE_DIR_NAME),
-                'judged': os.path.join(base_dir, JUDGED_DIR_NAME),
-                'data': os.path.join(base_dir, DATA_DIR_NAME)}
-
-
-def setup_classes(db_conn: MySQLConnection, dirs):
+def setup_classes(db_driver: DBDriver):
     """
     The classes have some static attributes which need to be filled out with information in the database.
     This function grabs the database info and puts it into those static attributes
     :param db_conn: a connection to the database
     """
-    curs = db_conn.cursor()
-    curs.execute("""SELECT * FROM LANGUAGE""")
-    for tupl in curs:
+    for tupl in db_driver.get_language_info():
+        lang_id = tupl[0]
         lang_name = tupl[1]
-        NAME_CLASS[lang_name].max_cpu_time = tupl[2]  # TODO not multiply by 1.1
-        NAME_CLASS[lang_name].chroot_dir = os.path.join(dirs['base'], tupl[3])
-        NAME_CLASS[lang_name].replace_headers = bool(tupl[4])
-        NAME_CLASS[lang_name].check_bad_words = bool(tupl[5])
+        NAME_CLASS[lang_name].lang_max_cpu_time = tupl[2]  # TODO not multiply by 1.1
+        NAME_CLASS[lang_name].lang_chroot_dir = os.path.join(db_driver.dirs['base'], tupl[3])
+        NAME_CLASS[lang_name].lang_replace_headers = bool(tupl[4])
+        NAME_CLASS[lang_name].lang_check_bad_words = bool(tupl[5])
+        NAME_CLASS[lang_name].lang_forbidden_words = db_driver.get_forbidden(lang_id)
+        
 
-    curs.close()
-
-
-def fetch_submissions(db_conn: MySQLConnection, dirs):
+def construct_submission(one_submission_info, dirs):
     """
-    Constructs a Submission object for each queued submission
-    :param db_conn: a connection to the database
-    :return: a list of Submission objects
+    Determines the correct Submission class to use and constructs one
+    :raises UndefinedFileTypeError
     """
-    out_list = []
+    file_name = one_submission_info[5]
+    extension = os.path.splitext(file_name)[1]
+    extension = extension.lower()
 
-    curs = db_conn.cursor()
-    curs.execute("""SELECT QUEUE_ID, TEAM_ID, PROBLEM_ID, TS, ATTEMPT, SOURCE_FILE 
-                    FROM QUEUED_SUBMISSIONS, CONTEST_CONFIG 
-                    WHERE TS < (START_TS + CONTEST_END_DELAY) 
-                    ORDER BY TS""")
+    if extension in EXTENSION_CLASS:
+        return EXTENSION_CLASS[extension](dirs, one_submission_info)  # Constructs a Submission object
+    else:
+        raise UndefinedFileTypeError(
+            "%s is not a recognised file extension. Make sure you're submitting your source code" % extension)
 
-    for tupl in curs:
-        extension = os.path.splitext(tupl[5])[1]
-        extension = extension.lower()
 
-        if extension in EXTENSION_CLASS:
-            submission = EXTENSION_CLASS[extension](dirs, tupl)  # Constructs a Submission object
-            out_list.append(submission)
-        else:
-            pass  # TODO undefined file type
+def process_submission(one_submission_info, dirs):
+    """
+    Performs all the steps necessary to determine if a submission is correct.
+    :param one_submission_info: A row from the QUEUED_SUBMISSIONS table
+    :param dirs: the directory dictionary in DBDriver
+    :raises UndefinedFileTypeError
+    """
+    submission = construct_submission(one_submission_info, dirs)
+    submission.move_to_judged()
+    submission.replace_headers()
+    submission.check_bad_words()
+    submission.compile()
+    submission.move_to_jail()
+    submission.execute()
+    submission.move_from_jail()
+    submission.judge_output()
+    # TODO report success
 
-    curs.close()
-    return out_list
+
+def judge_submissions(submission_info, dirs):
+    for row in submission_info:
+        try:
+            process_submission(row, dirs)
+        except UndefinedFileTypeError:
+            pass
 
 
 def main():
-    db_conn = db_connect()
-    dirs = get_dirs(db_conn)
-    lock_file = open(os.path.join(dirs['base'], "lockfile.lock"), 'w')
+    with DBDriver() as db:
+        lock_file = open(os.path.join(db.dirs['base'], "lockfile.lock"), 'w')
 
-    acquire_lock(lock_file)
-    setup_classes(db_conn, dirs)
+        acquire_lock(lock_file)
+        setup_classes(db)
 
-    for submission in fetch_submissions(db_conn, dirs):
-        pass
+        judge_submissions(db.get_submission_info(), db.dirs)
 
     release_lock(lock_file)
-    db_conn.close()
+
+
+if __name__ == '__main__':
+    main()
