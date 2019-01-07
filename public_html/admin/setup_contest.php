@@ -119,12 +119,12 @@ if ($_POST)
 		$i++;
 		$failed=true;
 	}
-	if ( !$freeze_hour ) {
+	if ( $freeze_hour == "") {
 		$error[$i] = "You forgot to give the contest a freeze hour.<br>";
 		$i++;
 		$failed=true;
 	}
-	if ( !$end_hour ) {
+	if ( $end_hour == "" ) {
 		$error[$i] = "You forgot to give the contest an end hour.<br>";
 		$i++;
 		$failed=true;
