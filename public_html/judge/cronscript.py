@@ -6,10 +6,10 @@ from py_lib.cpp_submission import CppSubmission
 from py_lib.java_submission import JavaSubmission
 from py_lib.python_submission import PythonSubmission
 from py_lib.db_driver import DBDriver
-from py_lib.exceptions import UndefinedFileTypeError
+from py_lib.exceptions import *
 
 
-EXTENSION_CLASS = {  # TODO .py2 extension? .C extension?
+EXTENSION_CLASS = {  # TODO .py2 extension
     '.c': CSubmission,
     '.cpp': CppSubmission,
     '.cc': CppSubmission,
@@ -47,7 +47,6 @@ def setup_classes(db_driver: DBDriver):
     """
     The classes have some static attributes which need to be filled out with information in the database.
     This function grabs the database info and puts it into those static attributes
-    :param db_conn: a connection to the database
     """
     for tupl in db_driver.get_language_info():
         lang_id = tupl[0]
@@ -69,20 +68,17 @@ def construct_submission(one_submission_info, dirs):
     extension = extension.lower()
 
     if extension in EXTENSION_CLASS:
-        return EXTENSION_CLASS[extension](dirs, one_submission_info)  # Constructs a Submission object
+        # Constructs a Submission object
+        return EXTENSION_CLASS[extension](dirs, one_submission_info[2], one_submission_info[4])
     else:
-        raise UndefinedFileTypeError(
-            "%s is not a recognised file extension. Make sure you're submitting your source code" % extension)
+        raise UndefinedFileTypeError(extension)
 
 
-def process_submission(one_submission_info, dirs):
+def process_submission(submission):
     """
     Performs all the steps necessary to determine if a submission is correct.
-    :param one_submission_info: A row from the QUEUED_SUBMISSIONS table
-    :param dirs: the directory dictionary in DBDriver
     :raises UndefinedFileTypeError
     """
-    submission = construct_submission(one_submission_info, dirs)
     submission.move_to_judged()
     submission.replace_headers()
     submission.check_bad_words()
@@ -91,15 +87,39 @@ def process_submission(one_submission_info, dirs):
     submission.execute()
     submission.move_from_jail()
     submission.judge_output()
-    # TODO report success
 
 
-def judge_submissions(submission_info, dirs):
+def judge_submissions(submission_info, db_driver: DBDriver):
     for row in submission_info:
+        sub_id = db_driver.report_pending(row)
+
         try:
-            process_submission(row, dirs)
-        except UndefinedFileTypeError:
-            pass
+            submission = construct_submission(row, db_driver.dirs)
+            process_submission(submission)
+
+        except UndefinedFileTypeError as err:
+            db_driver.report_judgement(sub_id, 1, err.message)
+
+        except ForbiddenWordError as err:
+            db_driver.report_judgement(sub_id, 2, err.message)
+
+        except CompileError as err:
+            db_driver.report_judgement(sub_id, 3, err.message)
+
+        except TimeExceededError as err:
+            db_driver.report_judgement(sub_id, 4, err.message)
+
+        except ExternalRuntimeError as err:
+            db_driver.report_judgement(sub_id, 5, err.message)
+
+        except IncorrectOutputError as err:
+            db_driver.report_judgement(sub_id, 6, err.message)
+
+        except FormatError as err:
+            db_driver.report_judgement(sub_id, 7, err.message)
+        # TODO handle other errors?
+        else:  # Accepted
+            db_driver.report_judgement(sub_id, 9, "Accepted")
 
 
 def main():
