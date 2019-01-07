@@ -12,40 +12,34 @@
         include_once("../../lib/auth.inc");
 
 if ($_POST) {
-        $ext_hour = $_POST['ext_hour'];
-        $ext_minute = $_POST['ext_minute'];
-        $ext_second = $_POST['ext_second'];
+    $ext_hour = $_POST['ext_hour'];
+    $ext_minute = $_POST['ext_minute'];
+    $ext_second = $_POST['ext_second'];
+    $extension =  $ext_hour*3600 + $ext_minute*60 + $ext_second;
 
-
-        $sql = mysqli_query($link, "SELECT * FROM CONTEST_CONFIG");
-	$row = mysqli_fetch_assoc($sql);	
+    $sql = mysqli_query($link, "SELECT * FROM CONTEST_CONFIG");
+    $row = mysqli_fetch_assoc($sql);
 	$contest_np = $row['CONTEST_NAME'];
-	$freeze_hour = (int)($row['FREEZE_DELAY']/3600);
-        $freeze_minute = ((int)($row['FREEZE_DELAY']/60))%60;
-	$freeze_second = $row['FREEZE_DELAY'] - ($freeze_hour*3600 + $freeze_minute*60);
-	$end_hour = (int)($row['CONTEST_END_DELAY']/3600);
-        $end_minute = ((int)($row['CONTEST_END_DELAY']/60))%60;
-        $end_second = $row['CONTEST_END_DELAY'] - ($freeze_hour*3600 + $freeze_minute*60);
-	
+	$freeze_delay = $row['FREEZE_DELAY'];
+	$end_delay = $row['CONTEST_END_DELAY'];
 
-        $freeze_delay = ($freeze_hour + $ext_hour)*3600 + ($freeze_minute + $ext_minute)*60 + ($freeze_second + $ext_second);
-        $contest_delay =($end_hour + $ext_hour)*3600 + ($end_minute + $ext_minute)*60 + ($end_second + $ext_second);
+    $freeze_delay += $extension;
+	$end_delay += $extension;
 
-if(isSet($_POST['B1'])) {
-	$exist = $ext_hour + $ext_minute + $ext_second;
-	if($exist > 0) {
-		$sql = "UPDATE CONTEST_CONFIG ";
-		$sql .= "SET FREEZE_DELAY = '$freeze_delay',";
-		$sql .= "    CONTEST_END_DELAY = '$contest_delay' ";
-		$sql .= "WHERE CONTEST_NAME = '$contest_name'";
-		$good = mysqli_query($link, $sql);
+	if(isSet($_POST['B1'])) {
+	    if($extension) {
+	        $sql = "UPDATE CONTEST_CONFIG ";
+		    $sql .= "SET FREEZE_DELAY = '$freeze_delay',";
+		    $sql .= "    CONTEST_END_DELAY = '$end_delay' ";
+		    $sql .= "WHERE CONTEST_NAME = '$contest_name'";
+		    $good = mysqli_query($link, $sql);
 		if(!$good) {
-			echo "There was an error and the contest was not extended!!!";
+			echo "Error: ". mysqli_error($link);
 		}
 		else {
 			echo "Contest Extended Successfully.";
 		}
-    	}
+    }
 }
 elseif(isSet($_POST['B2'])) {
 #$delete = mysqli_query($link, "UPDATE CONTEST_CONFIG SET FREEZE_DELAY = '0', CONTEST_END_DELAY = '0', START_TS = '0', HAS_STARTED = '0' WHERE CONTEST_NAME = '$contest_name'");
