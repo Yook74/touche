@@ -306,14 +306,15 @@ class AdminActor extends AcceptanceTester
 
 /* Contest Actions */
     /**
-     * Should end a contest by setting the contest duration to one second
+     * Edit the length of a contest
      */
-    public function endContest()
+    public function editContestLength($hours, $minutes, $seconds)
     {
         $I = $this;
         $I->amOnMyPage('setup_contest.php');
-        $I->fillField('end_hour', 0);
-        $I->fillField('end_second', 1);
+        $I->fillField('end_hour', $hours);
+        $I->fillField('end_minute', $minutes);
+        $I->fillField('end_second', $seconds);
         $I->click("Submit");
         $I->wait(1);
     }
@@ -330,6 +331,19 @@ class AdminActor extends AcceptanceTester
         $I->fillField('end_second', $I->attr["default_start_second"]);
         $I->click("Submit");
         $I->wait(1);
+    }
+
+    /**
+     * Extend the contest
+     */
+    public function extendContest($hours,$minutes,$seconds)
+    {
+        $I = $this;
+        $I->amOnMyPage("misc.php");
+        $I->fillField("ext_hour", $hours);
+        $I->fillField("ext_minute", $minutes);
+        $I->fillField("ext_second", $seconds);
+        $I->click("Extend Contest");
     }
 
 }

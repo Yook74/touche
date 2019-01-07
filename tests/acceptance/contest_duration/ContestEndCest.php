@@ -5,7 +5,7 @@ class ContestEndCest
     public function endContest(AdminActor $I)
     {
         $I->wantTo("Make sure the contest ends when it should");
-        $I->endContest();
+        $I->editContestLength(0,0,1);
         $I->see("Contest successfully edited");
     }
 

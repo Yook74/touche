@@ -131,4 +131,14 @@ class JudgeActor extends AcceptanceTester
         }
         $I->wait($expected_time);
     }
+
+    public function getEndHour()
+    {
+        $I = $this;
+        $pageSource = $I->grabPageSource();
+        $contestStringPos = strpos($pageSource, "Time Till Contest End");
+        $contestString = substr($pageSource, $contestStringPos);
+        $judgeEndHour = substr($contestString, 23, 2);
+        return $judgeEndHour;
+    }
 }
