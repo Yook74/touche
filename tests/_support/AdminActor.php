@@ -68,7 +68,6 @@ class AdminActor extends AcceptanceTester
         $I->amOnMyPage("setup_teams.php");
         $I->fillField('team_name', $name);
         $I->fillField('username', $username);
-        $I->fillField('organization', $organization);
         $I->fillField('password', $password);
         $I->click('submit');
     }
