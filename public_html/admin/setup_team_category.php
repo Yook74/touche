@@ -46,37 +46,46 @@ include_once("lib/header.inc");
     echo "<tr bgcolor=$hd_bg_color2>\n";
     echo "<td align=center><font color=$hd_txt_color2><b>Team Name</b></font></td>\n";
     for($i=1; $i<=$num_cat; $i++) { 
-	echo "<td align=center><font color=$hd_txt_color2><b>".$cat_row["CATEGORY_NAME"]."</b></font></td>";
-	$cat_row = mysqli_fetch_assoc($category);
-    }
+        echo "<td align=center><font color=$hd_txt_color2><b>".$cat_row["CATEGORY_NAME"]."</b></font></td>";
+        $cat_row = mysqli_fetch_assoc($category);
+        }
     echo "</tr>\n";
 
     $sql = "SELECT * FROM TEAMS";
     $team = mysqli_query($link, $sql);
     $num_teams = mysqli_num_rows($team);
     $team_row = mysqli_fetch_assoc($team);
-    
-    for($i=0; $i<$num_teams; $i++) {
-	if($i%2 == 0) {
-	    echo "<tr bgcolor=\"$data_bg_color1\">\n";
-	} else {
-	    echo "<tr bgcolor=\"$data_bg_color2\">\n";
-	}
-	echo "<td>".$team_row["TEAM_NAME"]."</td>";
 
-	for($x=1; $x<=$num_cat; $x++) {
-	    $sql = "SELECT * FROM CATEGORY_TEAM WHERE TEAM_ID = ".$team_row["TEAM_ID"]." AND CATEGORY_ID=$x";
-	    $query = mysqli_query($link, $sql);
-	    $check = mysqli_num_rows($query);
-	    
-	    echo "<td><input type='checkbox' ";
-	    if($check==1)
-	    	echo"checked=checked ";
-	    echo "name='".$team_row["TEAM_ID"]."|$x'/></td>";
-	}
-	
-	$team_row = mysqli_fetch_assoc($team);
-	echo "</tr>";
+    $sql = "SELECT * FROM CATEGORIES";
+    $category = mysqli_query($link, $sql);
+    for($i=0; $i<$num_teams; $i++) {
+        if($i%2 == 0) {
+            echo "<tr bgcolor=\"$data_bg_color1\">\n";
+        } else {
+            echo "<tr bgcolor=\"$data_bg_color2\">\n";
+        }
+        echo "<td>".$team_row["TEAM_NAME"]."</td>";
+
+        for($x=1; $x<=$num_cat; $x++) {
+            //Grab the category id that correlates to the right category - garph 2019
+            $cat_row = mysqli_fetch_assoc($category);
+            $category_id_sql = "SELECT CATEGORY_ID FROM CATEGORIES WHERE CATEGORY_NAME = '" . $cat_row["CATEGORY_NAME"] . "'";
+            $category_id_query = mysqli_query($link, $category_id_sql);
+            $category_id_array = mysqli_fetch_assoc($category_id_query);
+            $category_id = $category_id_array["CATEGORY_ID"];
+
+            $sql = "SELECT * FROM CATEGORY_TEAM WHERE TEAM_ID = ".$team_row["TEAM_ID"]." AND CATEGORY_ID=$category_id";
+            $query = mysqli_query($link, $sql);
+            $check = mysqli_num_rows($query);
+
+            echo "<td><input type='checkbox' ";
+            if($check==1)
+                echo"checked=checked ";
+            echo "name='".$team_row["TEAM_ID"]."|$category_id'/></td>";
+        }
+
+        $team_row = mysqli_fetch_assoc($team);
+        echo "</tr>";
     }
     echo "</table>";
     echo "<input type='submit' value='Make Changes' name='submit'/>";
