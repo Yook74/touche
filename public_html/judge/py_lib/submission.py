@@ -1,5 +1,6 @@
 from subprocess import run
 from os import path
+from configparser import ConfigParser
 
 from .exceptions import *
 
@@ -10,13 +11,30 @@ class Submission:
     lang_replace_headers = None
     lang_check_bad_words = None
     lang_forbidden_words = None
+    lang_headers = None
 
-    def __int__(self, dirs, problem_id, source_name):
+    def __int__(self, dirs, problem_id, source_name, config_path=None):
         self.dirs = dirs
         self.problem_id = problem_id
+
         self.source_path = path.join(dirs['queue'], source_name)
-        self.executable_path = None
         self.base_name, self.source_extension = path.splitext(source_name)
+
+        self.executable_path = None
+        self.error_path = None
+
+        self.config = None
+        if config_path is not None:
+            self.parse_config(config_path)
+
+    def parse_config(self, config_path):
+        self.config = ConfigParser()
+        successful_files = self.config.read(config_path)
+
+        if len(successful_files) != 1:
+            raise IOError("Something went wrong when opening file %s" % path.abspath(config_path))
+
+        self.config = self.config['config']  # these files only have one section
 
     def move_to_judged(self):
         new_source_path = path.join(self.dirs['judged'], self.base_name + self.source_extension)
