@@ -304,7 +304,7 @@ class AdminActor extends AcceptanceTester
         $I->click('submit');
     }
 
-/* Contest Actions */
+/* Duration Actions */
     /**
      * Edit the length of a contest
      */
@@ -316,7 +316,6 @@ class AdminActor extends AcceptanceTester
         $I->fillField('end_minute', $minutes);
         $I->fillField('end_second', $seconds);
         $I->click("Submit");
-        $I->wait(1);
     }
 
     /**
@@ -330,7 +329,6 @@ class AdminActor extends AcceptanceTester
         $I->fillField('end_minute', $I->attr["default_start_minute"]);
         $I->fillField('end_second', $I->attr["default_start_second"]);
         $I->click("Submit");
-        $I->wait(1);
     }
 
     /**
@@ -344,6 +342,32 @@ class AdminActor extends AcceptanceTester
         $I->fillField("ext_minute", $minutes);
         $I->fillField("ext_second", $seconds);
         $I->click("Extend Contest");
+    }
+
+    /**
+     * Set the time until the freeze
+     */
+    public function editFreezeTime($hours, $minutes, $seconds)
+    {
+        $I = $this;
+        $I->amOnMyPage('setup_contest.php');
+        $I->fillField('freeze_hour', $hours);
+        $I->fillField('freeze_minute', $minutes);
+        $I->fillField('freeze_second', $seconds);
+        $I->click("Submit");
+    }
+
+    /**
+     * Reset the freeze time
+     */
+    public function resetFreezeTime()
+    {
+        $I = $this;
+        $I->amOnMyPage('setup_contest.php');
+        $I->fillField('freeze_hour', $I->attr["default_freeze_hour"]);
+        $I->fillField('freeze_minute', $I->attr["default_freeze_minute"]);
+        $I->fillField('freeze_second', $I->attr["default_freeze_minute"]);
+        $I->click("Submit");
     }
 
 }

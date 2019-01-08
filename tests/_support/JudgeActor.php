@@ -116,6 +116,17 @@ class JudgeActor extends AcceptanceTester
     }
 
     /**
+     * Accepts submission
+     */
+    public function acceptSubmission(){
+        $I = $this;
+        $I->amOnMyPage("judge.php");
+        $I->click("judge submission");
+        $I->selectOption("result", "Accepted");
+        $I->click("Submit Results");
+    }
+
+    /**
      * Waits until any submission is ready for judging and then waits a little longer for the auto judgement to be made
      * @param int $expected_time how long the auto judging should take
      */
