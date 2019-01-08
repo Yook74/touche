@@ -102,7 +102,7 @@ else if($_POST)
 			$result = mysqli_query($link, $sql);
 			if($result)
 			{
-				$error_msg = "Successfull: New category created";
+				$error_msg = "Successful: New category created";
 			}
 			else
 			{
