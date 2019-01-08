@@ -54,4 +54,16 @@ class TeamActor extends AcceptanceTester
         $I->attachFile("source_file", $path);
         $I->click("Submit Solution");
     }
+
+    /**
+     * View the category page
+     */
+    public function viewCategory($catName)
+    {
+        $I = $this;
+        $I->amOnMyPage("standings.php");
+        $I->click($catName);
+    }
 }
+
+

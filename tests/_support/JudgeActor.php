@@ -152,4 +152,16 @@ class JudgeActor extends AcceptanceTester
         $judgeEndHour = substr($contestString, 23, 2);
         return $judgeEndHour;
     }
+
+/* Category Actions */
+
+    /**
+     * View the category page
+     */
+    public function viewCategory($catName)
+    {
+        $I = $this;
+        $I->amOnMyPage("standings.php");
+        $I->click($catName);
+    }
 }

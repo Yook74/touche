@@ -370,4 +370,85 @@ class AdminActor extends AcceptanceTester
         $I->click("Submit");
     }
 
+/* Category Actions */
+
+    /**
+     * Creates a new category
+     */
+    public function createCategory($catName)
+    {
+        $I = $this;
+        $I->amOnMyPage("setup_categories.php");
+        $I->fillField('category_name', $catName);
+        $I->click("Submit");
+    }
+
+    /**
+     *  Edits the first category
+     */
+    public function editCategory($catName)
+    {
+        $I = $this;
+        $I->amOnMyPage("setup_categories.php");
+        $I->click("Edit");
+        $I->fillField('category_name', $catName);
+        $I->click("Submit");
+    }
+
+    /**
+     * Deletes the first category
+     */
+    public function deleteCategory()
+    {
+        $I = $this;
+        $I->amOnMyPage("setup_categories.php");
+        $I->click("Delete");
+    }
+
+    /**
+     * Start to edit a problem and then navigate away
+     */
+    public function categoryEditCancel()
+    {
+        $I = $this;
+        $I->amOnMyPage("setup_categories.php");
+        $I->click("Edit");
+        $I->fillField("category_name", "Its nice to see you again.");
+        $I->click("Problems");
+    }
+
+    private function getCheckBoxName($catName)
+    {
+        $I = $this;
+        $category_id_array = $I->grabFromDatabase('CATEGORIES', 'CATEGORY_ID',
+            array('CATEGORY_NAME' => $catName));
+        $team_id_array = $I->grabFromDatabase('TEAMS','TEAM_ID',array());
+        return "$team_id_array[0]|$category_id_array[0]";
+    }
+    /**
+     * Check the first team's first category box
+     */
+    public function checkTeamCategoryBox($catName)
+    {
+        $I = $this;
+        $I->amOnMyPage("setup_team_category.php");
+        $checkBox = $I->getCheckBoxName($catName);
+        $I->checkOption($checkBox);
+        $I->click("Make Changes");
+        return $checkBox;
+    }
+
+    /**
+     * Unheck the first team's first category box
+     */
+    public function uncheckTeamCategoryBox($catName)
+    {
+        $I = $this;
+        $I->amOnMyPage("setup_team_category.php");
+        $checkBox = $I->getCheckBoxName($catName);
+        $I->uncheckOption($checkBox);
+        $I->click("Make Changes");
+        return $checkBox;
+    }
+
 }
