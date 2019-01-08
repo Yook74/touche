@@ -4,3 +4,6 @@ lockFile.lock
 .vscode
 lib/auth.inc
 .idea
+node_modules
+vendor
+*_generated*

@@ -95,11 +95,11 @@ else if($_POST)
 		}
 		if(strlen($_POST['problem_name']) == 0)
 		{
-			$error_msg .= "You forget to set the problem name<br>\n";
+			$error_msg .= "You forgot to set the problem name<br>\n";
 		}
 		else if(strlen($_POST['problem_loc']) == 0)
 		{
-			$error_msg .= "You forget to set the problem location<br>\n";
+			$error_msg .= "You forgot to set the problem location<br>\n";
 		}
 		//---------------------------------------------------------------------------
 		else if(preg_match("/ /", $_POST['problem_loc']))

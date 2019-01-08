@@ -69,7 +69,7 @@ $contest_freeze_ts, $site_start_offset, $contest_end_ts, $num_queued, $num_clari
 				<td bgcolor="#dcdcdc" align="left"><b>
 				<a href="start.php">Start Contest</a> &nbsp;
 				<a href="judge.php">Judge Submissions</a> &nbsp;
-				<a href="review.php">Review Judgements</a> &nbsp;
+				<a href="review.php">Review Judgments</a> &nbsp;
 				<a href="problems.php">Problems</a> &nbsp;
 				<a href="clarifications.php">Clarifications</a> &nbsp;
 				<a href="standings.php">Standings</a> &nbsp;

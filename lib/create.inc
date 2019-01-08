@@ -221,8 +221,8 @@
     }
 
     /**
-    * Edits the chroot_wrapper.c file to have a correct constant value
-    * TODO this is a truly horrendus way to parameterize something
+    * Edits the chroot_wrapper.c file to have correct constant values
+    * TODO this is a truly horrendous way to parametrize something
     * @param string $private_contest_dir the directory that contains the contest's public files
     * @param string $c_name_escaped the name of the contest with escaped spaces
     * @param string $linux_user name of the hosting linux user
@@ -230,8 +230,13 @@
     function fill_in_chroot_wrapper($private_contest_dir, $c_name_escaped, $linux_user){
         $path = "$private_contest_dir/chroot_wrapper.c";
 
-        replace_in_file($path, "/develop/", $c_name_escaped);
-        replace_in_file($path, "/contest/", $linux_user);
+        replace_in_file($path, "/#CONTEST-NAME/", $c_name_escaped);
+        replace_in_file($path, "/#USER-NAME/", $linux_user);
+
+        $my_gid = getmygid();
+        $my_uid = getmyuid();
+        replace_in_file($path, "/JUDGE_UID = 5001/", "JUDGE_UID = $my_uid");
+        replace_in_file($path, "/JUDGE_GID = 100/", "JUDGE_GID = $my_gid");
     }
 
     /**
