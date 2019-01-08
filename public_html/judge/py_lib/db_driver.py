@@ -66,7 +66,14 @@ class DBDriver:
         Gets the forbidden words for the language with the given ID
         """
         curs = self.__connection.cursor()
-        curs.execute('''SELECT WORD FROM FORBIDDEN_WORDS WHERE  LANGUAGE_ID=%s''' % lang_id)
+        curs.execute('''SELECT WORD FROM FORBIDDEN_WORDS WHERE LANGUAGE_ID=%s''' % lang_id)
+        out = [tupl[0] for tupl in curs.fetchall()]
+        curs.close()
+        return out
+
+    def get_headers(self, lang_id):
+        curs = self.__connection.cursor()
+        curs.execute('''SELECT HEADER FROM HEADERS WHERE LANGUAGE_ID=%s''' % lang_id)
         out = [tupl[0] for tupl in curs.fetchall()]
         curs.close()
         return out
