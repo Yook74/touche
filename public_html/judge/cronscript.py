@@ -56,7 +56,8 @@ def setup_classes(db_driver: DBDriver):
         NAME_CLASS[lang_name].lang_replace_headers = bool(tupl[4])
         NAME_CLASS[lang_name].lang_check_bad_words = bool(tupl[5])
         NAME_CLASS[lang_name].lang_forbidden_words = db_driver.get_forbidden(lang_id)
-        
+        NAME_CLASS[lang_name].lang_headers = db_driver.get_headers(lang_id)
+
 
 def construct_submission(one_submission_info, dirs):
     """
@@ -69,7 +70,7 @@ def construct_submission(one_submission_info, dirs):
 
     if extension in EXTENSION_CLASS:
         # Constructs a Submission object
-        return EXTENSION_CLASS[extension](dirs, one_submission_info[2], one_submission_info[4])
+        return EXTENSION_CLASS[extension](dirs, one_submission_info[3], one_submission_info[5])
     else:
         raise UndefinedFileTypeError(extension)
 
@@ -89,8 +90,8 @@ def process_submission(submission):
     submission.judge_output()
 
 
-def judge_submissions(submission_info, db_driver: DBDriver):
-    for row in submission_info:
+def judge_submissions(db_driver: DBDriver):
+    for row in db_driver.get_submission_info():
         sub_id = db_driver.report_pending(row)
 
         try:
@@ -129,7 +130,7 @@ def main():
         acquire_lock(lock_file)
         setup_classes(db)
 
-        judge_submissions(db.get_submission_info(), db.dirs)
+        judge_submissions(db)
 
     release_lock(lock_file)
 

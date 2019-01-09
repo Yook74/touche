@@ -15,6 +15,9 @@ class DBDriver:
         self.connect()
         self.get_dirs()
 
+    def __enter__(self):
+        return self
+
     def read_config(self):
         """
         Reads lib/database.inc and extracts the database connection information
@@ -66,14 +69,14 @@ class DBDriver:
         Gets the forbidden words for the language with the given ID
         """
         curs = self.__connection.cursor()
-        curs.execute('''SELECT WORD FROM FORBIDDEN_WORDS WHERE LANGUAGE_ID=%s''' % lang_id)
+        curs.execute('''SELECT WORD FROM FORBIDDEN_WORDS WHERE LANGUAGE_ID=%d''' % lang_id)
         out = [tupl[0] for tupl in curs.fetchall()]
         curs.close()
         return out
 
     def get_headers(self, lang_id):
         curs = self.__connection.cursor()
-        curs.execute('''SELECT HEADER FROM HEADERS WHERE LANGUAGE_ID=%s''' % lang_id)
+        curs.execute('''SELECT HEADER FROM HEADERS WHERE LANGUAGE_ID=%d''' % lang_id)
         out = [tupl[0] for tupl in curs.fetchall()]
         curs.close()
         return out
@@ -110,7 +113,7 @@ class DBDriver:
         """
         curs = self.__connection.cursor()
         curs.execute('''INSERT INTO JUDGED_SUBMISSIONS (TEAM_ID,PROBLEM_ID,TS,ATTEMPT,SOURCE_FILE) 
-                        VALUES (%d, %d, %d, %d, %s)''' % one_submission_info[1:])
+                        VALUES (%d, %d, %d, %d, '%s')''' % one_submission_info[1:])
         row_id = curs.lastrowid
 
         curs.execute('''DELETE FROM QUEUED_SUBMISSIONS WHERE QUEUE_ID = %d''' % one_submission_info[0])
@@ -128,10 +131,10 @@ class DBDriver:
         curs = self.__connection.cursor()
         if error_no is not None:
             curs.execute('''INSERT INTO AUTO_RESPONSES (JUDGED_ID, IN_FILE, AUTO_RESPONSE, ERROR_NO)
-                            VALUES (%d, '%s', %d, %d)''' % (judged_id, judgement_code, in_file, error_no))
+                            VALUES (%d, '%s', %d, %d)''' % (judged_id, in_file, judgement_code, error_no))
         else:
             curs.execute('''INSERT INTO AUTO_RESPONSES (JUDGED_ID, IN_FILE, AUTO_RESPONSE)
-                            VALUES (%d, '%s', %d)''' % (judged_id, judgement_code, in_file))
+                            VALUES (%d, '%s', %d)''' % (judged_id, in_file, judgement_code))
         curs.close()
 
     def __exit__(self, exc_type, exc_val, exc_tb):

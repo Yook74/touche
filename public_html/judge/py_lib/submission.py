@@ -15,7 +15,7 @@ class Submission:
     lang_forbidden_words = None
     lang_headers = None
 
-    def __int__(self, dirs, problem_id, source_name, config_path=None):
+    def __init__(self, dirs, problem_id, source_name, config_path=None):
         """
         :param dirs: DBDriver dirs dictionary
         :param problem_id: This identifies the problem and is used to name things
