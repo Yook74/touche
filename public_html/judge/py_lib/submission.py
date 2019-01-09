@@ -43,17 +43,22 @@ class Submission:
     def parse_config(self, config_path):
         """
         Parses the config file.
-        For now, only the keys and values in the [config] section of the specified file will be used.
         I recommend you use colons in the config file but the equals sign is also an acceptable key value delimiter
+        See c_config.ini for an example
+        This expands the items in the [list] section into python lists and merges both sections into a single flat dict
         :param config_path: path ending in .ini
         """
-        self.config = ConfigParser()
-        successful_files = self.config.read(config_path)
+        self.config = {}
+        parsed_config = ConfigParser()
+        successful_files = parsed_config.read(config_path)
 
         if len(successful_files) != 1:
             raise IOError("Something went wrong when opening file %s" % path.abspath(config_path))
 
-        self.config = self.config['config']  # these files only have one section
+        for key in parsed_config['list']:
+            self.config[key] = parsed_config['list'][key].split(' ')
+
+        self.config.update(dict(parsed_config['singleton']))  # Adds the singleton items into the config
 
     def get_bare_execute_cmd(self):
         """
@@ -62,13 +67,14 @@ class Submission:
         return self.executable_path
 
     def execute_one_test(self, input_path, output_path):
+        input_file = open(input_path, 'r')
+        output_file = open(output_path, 'w')
+
         try:
-            subprocess.run([self.get_bare_execute_cmd(),
-                            "<",
-                            input_path,
-                            ">",
-                            output_path,
-                            "2>&1"],
+            subprocess.run(self.get_bare_execute_cmd(),
+                           stdin=input_file,
+                           stdout=output_path,
+                           stderr=output_path,
                            timeout=self.lang_max_cpu_time,
                            check=True)  # raises CalledProcessError if it fails
         except subprocess.TimeoutExpired as err:
@@ -76,6 +82,10 @@ class Submission:
 
         except subprocess.CalledProcessError as err:
             raise ExternalRuntimeError()
+
+        finally:
+            input_file.close()
+            output_file.close()
 
     def get_io_paths(self):
         """
@@ -148,20 +158,25 @@ class Submission:
     def judge_output(self):
         reported_error = None
         for correct_out_path, compare_out_path in zip(self.correct_out_paths, self.compare_out_paths):
-            diff_path = correct_out_path + '.diff'
-            no_ws_diff_path = diff_path + 'no_ws'
+            diff_file = open(correct_out_path + '.diff', 'r+')
+            no_ws_diff_file = open(correct_out_path + '.diff.no_ws', 'r+')
 
-            subprocess.run(['diff', '-u', correct_out_path, compare_out_path, '>', diff_path])
+            subprocess.run(['diff', '-u', correct_out_path, compare_out_path],
+                           stdout=diff_file)
 
-            if file_stat(diff_path).st_size != 0:
-                subprocess.run(['diff', '-b', '-B', correct_out_path, compare_out_path, '>', no_ws_diff_path])
-                if file_stat(no_ws_diff_path).st_size != 0:
+            if diff_file.read(1) != "":
+                subprocess.run(['diff', '-b', '-B', correct_out_path, compare_out_path],
+                               stdout=no_ws_diff_file)
+                if no_ws_diff_file.read(1) != "":
                     reported_error = IncorrectOutputError()
                 else:
                     if reported_error is not None:
                         reported_error = FormatError()
             else:
                 pass  # This was correct
+
+            diff_file.close()
+            no_ws_diff_file.close()
 
         if reported_error is not None:
             raise reported_error
