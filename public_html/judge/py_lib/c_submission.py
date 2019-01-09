@@ -34,7 +34,8 @@ class CSubmission(Submission):
                                 self.executable_path,
                                 self.source_path,
                                 *self.config['linker flags']],
-                               stderr=error_file)
+                               stderr=error_file,
+                               check=True)
 
             except subprocess.CalledProcessError as err:
                 raise CompileError(err.returncode)

@@ -73,8 +73,8 @@ class Submission:
         try:
             subprocess.run(self.get_bare_execute_cmd(),
                            stdin=input_file,
-                           stdout=output_path,
-                           stderr=output_path,
+                           stdout=output_file,
+                           stderr=output_file,
                            timeout=self.lang_max_cpu_time,
                            check=True)  # raises CalledProcessError if it fails
         except subprocess.TimeoutExpired as err:
@@ -92,8 +92,11 @@ class Submission:
         Populates the list of in_paths, correct_out_paths, and compare_out_paths
         """
         glob_path = self.dirs['data'] + '/' + str(self.problem_id) + '_*'
-        self.in_paths = glob(glob_path + '.in')
-        self.correct_out_paths = glob(glob_path + '.out')
+        self.in_paths = list(glob(glob_path + '.in'))
+        self.in_paths.sort()
+
+        self.correct_out_paths = list(glob(glob_path + '.out'))
+        self.in_paths.sort()
 
         self.compare_out_paths = []
         for in_path in self.correct_out_paths:
@@ -158,25 +161,28 @@ class Submission:
     def judge_output(self):
         reported_error = None
         for correct_out_path, compare_out_path in zip(self.correct_out_paths, self.compare_out_paths):
-            diff_file = open(correct_out_path + '.diff', 'r+')
-            no_ws_diff_file = open(correct_out_path + '.diff.no_ws', 'r+')
+            diff_path = path.splitext(compare_out_path)[0] + '.diff'
+            no_ws_diff_path = diff_path + '.no_ws'
+
+            diff_file = open(diff_path, 'w')
+            no_ws_diff_file = open(no_ws_diff_path, 'w')
 
             subprocess.run(['diff', '-u', correct_out_path, compare_out_path],
                            stdout=diff_file)
+            diff_file.close()
 
-            if diff_file.read(1) != "":
+            if file_stat(diff_path).st_size != 0:
                 subprocess.run(['diff', '-b', '-B', correct_out_path, compare_out_path],
                                stdout=no_ws_diff_file)
-                if no_ws_diff_file.read(1) != "":
+                no_ws_diff_file.close()
+
+                if file_stat(no_ws_diff_path).st_size != 0:
                     reported_error = IncorrectOutputError()
                 else:
-                    if reported_error is not None:
+                    if reported_error is None:
                         reported_error = FormatError()
             else:
                 pass  # This was correct
-
-            diff_file.close()
-            no_ws_diff_file.close()
 
         if reported_error is not None:
             raise reported_error

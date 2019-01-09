@@ -70,7 +70,7 @@ def construct_submission(one_submission_info, dirs):
 
     if extension in EXTENSION_CLASS:
         # Constructs a Submission object
-        return EXTENSION_CLASS[extension](dirs, one_submission_info[3], one_submission_info[5])
+        return EXTENSION_CLASS[extension](dirs, one_submission_info[2], one_submission_info[5])
     else:
         raise UndefinedFileTypeError(extension)
 
@@ -99,28 +99,28 @@ def judge_submissions(db_driver: DBDriver):
             process_submission(submission)
 
         except UndefinedFileTypeError as err:
-            db_driver.report_judgement(sub_id, 1, err.message)
+            db_driver.report_judgement(sub_id, 1, '')
 
         except ForbiddenWordError as err:
-            db_driver.report_judgement(sub_id, 2, err.message)
+            db_driver.report_judgement(sub_id, 2, '')
 
         except CompileError as err:
-            db_driver.report_judgement(sub_id, 3, err.message)
+            db_driver.report_judgement(sub_id, 3, '')
 
         except TimeExceededError as err:
-            db_driver.report_judgement(sub_id, 4, err.message)
+            db_driver.report_judgement(sub_id, 4, '')
 
         except ExternalRuntimeError as err:
-            db_driver.report_judgement(sub_id, 5, err.message)
+            db_driver.report_judgement(sub_id, 5, '')
 
         except IncorrectOutputError as err:
-            db_driver.report_judgement(sub_id, 6, err.message)
+            db_driver.report_judgement(sub_id, 6, '')
 
         except FormatError as err:
-            db_driver.report_judgement(sub_id, 7, err.message)
+            db_driver.report_judgement(sub_id, 7, '')
         # TODO handle other errors?
         else:  # Accepted
-            db_driver.report_judgement(sub_id, 9, "Accepted")
+            db_driver.report_judgement(sub_id, 9, '')
 
 
 def main():

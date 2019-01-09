@@ -112,11 +112,12 @@ class DBDriver:
         :return: the id of the inserted row
         """
         curs = self.__connection.cursor()
-        curs.execute('''INSERT INTO JUDGED_SUBMISSIONS (TEAM_ID,PROBLEM_ID,TS,ATTEMPT,SOURCE_FILE) 
+        curs.execute('''INSERT INTO JUDGED_SUBMISSIONS (TEAM_ID, PROBLEM_ID, TS, ATTEMPT, SOURCE_FILE) 
                         VALUES (%d, %d, %d, %d, '%s')''' % one_submission_info[1:])
         row_id = curs.lastrowid
 
         curs.execute('''DELETE FROM QUEUED_SUBMISSIONS WHERE QUEUE_ID = %d''' % one_submission_info[0])
+        self.__connection.commit()
         curs.close()
         return row_id
 
@@ -135,6 +136,7 @@ class DBDriver:
         else:
             curs.execute('''INSERT INTO AUTO_RESPONSES (JUDGED_ID, IN_FILE, AUTO_RESPONSE)
                             VALUES (%d, '%s', %d)''' % (judged_id, in_file, judgement_code))
+        self.__connection.commit()
         curs.close()
 
     def __exit__(self, exc_type, exc_val, exc_tb):
