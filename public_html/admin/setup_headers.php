@@ -66,7 +66,7 @@ else if($_POST)
 			//clear out the DB
 			$sql = "delete from HEADERS where LANGUAGE_ID = '";
 			$sql .= $_SESSION['edit_language'] . "'";
-			$result = mysqli_query($sql);
+			$result = mysqli_query($link,$sql);
 			if(!$result)
 			{
 				$error_msg .= "Error: " . mysqli_error($link);
