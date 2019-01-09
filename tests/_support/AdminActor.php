@@ -451,4 +451,42 @@ class AdminActor extends AcceptanceTester
         return $checkBox;
     }
 
+/* Header Actions */
+
+    /**
+     * Add a $headerFile to $language's headers
+     */
+    public function addHeader($language, $headerFile)
+    {
+        $I = $this;
+        $I->amOnMyPage("setup_headers");
+        $I->click(['name' => $language."Edit"]);
+        $I->appendField("edit_headers", $headerFile);
+        $I->click("Submit");
+    }
+
+    /**
+     * Delete a $headerFile from $language's headers
+     */
+    public function deleteHeader($language, $headerFile)
+    {
+        $I = $this;
+        $I->amOnMyPage("setup_headers");
+        $I->click(['name' => $language."Edit"]);
+        $I->removeFromField("textarea", $headerFile);
+        $I->click("Submit");
+    }
+
+    /**
+     * Remove $text from a field specified by $field
+     */
+    public function removeFromField($field, $text)
+    {
+        $I = $this;
+        $originalText = $I->grabTextFrom($field);
+        $stringToBeDeletedPos = strpos($originalText, $text, strlen($text));
+        $replacementText = substr($originalText, 0, $stringToBeDeletedPos);
+        $I->fillField($field, $replacementText);
+    }
+
 }

@@ -129,8 +129,9 @@ class JudgeActor extends AcceptanceTester
     /**
      * Waits until any submission is ready for judging and then waits a little longer for the auto judgement to be made
      * @param int $expected_time how long the auto judging should take
+     * @param int $autoJudgeTime is the default amount of time to wait until timeout
      */
-    public function waitForAutoJudging($expected_time = 7){
+    public function waitForAutoJudging($expected_time = 7, $autoJudgeTime = 65){
         $I = $this;
         $I->amOnMyPage('judge.php');
         if($this->attr['invoke_cronscript']){
@@ -138,7 +139,7 @@ class JudgeActor extends AcceptanceTester
            $result = system("php ../public_html/$c_name/judge/cronScript.php > /dev/null");
            if($result != 0) throw new RuntimeException("Cronscript invocation failed");
         } else {
-            $I->waitForText('judge submission', 65); #wait for cron to call the cronscript
+            $I->waitForText('judge submission', $autoJudgeTime); #wait for cron to call the cronscript
         }
         $I->wait($expected_time);
     }
