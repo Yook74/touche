@@ -19,21 +19,6 @@ class FreezeCest
         $I->see("Standings - Frozen");
     }
 
-//    public function teamFreezeSubmission(TeamActor $I)
-////    {
-////        $I->wantTo("Submit a correct solution after the freeze");
-////        $I->submitSolution("example_submissions/accepted/src.c");
-////        $I->see("Judging pending");
-////    }
-////
-////    public function judgeViewFrozenSubmission(JudgeActor $I)
-////    {
-////        $I->wantTo("View a submission after the freeze as a judge");
-////        $I->waitForAutoJudging();
-////        $I->see("judge submission");
-////        $I->rejectSubmission();
-////    }
-
     public function judgeFreezeCheck(JudgeActor $I)
     {
         $I->wantTo("View the standings after the freeze as a judge");
