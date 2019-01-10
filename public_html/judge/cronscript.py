@@ -62,11 +62,12 @@ def construct_submission(one_submission_info, db_driver: DBDriver):
     return class_to_construct(lang_name=lang_name,
                               dirs=db_driver.dirs,
                               problem_id=one_submission_info[2],
-                              source_name=one_submission_info[5],
+                              source_name=file_name,
                               max_cpu_time=lang_info[2],
                               jail_dir=lang_info[3],
                               replace_headers=bool(lang_info[4]),
                               check_bad_words=bool(lang_info[5]),
+                              ignore_stderr=db_driver.get_ignore_stderr(),
                               forbidden_words=db_driver.get_forbidden(lang_info[0]),
                               headers=db_driver.get_headers(lang_info[0]))
 
@@ -74,11 +75,9 @@ def construct_submission(one_submission_info, db_driver: DBDriver):
 def process_submission(submission):
     """
     Performs all the steps necessary to determine if a submission is correct.
-    :raises UndefinedFileTypeError
     """
     submission.move_to_judged()
-    submission.replace_headers()
-    submission.check_bad_words()
+    submission.pre_compile()
     submission.compile()
     submission.move_to_jail()
     submission.execute()
@@ -118,6 +117,7 @@ def judge_submissions(db_driver: DBDriver):
         except FormatError as err:
             db_driver.report_judgement(sub_id, 7, '')
         # TODO handle other errors?
+        # TODO get numbers from .inc file?
         else:  # Accepted
             db_driver.report_judgement(sub_id, 9, '')
 

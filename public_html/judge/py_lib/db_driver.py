@@ -108,6 +108,17 @@ class DBDriver:
         curs.close()
         return out
 
+    def get_ignore_stderr(self):
+        """
+        :return boolean: Whether IGNORE_STDERR is set
+        """
+        curs = self.__connection.cursor()
+        curs.execute('''SELECT IGNORE_STDERR FROM CONTEST_CONFIG''')
+
+        out = curs.fetchone()[0]
+        curs.close()
+        return bool(out)
+
     def report_pending(self, one_submission_info):
         """
         Reports that the given submission is being judged by moving the row from QUEUED_SUBMISSIONS to JUDGED_SUBMISSIONS

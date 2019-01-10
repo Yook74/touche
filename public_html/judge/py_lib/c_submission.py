@@ -1,7 +1,7 @@
 from .submission import Submission
 from .exceptions import *
 
-import re
+import shutil
 from os import path
 import subprocess
 
@@ -12,20 +12,39 @@ class CSubmission(Submission):
     def __init__(self, **kwargs):
         super().__init__(**kwargs, config_path=CONFIG_PATH)
 
-    def replace_headers(self):
+    def strip_headers(self):
         """
-        Replaces the #include statements in the source file with those specified by config['headers']
+        Removes the headers from the source file and saves them for later
         """
-        with open(self.source_path, 'r+') as source_file:
-            file_string = source_file.read()
-            file_string = re.sub(r"#include\s*<(\w|[-_=.^%$#!*]|\s)*>", "", file_string)  # remove #includes TODO strip "s too
+        self.stripped_headers = self.replace_in_source(r'#include\s*["<](\w|[-_=.^%$#!*]|\s)*[">]', '')
+        self.stripped_headers = '\n'.join(self.stripped_headers)
 
-            for library in self.config['headers']:
-                file_string = ("#include <%s>\n" % library) + file_string
+    def get_headers(self):
+        """
+        Converts the list of headers in self.config into a string that can be put at the beginning of the source file
+        """
+        out = ''
+        for header in self.config['headers']:
+            out += '#include <%s>\n' % header
 
-            source_file.seek(0)
-            source_file.write(file_string)
-            source_file.truncate()
+        return out
+
+    def run_preprocessor(self):
+        """
+        We run the preprocessor before checking for forbidden words because it's possible to use macros to
+        obscure forbidden words. For example:
+        # define func fo##rk
+        func()
+        results in a call to fork
+        """
+        temp_path = path.join(self.dirs['judged'], 'temp.tmp')
+        temp_file = open(temp_path, 'w')
+
+        args = [self.config['compiler']] + self.config['preprocess_flags'] + [self.source_path]
+        subprocess.run(args, stdout=temp_file, check=True)
+
+        temp_file.close()
+        shutil.move(temp_path, self.source_path)
 
     def compile(self):
         """

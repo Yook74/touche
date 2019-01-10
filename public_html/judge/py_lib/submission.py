@@ -1,6 +1,7 @@
 import subprocess
+import shutil
+import re
 from os import path
-from os import stat as file_stat
 from configparser import ConfigParser
 from glob import glob
 
@@ -18,6 +19,7 @@ class Submission:
         :param jail_dir: directory of this language's jail
         :param replace_headers: True if this language should replace headers in the submitted source file
         :param check_bad_words: True if this language checks for forbidden words in the submitted source file
+        :param ignore_stderr: True if stderr should be ignored when executing the submission
         :param forbidden_words: The list of forbidden words for this language (or None)
         :param headers: The list of headers for this language (or None)
         :param config_path: a path to an .ini file that specifies configuration info for this submission (or None).
@@ -30,12 +32,13 @@ class Submission:
         self.source_path = path.join(self.dirs['queue'], source_name)
         self.base_name, self.source_extension = path.splitext(source_name)
 
-        self.config = {key: kwargs[key] for key in
-                       ['max_cpu_time', 'jail_dir', 'replace_headers', 'check_bad_words', 'forbidden_words', 'headers']}
+        self.config = {key: kwargs[key] for key in ['max_cpu_time', 'jail_dir', 'replace_headers',
+                                                    'check_bad_words', 'ignore_stderr', 'forbidden_words', 'headers']}
 
         if 'config_path' in kwargs and kwargs['config_path'] is not None:
             self.parse_config(kwargs['config_path'])
 
+        self.stripped_headers = None
         self.executable_path = None
         self.error_path = None
 
@@ -45,6 +48,34 @@ class Submission:
         self.get_io_paths()
 
 # Helpers
+
+    def replace_in_source(self, regex, repl):
+        """
+        Replaces all instances of the given regex with the repl string in the source file
+        :return Everything that was deleted from the source file
+        """
+        with open(self.source_path, 'r+') as source_file:
+            file_string = source_file.read()
+            matches = re.findall(regex, file_string)
+            file_string = re.sub(regex, repl, file_string)
+
+            source_file.seek(0)
+            source_file.write(file_string)
+            source_file.truncate()
+
+        return matches
+
+    def prefix_source(self, prefix_str):
+        """
+        Writes the given prefix string to the beginning of the source file
+        """
+        with open(self.source_path, 'r+') as source_file:
+            file_string = source_file.read()
+            file_string = prefix_str + file_string
+
+            source_file.seek(0)
+            source_file.write(file_string)
+            source_file.truncate()
 
     def parse_config(self, config_path):
         """
@@ -101,13 +132,18 @@ class Submission:
         input_file = open(input_path, 'r')
         output_file = open(output_path, 'w')
 
+        kwargs = {'args': self.get_bare_execute_cmd(),
+                  'stdin': input_file,
+                  'stdout': output_file,
+                  'timeout': self.config['max_cpu_time'],
+                  'check': True}
+
+        if not self.config['ignore_stderr']:
+            kwargs['stderr'] = output_file
+
         try:
-            subprocess.run(self.get_bare_execute_cmd(),
-                           stdin=input_file,
-                           stdout=output_file,
-                           stderr=output_file,
-                           timeout=self.config['max_cpu_time'],
-                           check=True)  # raises CalledProcessError if it fails
+            subprocess.run(**kwargs)
+
         except subprocess.TimeoutExpired as err:
             raise TimeExceededError()
 
@@ -119,7 +155,7 @@ class Submission:
             output_file.close()
 
     @staticmethod
-    def diff(correct_path, compare_path, diff_path, no_ws):
+    def diff(correct_path, compare_path, diff_path=None, no_ws=False):
         """
         Uses the linux diff tool to determine if the files located by correct_path and compare_path are the same
         :param correct_path: The path to the known correct file
@@ -127,20 +163,64 @@ class Submission:
         :param diff_path: The output of the diff will be placed here
         :param no_ws: True if the diff should ignore whitespace characters
         :return: True if compare_path and correct_path are the same and False otherwise
-
-        Why are we using the linux diff tool? Because that's the way it's always been done
         """
         if no_ws:
-            flags = ['-b', '-B']
+            flags = ['-b', '-B', '-q']
         else:
             flags = ['-u']
 
-        diff_file = open(diff_path, 'w')
         args = ['diff'] + flags + [correct_path, compare_path]
-        subprocess.run(args, stdout=diff_file)
-        diff_file.close()
+        if diff_path is None:
+            completed_process = subprocess.run(args)
+        else:
+            diff_file = open(diff_path, 'w')
+            completed_process = subprocess.run(args, stdout=diff_file)
+            diff_file.close()
 
-        return file_stat(diff_path).st_size == 0
+        if completed_process.returncode == 0:
+            return True
+        elif completed_process.returncode == 1:
+            return False
+        else:
+            raise subprocess.CalledProcessError(completed_process.returncode, args)
+
+    def strip_headers(self):
+        raise NotImplementedError()
+
+    def get_headers(self):
+        raise NotImplementedError()
+
+    def insert_headers(self):
+        """
+        Either inserts the headers in self.config or replaces the previously stripped headers
+        """
+        if self.config['replace_headers']:
+            self.prefix_source(self.get_headers())
+        else:
+            self.prefix_source(self.stripped_headers)
+
+    def run_preprocessor(self):
+        """
+        Some languages need to run the preprocessor before they can be checked for forbidden words
+        """
+        pass
+
+    def check_bad_words(self):
+        """
+        If check_bad_words is set, look through the source file for the words in forbidden_words
+        :raises ForbiddenWordError
+        """
+        if not self.config['check_bad_words']:
+            return
+
+        self.run_preprocessor()
+
+        with open(self.source_path, 'r') as handle:
+            file_string = handle.read()
+
+        for word in self.config['forbidden_words']:
+            if word in file_string:
+                raise ForbiddenWordError(word)
 
 # API methods
 
@@ -149,27 +229,13 @@ class Submission:
         Moves the submitted file into the judged directory
         """
         new_source_path = path.join(self.dirs['judged'], self.base_name + self.source_extension)
-        subprocess.run(['mv', self.source_path, new_source_path], check=True)
+        shutil.move(self.source_path, new_source_path)
         self.source_path = new_source_path
 
-    def replace_headers(self):
-        raise NotImplementedError()
-
-    def check_bad_words(self):
-        """
-        If check_bad_words is set, look through the source file for the words in forbidden_words
-        :raises ForbiddenWordError
-        TODO handle #define thingy
-        """
-        if not self.config['check_bad_words']:
-            return
-
-        with open(self.source_path, 'r') as handle:
-            file_string = handle.read()
-
-        for word in self.config['forbidden_words']:
-            if word in file_string:
-                raise ForbiddenWordError(word)
+    def pre_compile(self):
+        self.strip_headers()
+        self.check_bad_words()
+        self.insert_headers()
 
     def compile(self):
         raise NotImplementedError()
@@ -191,6 +257,10 @@ class Submission:
             except ExternalRuntimeError as thrown:
                 reported_error = thrown
 
+            except TimeExceededError as thrown:
+                if reported_error is None:
+                    reported_error = thrown
+
         if reported_error is not None:
             raise reported_error
 
@@ -207,10 +277,9 @@ class Submission:
         reported_error = None
         for correct_out_path, compare_out_path in zip(self.correct_out_paths, self.compare_out_paths):
             diff_path = path.splitext(compare_out_path)[0] + '.diff'
-            no_ws_diff_path = diff_path + '.no_ws'
 
-            if not self.diff(correct_out_path, compare_out_path, diff_path, False):
-                if not self.diff(correct_out_path, compare_out_path, no_ws_diff_path, True):
+            if not self.diff(correct_out_path, compare_out_path, diff_path):
+                if not self.diff(correct_out_path, compare_out_path, no_ws=True):
                     reported_error = IncorrectOutputError()
                 else:
                     if reported_error is None:
