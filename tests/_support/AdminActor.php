@@ -527,4 +527,17 @@ class AdminActor extends AcceptanceTester
         $I->click("Clear Contest");
     }
 
+ /* Cloning Actions */
+
+    /**
+     * Create new cloned contest with name $newContestName
+     */
+    public function cloneContest($newContestName)
+    {
+        $I = $this;
+        $I->amOnMyPage("misc.php");
+        $I->fillField("clone_name", $newContestName);
+        $I->click("Clone Contest");
+    }
+
 }

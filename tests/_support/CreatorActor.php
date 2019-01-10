@@ -74,6 +74,23 @@ class CreatorActor extends AcceptanceTester
     }
 
     /**
+     * Points all the actors to the given $contestName
+     * Make sure that if you invoke this you keep the old contest name
+     */
+    public static function switchContest($path, $contestName, $newContestName, $I)
+    {
+        //overwrite creatorAttr.ini with new name
+        $file_string = file_get_contents($path);
+        $new_string = str_replace($contestName, $newContestName, $file_string, $count);
+        if($count != 1)
+            die("Multiple occurrences of $contestName in .ini file");
+
+        $handle = fopen($path, "w") OR die("Error writing file $path");
+        fwrite($handle, $new_string);
+        fclose($handle);
+    }
+
+    /**
      * Sets the admin's credentials to the ones defined in adminAttr.ini
      */
     public function setAdminCredentials()
