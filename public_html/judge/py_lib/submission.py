@@ -8,25 +8,33 @@ from .exceptions import *
 
 
 class Submission:
-    lang_max_cpu_time = None  # Maximum time allowed for the compiled solution to run
-    lang_chroot_dir = None  # directory of this language's jail
-    lang_replace_headers = None  # True if this language should replace headers in the submitted source file
-    lang_check_bad_words = None  # True if this language checks for forbidden words in the submitted source file
-    lang_forbidden_words = None  # The list of forbidden words for this language (or None)
-    lang_headers = None  # The list of headers for this language (or None)
-
-    def __init__(self, dirs, problem_id, source_name, config_path=None):
+    def __init__(self, **kwargs):
         """
+        :param lang_name: C, CXX, JAVA, Python2, or Python3
         :param dirs: DBDriver dirs dictionary
         :param problem_id: This identifies the problem and is used to name things
         :param source_name: The name of the submitted source file
-        :param config_path: a path to an .ini file that specifies configuration info for this submission.
+        :param max_cpu_time: Maximum time allowed for the compiled solution to run
+        :param jail_dir: directory of this language's jail
+        :param replace_headers: True if this language should replace headers in the submitted source file
+        :param check_bad_words: True if this language checks for forbidden words in the submitted source file
+        :param forbidden_words: The list of forbidden words for this language (or None)
+        :param headers: The list of headers for this language (or None)
+        :param config_path: a path to an .ini file that specifies configuration info for this submission (or None).
         """
-        self.dirs = dirs
-        self.problem_id = problem_id
+        self.lang_name = kwargs['lang_name']
+        self.dirs = kwargs['dirs']
+        self.problem_id = kwargs['problem_id']
 
-        self.source_path = path.join(dirs['queue'], source_name)
+        source_name = kwargs['source_name']
+        self.source_path = path.join(self.dirs['queue'], source_name)
         self.base_name, self.source_extension = path.splitext(source_name)
+
+        self.config = {key: kwargs[key] for key in
+                       ['max_cpu_time', 'jail_dir', 'replace_headers', 'check_bad_words', 'forbidden_words', 'headers']}
+
+        if 'config_path' in kwargs and kwargs['config_path'] is not None:
+            self.parse_config(kwargs['config_path'])
 
         self.executable_path = None
         self.error_path = None
@@ -35,10 +43,6 @@ class Submission:
         self.compare_out_paths = []  # paths to the files outputted by the submitted solution given an in_file
         self.correct_out_paths = []  # paths to the correct output for this problem
         self.get_io_paths()
-
-        self.config = None
-        if config_path is not None:
-            self.parse_config(config_path)
 
 # Helpers
 
@@ -50,8 +54,6 @@ class Submission:
         This expands the items in the [list] section into python lists and merges both sections into a single flat dict.
         :param config_path: path ending in .ini
         """
-        self.config = {}
-
         parsed_config = ConfigParser()
         successful_files = parsed_config.read(config_path)
 
@@ -93,7 +95,7 @@ class Submission:
         Executes the command from get_bare_execute_cmd with piping to the given input and output files
         :param input_path: path to one of the input files for a problem
         :param output_path: path to an empty file which will be written to by the executed program
-        :raises TimeExceededError if lang_max_cpu_time is exceeded
+        :raises TimeExceededError if max_cpu_time is exceeded
         :raises ExternalRuntimeError if the executable produces a runtime error
         """
         input_file = open(input_path, 'r')
@@ -104,7 +106,7 @@ class Submission:
                            stdin=input_file,
                            stdout=output_file,
                            stderr=output_file,
-                           timeout=self.lang_max_cpu_time,
+                           timeout=self.config['max_cpu_time'],
                            check=True)  # raises CalledProcessError if it fails
         except subprocess.TimeoutExpired as err:
             raise TimeExceededError()
@@ -155,17 +157,17 @@ class Submission:
 
     def check_bad_words(self):
         """
-        If lang_check_bad_words is set, look through the source file for the words in lang_forbidden_words
+        If check_bad_words is set, look through the source file for the words in forbidden_words
         :raises ForbiddenWordError
         TODO handle #define thingy
         """
-        if not self.lang_check_bad_words:
+        if not self.config['check_bad_words']:
             return
 
         with open(self.source_path, 'r') as handle:
             file_string = handle.read()
 
-        for word in self.lang_forbidden_words:
+        for word in self.config['forbidden_words']:
             if word in file_string:
                 raise ForbiddenWordError(word)
 
@@ -207,8 +209,8 @@ class Submission:
             diff_path = path.splitext(compare_out_path)[0] + '.diff'
             no_ws_diff_path = diff_path + '.no_ws'
 
-            if self.diff(correct_out_path, compare_out_path, diff_path, False):
-                if self.diff(compare_out_path, compare_out_path, no_ws_diff_path, True):
+            if not self.diff(correct_out_path, compare_out_path, diff_path, False):
+                if not self.diff(correct_out_path, compare_out_path, no_ws_diff_path, True):
                     reported_error = IncorrectOutputError()
                 else:
                     if reported_error is None:

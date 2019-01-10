@@ -75,19 +75,22 @@ class DBDriver:
         return out
 
     def get_headers(self, lang_id):
+        """
+        Gets the headers for the language with the given ID
+        """
         curs = self.__connection.cursor()
         curs.execute('''SELECT HEADER FROM HEADERS WHERE LANGUAGE_ID=%d''' % lang_id)
         out = [tupl[0] for tupl in curs.fetchall()]
         curs.close()
         return out
 
-    def get_language_info(self):
+    def get_language_info(self, language_name):
         """
-        :return: The contents of the LANGUAGE table
+        :return: A row of the LANGUAGE table specified by language_name
         """
         curs = self.__connection.cursor()
-        curs.execute('''SELECT * FROM LANGUAGE''')
-        out = curs.fetchall()
+        curs.execute('''SELECT * FROM LANGUAGE WHERE LANGUAGE_NAME="%s"''' % language_name)
+        out = curs.fetchone()
         curs.close()
         return out
 

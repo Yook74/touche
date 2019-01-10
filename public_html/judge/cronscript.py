@@ -9,16 +9,17 @@ from py_lib.db_driver import DBDriver
 from py_lib.exceptions import *
 
 
-EXTENSION_CLASS = {  # TODO .py2 extension
-    '.c': CSubmission,
-    '.cpp': CppSubmission,
-    '.cc': CppSubmission,
-    '.java': JavaSubmission,
-    '.py': PythonSubmission}
+EXTENSION_NAME = {  # TODO document .py2 and put this information in the database
+    '.c': 'C',
+    '.cpp': 'CXX',
+    '.cc': 'CXX',
+    '.java': 'JAVA',
+    '.py': 'Python3',
+    '.py2': 'Python2'}
 
 NAME_CLASS = {  # Associates the names used in the database with the Submission Classes
     'C': CSubmission,
-    'CXX': CppSubmission,
+    'CXX': CSubmission,
     'JAVA': JavaSubmission,
     'Python2': PythonSubmission,
     'Python3': PythonSubmission}
@@ -43,23 +44,7 @@ def release_lock(file_handle):
     fcntl.lockf(file_handle, fcntl.LOCK_UN)
 
 
-def setup_classes(db_driver: DBDriver):
-    """
-    The classes have some static attributes which need to be filled out with information in the database.
-    This function grabs the database info and puts it into those static attributes
-    """
-    for tupl in db_driver.get_language_info():
-        lang_id = tupl[0]
-        lang_name = tupl[1]
-        NAME_CLASS[lang_name].lang_max_cpu_time = tupl[2]  # TODO not multiply by 1.1
-        NAME_CLASS[lang_name].lang_chroot_dir = os.path.join(db_driver.dirs['base'], tupl[3])
-        NAME_CLASS[lang_name].lang_replace_headers = bool(tupl[4])
-        NAME_CLASS[lang_name].lang_check_bad_words = bool(tupl[5])
-        NAME_CLASS[lang_name].lang_forbidden_words = db_driver.get_forbidden(lang_id)
-        NAME_CLASS[lang_name].lang_headers = db_driver.get_headers(lang_id)
-
-
-def construct_submission(one_submission_info, dirs):
+def construct_submission(one_submission_info, db_driver: DBDriver):
     """
     Determines the correct Submission class to use and constructs one
     :raises UndefinedFileTypeError
@@ -68,11 +53,23 @@ def construct_submission(one_submission_info, dirs):
     extension = os.path.splitext(file_name)[1]
     extension = extension.lower()
 
-    if extension in EXTENSION_CLASS:
-        # Constructs a Submission object
-        return EXTENSION_CLASS[extension](dirs, one_submission_info[2], one_submission_info[5])
-    else:
+    if extension not in EXTENSION_NAME:
         raise UndefinedFileTypeError(extension)
+
+    lang_name = EXTENSION_NAME[extension]
+    lang_info = db_driver.get_language_info(lang_name)
+    class_to_construct = NAME_CLASS[lang_name]
+
+    return class_to_construct(lang_name=lang_name,
+                              dirs=db_driver.dirs,
+                              problem_id=one_submission_info[2],
+                              source_name=one_submission_info[5],
+                              max_cpu_time=lang_info[2],
+                              jail_dir=lang_info[3],
+                              replace_headers=bool(lang_info[4]),
+                              check_bad_words=bool(lang_info[5]),
+                              forbidden_words=db_driver.get_forbidden(lang_info[0]),
+                              headers=db_driver.get_headers(lang_info[0]))
 
 
 def process_submission(submission):
@@ -91,11 +88,14 @@ def process_submission(submission):
 
 
 def judge_submissions(db_driver: DBDriver):
+    """
+    Assigns an autoresponse to every queued submission in the database
+    """
     for row in db_driver.get_submission_info():
         sub_id = db_driver.report_pending(row)
 
         try:
-            submission = construct_submission(row, db_driver.dirs)
+            submission = construct_submission(row, db_driver)
             process_submission(submission)
 
         except UndefinedFileTypeError as err:
@@ -126,9 +126,7 @@ def judge_submissions(db_driver: DBDriver):
 def main():
     with DBDriver() as db:
         lock_file = open(os.path.join(db.dirs['base'], "lockfile.lock"), 'w')
-
         acquire_lock(lock_file)
-        setup_classes(db)
 
         judge_submissions(db)
 
