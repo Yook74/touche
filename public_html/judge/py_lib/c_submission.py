@@ -28,14 +28,13 @@ class CSubmission(Submission):
         self.executable_path = path.join(self.dirs['judged'], self.base_name)
         self.error_path = path.join(self.dirs['judged'], self.base_name + '.err')
         with open(self.error_path, 'w') as error_file:
+
+            args = [self.config['compiler']] + \
+                   self.config['compiler flags'] + \
+                   [self.executable_path, self.source_path] + \
+                   self.config['linker flags']
             try:
-                subprocess.run([self.config['compiler'],
-                                *self.config['compiler flags'],
-                                self.executable_path,
-                                self.source_path,
-                                *self.config['linker flags']],
-                               stderr=error_file,
-                               check=True)
+                subprocess.run(args, stderr=error_file, check=True)
 
             except subprocess.CalledProcessError as err:
                 raise CompileError(err.returncode)
