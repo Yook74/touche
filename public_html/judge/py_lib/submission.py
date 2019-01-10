@@ -8,12 +8,12 @@ from .exceptions import *
 
 
 class Submission:
-    lang_max_cpu_time = None
-    lang_chroot_dir = None
-    lang_replace_headers = None
-    lang_check_bad_words = None
-    lang_forbidden_words = None
-    lang_headers = None
+    lang_max_cpu_time = None  # Maximum time allowed for the compiled solution to run
+    lang_chroot_dir = None  # directory of this language's jail
+    lang_replace_headers = None  # True if this language should replace headers in the submitted source file
+    lang_check_bad_words = None  # True if this language checks for forbidden words in the submitted source file
+    lang_forbidden_words = None  # The list of forbidden words for this language (or None)
+    lang_headers = None  # The list of headers for this language (or None)
 
     def __init__(self, dirs, problem_id, source_name, config_path=None):
         """
@@ -31,24 +31,27 @@ class Submission:
         self.executable_path = None
         self.error_path = None
 
-        self.in_paths = []
-        self.compare_out_paths = []
-        self.correct_out_paths = []
+        self.in_paths = []  # paths to the .in files of the problem's test data
+        self.compare_out_paths = []  # paths to the files outputted by the submitted solution given an in_file
+        self.correct_out_paths = []  # paths to the correct output for this problem
         self.get_io_paths()
 
         self.config = None
         if config_path is not None:
             self.parse_config(config_path)
 
+# Helpers
+
     def parse_config(self, config_path):
         """
         Parses the config file.
-        I recommend you use colons in the config file but the equals sign is also an acceptable key value delimiter
-        See c_config.ini for an example
-        This expands the items in the [list] section into python lists and merges both sections into a single flat dict
+        I recommend you use colons in the config file but the equals sign is also an acceptable key value delimiter.
+        See c_config.ini for an example.
+        This expands the items in the [list] section into python lists and merges both sections into a single flat dict.
         :param config_path: path ending in .ini
         """
         self.config = {}
+
         parsed_config = ConfigParser()
         successful_files = parsed_config.read(config_path)
 
@@ -60,6 +63,25 @@ class Submission:
 
         self.config.update(dict(parsed_config['singleton']))  # Adds the singleton items into the config
 
+    def get_io_paths(self):
+        """
+        Populates the list of in_paths, correct_out_paths, and compare_out_paths
+        """
+        glob_path = self.dirs['data'] + '/' + str(self.problem_id) + '_*'
+        self.in_paths = list(glob(glob_path + '.in'))
+        self.in_paths.sort()
+
+        self.correct_out_paths = list(glob(glob_path + '.out'))
+        self.in_paths.sort()
+
+        self.compare_out_paths = []
+        for in_path in self.correct_out_paths:
+            out_name = path.split(in_path)[-1]
+            out_name = self.base_name + "_" + out_name
+            out_path = path.join(self.dirs['judged'], out_name)
+
+            self.compare_out_paths.append(out_path)
+
     def get_bare_execute_cmd(self):
         """
         :return: The command needed to run the compiled code without any piping etc
@@ -67,6 +89,13 @@ class Submission:
         return self.executable_path
 
     def execute_one_test(self, input_path, output_path):
+        """
+        Executes the command from get_bare_execute_cmd with piping to the given input and output files
+        :param input_path: path to one of the input files for a problem
+        :param output_path: path to an empty file which will be written to by the executed program
+        :raises TimeExceededError if lang_max_cpu_time is exceeded
+        :raises ExternalRuntimeError if the executable produces a runtime error
+        """
         input_file = open(input_path, 'r')
         output_file = open(output_path, 'w')
 
@@ -87,24 +116,31 @@ class Submission:
             input_file.close()
             output_file.close()
 
-    def get_io_paths(self):
+    @staticmethod
+    def diff(correct_path, compare_path, diff_path, no_ws):
         """
-        Populates the list of in_paths, correct_out_paths, and compare_out_paths
+        Uses the linux diff tool to determine if the files located by correct_path and compare_path are the same
+        :param correct_path: The path to the known correct file
+        :param compare_path: The path to the questionable file
+        :param diff_path: The output of the diff will be placed here
+        :param no_ws: True if the diff should ignore whitespace characters
+        :return: True if compare_path and correct_path are the same and False otherwise
+
+        Why are we using the linux diff tool? Because that's the way it's always been done
         """
-        glob_path = self.dirs['data'] + '/' + str(self.problem_id) + '_*'
-        self.in_paths = list(glob(glob_path + '.in'))
-        self.in_paths.sort()
+        if no_ws:
+            flags = ['-b', '-B']
+        else:
+            flags = ['-u']
 
-        self.correct_out_paths = list(glob(glob_path + '.out'))
-        self.in_paths.sort()
+        diff_file = open(diff_path, 'w')
+        args = ['diff'] + flags + [correct_path, compare_path]
+        subprocess.run(args, stdout=diff_file)
+        diff_file.close()
 
-        self.compare_out_paths = []
-        for in_path in self.correct_out_paths:
-            out_name = path.split(in_path)[-1]
-            out_name = self.base_name + "_" + out_name
-            out_path = path.join(self.dirs['judged'], out_name)
+        return file_stat(diff_path).st_size == 0
 
-            self.compare_out_paths.append(out_path)
+# API methods
 
     def move_to_judged(self):
         """
@@ -140,14 +176,15 @@ class Submission:
         pass
 
     def execute(self):
+        """
+        Executes the compiled code for all of the test cases.
+        If the compiled submission produces a runtime error, the other test cases will still be run,
+        but the runtime error will be re-raised afterward
+        """
         reported_error = None
         for in_path, compare_out_path in zip(self.in_paths, self.compare_out_paths):
             try:
                 self.execute_one_test(in_path, compare_out_path)
-
-            except (IncorrectOutputError, FormatError) as thrown:
-                if not isinstance(reported_error, ExternalRuntimeError):
-                    reported_error = thrown
 
             except ExternalRuntimeError as thrown:
                 reported_error = thrown
@@ -159,24 +196,19 @@ class Submission:
         pass
 
     def judge_output(self):
+        """
+        Determines if the solution is correct by comparing its output files to the correct output files
+        :raises IncorrectOutputError if the output is definitely wrong
+        :raises FormatError if the output is only different with whitespace characters
+        If the output is determined to be incorrect, the other tests will be run before the error is raised
+        """
         reported_error = None
         for correct_out_path, compare_out_path in zip(self.correct_out_paths, self.compare_out_paths):
             diff_path = path.splitext(compare_out_path)[0] + '.diff'
             no_ws_diff_path = diff_path + '.no_ws'
 
-            diff_file = open(diff_path, 'w')
-            no_ws_diff_file = open(no_ws_diff_path, 'w')
-
-            subprocess.run(['diff', '-u', correct_out_path, compare_out_path],
-                           stdout=diff_file)
-            diff_file.close()
-
-            if file_stat(diff_path).st_size != 0:
-                subprocess.run(['diff', '-b', '-B', correct_out_path, compare_out_path],
-                               stdout=no_ws_diff_file)
-                no_ws_diff_file.close()
-
-                if file_stat(no_ws_diff_path).st_size != 0:
+            if self.diff(correct_out_path, compare_out_path, diff_path, False):
+                if self.diff(compare_out_path, compare_out_path, no_ws_diff_path, True):
                     reported_error = IncorrectOutputError()
                 else:
                     if reported_error is None:
