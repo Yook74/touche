@@ -515,5 +515,16 @@ class AdminActor extends AcceptanceTester
         $I->click("Submit");
     }
 
+/* Clearing Actions */
+
+    /**
+     * Navigate to Misc and clear a contest
+     */
+    public function clearContest()
+    {
+        $I = $this;
+        $I->amOnMyPage("misc.php");
+        $I->click("Clear Contest");
+    }
 
 }
