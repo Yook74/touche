@@ -451,7 +451,7 @@ class AdminActor extends AcceptanceTester
         return $checkBox;
     }
 
-/* Header Actions */
+/* Header and Forbidden Actions */
 
     /**
      * Add a $headerFile to $language's headers
@@ -484,9 +484,36 @@ class AdminActor extends AcceptanceTester
     {
         $I = $this;
         $originalText = $I->grabTextFrom($field);
-        $stringToBeDeletedPos = strpos($originalText, $text, strlen($text));
-        $replacementText = substr($originalText, 0, $stringToBeDeletedPos);
-        $I->fillField($field, $replacementText);
+        $stringToBeDeletedPos = strpos($originalText, $text);
+        $replacementTextBeginning = substr($originalText, 0, $stringToBeDeletedPos);
+        $replacementTextEnding = substr($originalText, $stringToBeDeletedPos + strlen($text));
+        $I->fillField($field, $replacementTextBeginning);
+        $I->appendField($field, $replacementTextEnding);
     }
+
+    /**
+     * Add a $word to the $language's forbidden words list
+     */
+    public function addForbiddenWord($language, $word)
+    {
+        $I = $this;
+        $I->amOnMyPage("setup_forbidden");
+        $I->click(['name' => $language."Edit"]);
+        $I->appendField("edit_forbidden_words", $word);
+        $I->click("Submit");
+    }
+
+    /**
+     * Delete a $word from the $language's forbidden words list
+     */
+    public function deleteForbiddenWord($language, $word)
+    {
+        $I = $this;
+        $I->amOnMyPage("setup_forbidden");
+        $I->click(['name' => $language."Edit"]);
+        $I->removeFromField("textarea", $word);
+        $I->click("Submit");
+    }
+
 
 }
