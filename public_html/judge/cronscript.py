@@ -2,7 +2,6 @@ import fcntl
 import os
 
 from py_lib.c_submission import CSubmission
-from py_lib.cpp_submission import CppSubmission
 from py_lib.java_submission import JavaSubmission
 from py_lib.python_submission import PythonSubmission
 from py_lib.db_driver import DBDriver
