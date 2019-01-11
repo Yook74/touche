@@ -144,6 +144,8 @@ def main():
         lock_file = open(os.path.join(db.dirs['base'], "lockfile.lock"), 'w')
         acquire_lock(lock_file)
 
+        parse_error_codes()
+
         judge_submissions(db)
 
     release_lock(lock_file)
