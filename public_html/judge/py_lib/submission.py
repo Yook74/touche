@@ -171,7 +171,7 @@ class Submission:
 
         args = ['diff'] + flags + [correct_path, compare_path]
         if diff_path is None:
-            completed_process = subprocess.run(args)
+            completed_process = subprocess.run(args, stdout=subprocess.DEVNULL)
         else:
             diff_file = open(diff_path, 'w')
             completed_process = subprocess.run(args, stdout=diff_file)
