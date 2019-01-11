@@ -1,5 +1,6 @@
 import fcntl
 import os
+import re
 
 from py_lib.c_submission import CSubmission
 from py_lib.java_submission import JavaSubmission
@@ -22,6 +23,23 @@ NAME_CLASS = {  # Associates the names used in the database with the Submission 
     'JAVA': JavaSubmission,
     'Python2': PythonSubmission,
     'Python3': PythonSubmission}
+
+ERROR_CODE_PATH = 'lib/responses.inc'
+error_codes = {}
+
+
+def parse_error_codes():
+    with open(ERROR_CODE_PATH, 'r') as code_file:
+        file_string = code_file.read()
+
+    defines = re.findall(r'define\w*\(\w*"[^"]*"\w*,[0-9]*\w*\)\w*;', file_string)
+    for define in defines:
+        split = define.split('"')
+        key = split[1]
+        value = split[2]
+        value = re.findall(r'[0-9]+', value)[0]
+        value = int(value)
+        error_codes[key] = value
 
 
 def acquire_lock(file_handle):
@@ -97,29 +115,28 @@ def judge_submissions(db_driver: DBDriver):
             process_submission(submission)
 
         except UndefinedFileTypeError as err:
-            db_driver.report_judgement(sub_id, 1, '')
+            db_driver.report_judgement(sub_id, error_codes['EFILETYPE'], '')
 
         except ForbiddenWordError as err:
-            db_driver.report_judgement(sub_id, 2, '')
+            db_driver.report_judgement(sub_id, error_codes['EFORBIDDEN'], '')
 
         except CompileError as err:
-            db_driver.report_judgement(sub_id, 3, '')
+            db_driver.report_judgement(sub_id, error_codes['ECOMPILE'], '')
 
         except TimeExceededError as err:
-            db_driver.report_judgement(sub_id, 4, '')
+            db_driver.report_judgement(sub_id, error_codes['ERUNLENGTH'], '')
 
         except ExternalRuntimeError as err:
-            db_driver.report_judgement(sub_id, 5, '')
+            db_driver.report_judgement(sub_id, error_codes['ERUNTIME'], '')
 
         except IncorrectOutputError as err:
-            db_driver.report_judgement(sub_id, 6, '')
+            db_driver.report_judgement(sub_id, error_codes['EINCORRECT'], '')
 
         except FormatError as err:
-            db_driver.report_judgement(sub_id, 7, '')
+            db_driver.report_judgement(sub_id, error_codes['EFORMAT'], '')
         # TODO handle other errors?
-        # TODO get numbers from .inc file?
         else:  # Accepted
-            db_driver.report_judgement(sub_id, 9, '')
+            db_driver.report_judgement(sub_id, error_codes['ECORRECT'], '')
 
 
 def main():
