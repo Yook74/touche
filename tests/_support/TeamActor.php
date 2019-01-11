@@ -46,11 +46,13 @@ class TeamActor extends AcceptanceTester
     /**
      * Submit a solution to the first problem
      * @param $path string a path to the file to submit where the _data directory is the root
+     * @param $problemNumber integer the problem number to submit a solution for
      */
-    public function submitSolution(string $path)
+    public function submitSolution(string $path, $problemNumber = 1)
     {
         $I = $this;
         $I->amOnMyPage("submissions.php");
+        $I->selectOption("problem_id", $problemNumber);
         $I->attachFile("source_file", $path);
         $I->click("Submit Solution");
     }

@@ -165,4 +165,26 @@ class JudgeActor extends AcceptanceTester
         $I->amOnMyPage("standings.php");
         $I->click($catName);
     }
+
+/* Submission Actions */
+
+    /**
+     * Filter by selected $problemName
+     */
+    public function filterProblem($problemName)
+    {
+        $I = $this;
+        $I->amOnMyPage("judge.php");
+        $I->click($problemName);
+    }
+
+    /**
+     * Filter by selected $teamName
+     */
+    public function filterByTeam($teamID)
+    {
+        $I = $this;
+        $I->amOnMyPage("judge.php");
+        $I->selectOption("team", $teamID);
+    }
 }
