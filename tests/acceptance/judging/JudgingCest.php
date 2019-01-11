@@ -3,6 +3,9 @@ use Codeception\Util\Locator;
 
 class JudgingCest
 {
+    public static $outputFile1 = "1_input1.out";
+    public static $outputFile2 = "1_input2.out";
+
     # This describes all the source file directories and the results their code should give
     private static $dir_judgement = array(
         "accepted" => "Accepted",
@@ -114,6 +117,46 @@ class JudgingCest
         }
     }
 
+    /**
+     * Test the judge response page
+     * @param JudgeActor $I must be logged in
+     * @param string $judgment is the error to test
+     */
+    private function testJudgeResponse(JudgeActor $I, $judgment){
+        $I->amOnMyPage("judge.php");
+        $I->click("judge submission");
+        $file1 = self::$outputFile1;
+        $file2 = self::$outputFile2;
+        switch($judgment){
+            case "Forbidden Word In Source":
+            case "Compile Error":
+                $I->see($judgment);
+                $fullField = $I->grabTextFrom("[name=error_field]");
+                $I->assertNotEquals("", $fullField);
+                break;
+            case "Format Error":
+                $I->see("White space diff succeeded");
+            case "Incorrect Output":
+                $I->see($file1);
+                //get the link for the page that "Output Files" links to, since tab actions don't work in codeception
+                $link = $I->grabMultiple("[name=\"$file1\"]", 'href');
+                $newPage = substr($link[0], strpos($link[0], "test_contest"));
+                //use amOnPage instead of amOnUrl because codeception doesn't like it
+                $I->amOnPage($newPage);
+                $I->see("Comparing Output Files");
+                $I->moveBack();
+                $I->see($file2);
+                $link = $I->grabMultiple("[name=\"$file2\"]", 'href');
+                $newPage = substr($link[0], strpos($link[0], "test_contest"));
+                $I->amOnPage($newPage);
+                $I->see("Comparing Output Files");
+                break;
+            default:
+                $I->see($judgment);
+                break;
+        }
+    }
+
     public function testAutoJudging(AdminActor $admin, JudgeActor $judge, \Codeception\Scenario $scenario)
     {
         $judge -> wantTo("Check that the auto judging software makes correct judgements (takes a while)");
@@ -157,6 +200,7 @@ class JudgingCest
             $judge->waitForAutoJudging($wait_per_submission * $num_submissions);
 
             $this->assertJudgmentsMatch($judge, $judgement);
+            $this->testJudgeResponse($judge, $judgement);
             for (; $num_submissions > 0; $num_submissions--){
                 $judge->rejectSubmission();
             }
