@@ -76,25 +76,19 @@
 	$ts = $ts - $site_start_offset;
 	
 
-	$extension="";
-	for ($i=strlen($_FILES['source_file']['name'])-1; $i>=0; $i--) {
-		if ($_FILES['source_file']['name'][$i]==".") {
-			break;
-		}
-		$extension = $_FILES['source_file']['name'][$i].$extension;
-	}
-
-	$queue_file_name = "$team_id-$problem_id-$ts.$extension";
+	$file_name = $_FILES['source_file']['name'];
+	$submission_dir = "$base_dir/queue/$team_id-$problem_id-$ts";
+	mkdir($submission_dir, 775);
     $result = move_uploaded_file($_FILES['source_file']['tmp_name'],
-		       "$base_dir/queue/$queue_file_name");
+		       "$submission_dir/$file_name");
     if(!$result){
 		print "Failed to upload submission. Please contact administrator.";
 	}
 
-	chmod("$base_dir/queue/$queue_file_name", 0644);
+	chmod("$submission_dir/$file_name", 0644);
 
-	$sql  = "INSERT INTO QUEUED_SUBMISSIONS (TEAM_ID, PROBLEM_ID, ATTEMPT, TS, SOURCE_FILE) ";
-	$sql .= "VALUES ('$team_id','$problem_id', '$attempt', '$ts','$queue_file_name') ";
+	$sql  = "INSERT INTO QUEUED_SUBMISSIONS (TEAM_ID, PROBLEM_ID, ATTEMPT, TS, SOURCE_NAME) ";
+	$sql .= "VALUES ('$team_id','$problem_id', '$attempt', '$ts','$file_name') ";
 	$result = mysqli_query($link, $sql);
 
 	header("location: submissions.php?state=3");

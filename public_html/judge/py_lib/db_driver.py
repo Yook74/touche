@@ -99,7 +99,7 @@ class DBDriver:
         :return: Information on all the queued submissions submitted before the contest ends
         """
         curs = self.__connection.cursor()
-        curs.execute('''SELECT QUEUE_ID, TEAM_ID, PROBLEM_ID, TS, ATTEMPT, SOURCE_FILE 
+        curs.execute('''SELECT QUEUE_ID, TEAM_ID, PROBLEM_ID, TS, ATTEMPT, SOURCE_NAME
                         FROM QUEUED_SUBMISSIONS, CONTEST_CONFIG 
                         WHERE TS < (START_TS + CONTEST_END_DELAY) 
                        ORDER BY TS''')
@@ -126,7 +126,7 @@ class DBDriver:
         :return: the id of the inserted row
         """
         curs = self.__connection.cursor()
-        curs.execute('''INSERT INTO JUDGED_SUBMISSIONS (TEAM_ID, PROBLEM_ID, TS, ATTEMPT, SOURCE_FILE) 
+        curs.execute('''INSERT INTO JUDGED_SUBMISSIONS (TEAM_ID, PROBLEM_ID, TS, ATTEMPT, SOURCE_NAME) 
                         VALUES (%d, %d, %d, %d, '%s')''' % one_submission_info[1:])
         row_id = curs.lastrowid
 

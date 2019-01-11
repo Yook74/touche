@@ -67,21 +67,23 @@ def construct_submission(one_submission_info, db_driver: DBDriver):
     Determines the correct Submission class to use and constructs one
     :raises UndefinedFileTypeError
     """
-    file_name = one_submission_info[5]
-    extension = os.path.splitext(file_name)[1]
+    source_name = one_submission_info[5]
+    extension = os.path.splitext(source_name)[1]
     extension = extension.lower()
 
     if extension not in EXTENSION_NAME:
         raise UndefinedFileTypeError(extension)
 
+    submission_dir = str(one_submission_info[2]) + '-' + str(one_submission_info[1]) + '-' + str(one_submission_info[3])
     lang_name = EXTENSION_NAME[extension]
     lang_info = db_driver.get_language_info(lang_name)
     class_to_construct = NAME_CLASS[lang_name]
 
     return class_to_construct(lang_name=lang_name,
+                              submission_dir=submission_dir,
+                              source_name=source_name,
                               dirs=db_driver.dirs,
                               problem_id=one_submission_info[2],
-                              source_name=file_name,
                               max_cpu_time=lang_info[2],
                               jail_dir=lang_info[3],
                               replace_headers=bool(lang_info[4]),

@@ -49,7 +49,7 @@ class CSubmission(Submission):
         func()
         results in a call to fork
         """
-        temp_path = path.join(self.dirs['judged'], 'temp.tmp')
+        temp_path = path.join(self.submission_dir, 'temp.tmp')
         temp_file = open(temp_path, 'w')
 
         args = [self.config['compiler']] + self.config['preprocess_flags'] + [self.source_path]
@@ -63,8 +63,8 @@ class CSubmission(Submission):
         Compiles the source file using the compiler information specified in the config file
         :raises CompileError
         """
-        self.executable_path = path.join(self.dirs['judged'], self.base_name)
-        self.error_path = path.join(self.dirs['judged'], self.base_name + '.err')
+        self.executable_path = path.join(self.submission_dir, 'executable')
+        self.error_path = path.join(self.submission_dir, 'compile-err.txt')
         with open(self.error_path, 'w') as error_file:
 
             args = [self.config['compiler']] + \

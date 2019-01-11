@@ -49,7 +49,7 @@ CREATE TABLE JUDGED_SUBMISSIONS (
   PROBLEM_ID int(11) NOT NULL default '0',
   TS int(11) NOT NULL default '0',
   ATTEMPT int(11) NOT NULL default '0',
-  SOURCE_FILE char(255) NOT NULL default '',
+  SOURCE_NAME char(255) NOT NULL default '',
   RESPONSE_ID int(11) NOT NULL default '0',
   VIEWED int(11) NOT NULL default '0',
   JUDGED int(10) NOT NULL default '0',
@@ -68,7 +68,7 @@ CREATE TABLE QUEUED_SUBMISSIONS (
   PROBLEM_ID int(11) NOT NULL default '0',
   TS int(11) NOT NULL default '0',
   ATTEMPT int(11) NOT NULL default '0',
-  SOURCE_FILE char(255) NOT NULL default '',
+  SOURCE_NAME char(10) NOT NULL default '',
   PRIMARY KEY  (QUEUE_ID)
 );
 # --------------------------------------------------------

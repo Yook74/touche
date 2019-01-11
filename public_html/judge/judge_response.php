@@ -22,7 +22,8 @@ if($_GET){
     	sql_error($sql);
 
     $row = mysqli_fetch_assoc($sql_result);
-    $source_file = $row['SOURCE_FILE'];
+    $source_file = $row['SOURCE_NAME'];
+    $submission_dir = $row['PROBLEM_ID'] . '-' . $row['TEAM_ID'] . '-' . $row['TS'];
     $viewed = $row['VIEWED'];
     $viewed++;
     
@@ -75,7 +76,7 @@ if($_GET){
     echo "<tr><td bgcolor=$data_bg_color1>Attempt:</td>\n";
     echo "<td bgcolor=$data_bg_color1>" . $_GET['attempt'] . "</td></tr>\n";
     echo "<tr><td bgcolor=$data_bg_color1>Source:</td>\n";
-    echo "<td  bgcolor=$data_bg_color1><a href='judge_output.php?problem=$problem_id&sub_source=$source_file&format=2' target='blank'> $source_file </a></td></tr>";
+    echo "<td  bgcolor=$data_bg_color1><a href='judge_output.php?problem=$problem_id&sub_source=$submission_dir/$source_file&format=2' target='blank'> $source_file </a></td></tr>";
     echo "<table width = 100% border=0 cellpadding=5><tr>";
     echo "<td bgcolor=$hd_bg_color2><center><b>";
     echo "<font color=$hd_txt_color2>Problem Notes:</font>";
@@ -161,8 +162,7 @@ if($_GET){
 	
 		default:
 			$know_output = preg_replace("/\.in/", ".out", $row['IN_FILE']);
-			$source_file = preg_replace("/\.(cc|cpp|c|java|py)/", "", $source_file);	
-			$program_output = $problem_handle['judged_dir']	.  $source_file . "_" . $know_output;
+			$program_output = $problem_handle['judged_dir'] . "/$submission_dir/$know_output";
 			$diff_out_file = $program_output . ".diff";
 			$diff_no_ws_out_file = $diff_out_file . ".no_ws";
 	
@@ -214,7 +214,7 @@ if($_GET){
 		                echo "Correct Solution</font></b></td></tr>\n";
 			}
 			echo "<tr><td bgcolor=$data_bg_color1>";
-		        echo "<a href='judge_output.php?problem=$problem_name&judge_source=$know_output&sub_source=$source_file" . "_" . "$know_output&format=1'target='blank'>Output Files</a>";
+		        echo "<a href='judge_output.php?problem=$problem_name&judge_source=$know_output&sub_source=$submission_dir/$program_output&format=1'target='blank'>Output Files</a>";
 		        echo "</td></tr></table>";
 	}	
     }

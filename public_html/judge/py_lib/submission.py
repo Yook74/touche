@@ -12,9 +12,10 @@ class Submission:
     def __init__(self, **kwargs):
         """
         :param lang_name: C, CXX, JAVA, Python2, or Python3
+        :param source_name: The name of the submitted source file
+        :param submission_dir: The name of the directory containing the submission's file(s) (not an absolute path)
         :param dirs: DBDriver dirs dictionary
         :param problem_id: This identifies the problem and is used to name things
-        :param source_name: The name of the submitted source file
         :param max_cpu_time: Maximum time allowed for the compiled solution to run
         :param jail_dir: directory of this language's jail
         :param replace_headers: True if this language should replace headers in the submitted source file
@@ -27,10 +28,10 @@ class Submission:
         self.lang_name = kwargs['lang_name']
         self.dirs = kwargs['dirs']
         self.problem_id = kwargs['problem_id']
+        self.submission_dir = path.join(self.dirs['queue'], kwargs['submission_dir'])
 
-        source_name = kwargs['source_name']
-        self.source_path = path.join(self.dirs['queue'], source_name)
-        self.base_name, self.source_extension = path.splitext(source_name)
+        self.source_path = path.join(self.submission_dir, kwargs['source_name'])
+        self.source_extension = path.splitext(kwargs['source_name'])[1]
 
         self.config = {key: kwargs[key] for key in ['max_cpu_time', 'jail_dir', 'replace_headers',
                                                     'check_bad_words', 'ignore_stderr', 'forbidden_words', 'headers']}
@@ -45,7 +46,6 @@ class Submission:
         self.in_paths = []  # paths to the .in files of the problem's test data
         self.compare_out_paths = []  # paths to the files outputted by the submitted solution given an in_file
         self.correct_out_paths = []  # paths to the correct output for this problem
-        self.get_io_paths()
 
 # Helpers
 
@@ -108,11 +108,9 @@ class Submission:
         self.in_paths.sort()
 
         self.compare_out_paths = []
-        for in_path in self.correct_out_paths:
-            out_name = path.split(in_path)[-1]
-            out_name = self.base_name + "_" + out_name
-            out_path = path.join(self.dirs['judged'], out_name)
-
+        for out_path in self.correct_out_paths:
+            out_name = path.split(out_path)[-1]
+            out_path = path.join(self.submission_dir, out_name)
             self.compare_out_paths.append(out_path)
 
     def get_bare_execute_cmd(self):
@@ -228,9 +226,15 @@ class Submission:
         """
         Moves the submitted file into the judged directory
         """
-        new_source_path = path.join(self.dirs['judged'], self.base_name + self.source_extension)
-        shutil.move(self.source_path, new_source_path)
-        self.source_path = new_source_path
+        base_name = path.split(self.submission_dir)[-1]
+        new_dir = path.join(self.dirs['judged'], base_name)
+        shutil.move(self.submission_dir, new_dir)
+        self.submission_dir = new_dir
+
+        source_name = path.split(self.source_path)[-1]
+        self.source_path = path.join(self.submission_dir, source_name)
+
+        self.get_io_paths()
 
     def pre_compile(self):
         self.strip_headers()
