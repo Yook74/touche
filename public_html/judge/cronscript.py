@@ -1,6 +1,7 @@
 import fcntl
 import os
 import re
+import traceback
 
 from py_lib.c_submission import CSubmission
 from py_lib.java_submission import JavaSubmission
@@ -134,7 +135,11 @@ def judge_submissions(db_driver: DBDriver):
 
         except FormatError as err:
             db_driver.report_judgement(sub_id, error_codes['EFORMAT'], '')
-        # TODO handle other errors?
+
+        except BaseException as err:
+            db_driver.report_judgement(sub_id, error_codes['EUNKNOWN'], '')
+            traceback.print_exc()
+
         else:  # Accepted
             db_driver.report_judgement(sub_id, error_codes['ECORRECT'], '')
 
