@@ -5,12 +5,24 @@ import shutil
 from os import path
 import subprocess
 
-CONFIG_PATH = 'py_lib/c_config.ini'
+C_CONFIG_PATH = 'py_lib/c_config.ini'
+CPP_CONFIG_PATH = 'py_lib/cpp_config.ini'
 
 
 class CSubmission(Submission):
+    """
+    This handles both C and C++
+    """
     def __init__(self, **kwargs):
-        super().__init__(**kwargs, config_path=CONFIG_PATH)
+        if kwargs['lang_name'] == 'CXX':
+            config_path = CPP_CONFIG_PATH
+        elif kwargs['lang_name'] == 'C':
+            config_path = C_CONFIG_PATH
+        else:
+            raise ValueError("The CSubmission class only handles C and CXX (C++) submissions. "
+                             "'%s' is not a valid lang_name" % kwargs['lang_name'])
+
+        super().__init__(**kwargs, config_path=config_path)
 
     def strip_headers(self):
         """
