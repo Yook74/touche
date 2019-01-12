@@ -133,6 +133,7 @@ class JudgeActor extends AcceptanceTester
             $I->waitForText('judge submission', $autoJudgeTime); #wait for cron to call the cronscript
         }
         $I->wait($expected_time);
+        $I->reloadPage();
     }
 
     public function getEndHour()
