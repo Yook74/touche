@@ -105,7 +105,7 @@ if($_GET){
 	                echo "<font color=$hd_txt_color2>\n";
 	                echo "<b>Forbidden Word in Source</b>";
 	                echo "</td></tr>\n";
-			echo "<tr><td><textarea rows=15 cols=62 readonly>$row[IN_FILE]</textarea>";
+			echo "<tr><td><textarea name=error_field rows=15 cols=62 readonly>$row[IN_FILE]</textarea>";
 			echo "</td></tr></table>\n";
 			break;
 		 
@@ -116,7 +116,7 @@ if($_GET){
                         echo "<font color=$hd_txt_color2>\n";
                         echo "<b>Compile Error</b>";
                         echo "</td></tr>\n";
-                        echo "<tr><td><textarea rows=15 cols=62 readonly>" . read_entire_file($problem_handle['judged_dir'] . $row['IN_FILE']);
+                        echo "<tr><td><textarea name=error_field rows=15 cols=62 readonly>" . read_entire_file($problem_handle['judged_dir'] . $row['IN_FILE']);
                         echo "</textarea></td></tr></table>\n";
                         break;
 		
@@ -198,7 +198,7 @@ if($_GET){
 					else{
 						echo "<tr><td bgcolor=$data_bg_color1>";
 			                        echo "<font color=$data_txt_color3>";
-		        	                echo "White space diff succedded";
+		        	                echo "White space diff succeeded";
 		                	        echo "</font></td></tr>";
 						echo "<tr><td bgcolor=$data_bg_color1>";
 						echo "<font color=$data_txt_color4>";
@@ -214,7 +214,7 @@ if($_GET){
 		                echo "Correct Solution</font></b></td></tr>\n";
 			}
 			echo "<tr><td bgcolor=$data_bg_color1>";
-		        echo "<a href='judge_output.php?problem=$problem_name&judge_source=$know_output&sub_source=$submission_dir/$program_output&format=1'target='blank'>Output Files</a>";
+		        echo "<a name=$know_output href='judge_output.php?problem=$problem_name&judge_source=$know_output&sub_source=$submission_dir/$program_output&format=1'target='blank'>Output Files</a>";
 		        echo "</td></tr></table>";
 	}	
     }

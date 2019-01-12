@@ -9,9 +9,9 @@
 #
 # arch-tag: admin/setup_contest.php
 #
-	include("lib/admin_config.inc");
-	include("lib/data.inc");
-	include("lib/session.inc");
+include("lib/admin_config.inc");
+include("lib/data.inc");
+include("lib/session.inc");
 
 if ($_POST)
 {
@@ -39,7 +39,7 @@ if ($_POST)
 		$failed=true;
 	}
 	$base_directory = $_POST['base_directory'];
-	
+
 	//if the three checkboxes are not checked, they are submitted
 	//as undefined/not set.  Therefore, I used the isset function
 	//exclusively to decide if they wanted these three options
@@ -119,25 +119,25 @@ if ($_POST)
 		$i++;
 		$failed=true;
 	}
-	if ( !$freeze_hour ) {
+	if ( $freeze_hour == "") {
 		$error[$i] = "You forgot to give the contest a freeze hour.<br>";
 		$i++;
 		$failed=true;
 	}
-	if ( !$end_hour ) {
+	if ( $end_hour == "" ) {
 		$error[$i] = "You forgot to give the contest an end hour.<br>";
 		$i++;
 		$failed=true;
 	}
-/*	if (!date_validate($contest_month, $contest_day, $contest_year)) {
-		$failed=true;
-	}
-	if (!time_validate($freeze_hour, $freeze_minute, $freeze_second)) {
-		$failed=true;
-	}
-	if (!time_validate($end_hour, $end_minute, $end_second)) {
-		$failed=true;
-	}*/
+	/*	if (!date_validate($contest_month, $contest_day, $contest_year)) {
+            $failed=true;
+        }
+        if (!time_validate($freeze_hour, $freeze_minute, $freeze_second)) {
+            $failed=true;
+        }
+        if (!time_validate($end_hour, $end_minute, $end_second)) {
+            $failed=true;
+        }*/
 
 	if ( !$base_directory ) {
 		$error[$i] = "You forgot to give the contest a base directory.<br>";
@@ -181,7 +181,7 @@ if ($_POST)
 	$sql.= "VALUES ( '$host_name', '$contest_name', '$num_problems', '$contest_date', ";
 	$sql.= "	     '$save_start', '$freeze_delay', '$contest_delay', ";
 	$sql.= "	     '$base_directory', '$ignore_stderr', '$username', '$password', '$show_team_names', '$save_ts', '$save_hs') ";
-echo $sql;
+//echo $sql;
 	$success = mysqli_query($link, $sql);
 	if ($success) {
 		if ($forbidden_c == 1 || $forbidden_cpp == 1 || $forbidden_java == 1 || $forbidden_python == 1) {
@@ -218,8 +218,7 @@ echo $sql;
 			echo "Please contact an administrator.";
 		}
 		else {
-			header("Location: setup_contest.php");
-			Print "<h2>Submission succeeded.  Redirecting...";
+			$status_msg = "Contest Edited Successfully";
 		}
 	}
 	else {
@@ -229,179 +228,179 @@ echo $sql;
 }
 /*******************************************************
 End of POST section
-*******************************************************/
-	include("lib/header.inc");
+ *******************************************************/
+include("lib/header.inc");
 
-	$link = mysqli_connect($db_host, $db_user, $db_pass, $db_name);
-	if(!$link){
-		print "Sorry.  Database connect failed.  Check your internet connection.";
-		exit;
-	}
+$link = mysqli_connect($db_host, $db_user, $db_pass, $db_name);
+if(!$link){
+	print "Sorry.  Database connect failed.  Check your internet connection.";
+	exit;
+}
 
-	$sql = mysqli_query($link, "SELECT * FROM CONTEST_CONFIG");
-	if (!$sql) {
-		print "Could not tell if a contest has been created.  bailing out.";
-		exit;
-		#die or break
-	}
-	if (mysqli_num_rows($sql) > 0) {
+$sql = mysqli_query($link, "SELECT * FROM CONTEST_CONFIG");
+if (!$sql) {
+	print "Could not tell if a contest has been created.  bailing out.";
+	exit;
+	#die or break
+}
+if (mysqli_num_rows($sql) > 0) {
 	//a contest is already set up!  allow user to edit
-		$contest=true;
-		$row = mysqli_fetch_assoc($sql);
-		echo "<center>\n";
-	
-		# Print out any errors
-		if(isset($error)) {
-		    echo "<br>";
-		    foreach($error as $er) {
+	$contest=true;
+	$row = mysqli_fetch_assoc($sql);
+	echo "<center>\n";
+
+	# Print out any errors
+	if(isset($error)) {
+		echo "<br>";
+		foreach($error as $er) {
 			echo "<b><font color=#ff0000>$er</font></b>";
-		    }
 		}
-		
-		echo "</center>";
-		echo "<p>";
-		echo "<form method=POST action=setup_contest.php>\n";
-		echo "<table align=center bgcolor=#ffffff cellpadding=0 cellspacing=0 border=0<tr><td>";
-		echo "<table width=100% cellpadding=5 cellspacing=1 border=0>\n";
-		echo "  <tr bgcolor=\"$hd_bg_color1\">\n";
-		echo "		<td align=\"center\" colspan=\"2\"><font color=\"$hd_txt_color1\"><b>Edit Contest Info</b></font></td>\n";
-		echo "	</tr>";
-		echo "	<tr bgcolor=\"$hd_bg_color2\">";
-		echo "		<td colspan=\"2\">Which aspect of your contest would you like to change?</td>";
-		echo "	</tr>";
-		$host = $row['HOST'];
-		$contest_name = $row['CONTEST_NAME'];
-		$today_month  = date('m', $contest_start_ts);
-		$today_day    = date('d', $contest_start_ts);
-		$today_year   = date('Y', $contest_start_ts);
-		$today_hour   = date('H', $contest_start_ts);
-		$today_minute = date('i', $contest_start_ts);
-		//calculating the number of seconds since January 1 1970 at midnight
-		//for our particular freeze/contest end values in seconds
-		$freeze_hour = gmdate('H', $contest_freeze_time);
-		$freeze_minute = gmdate('i', $contest_freeze_time);
-		$freeze_second = gmdate('s', $contest_freeze_time);
-		$end_hour = gmdate('H', $contest_end_time);
-		$end_minute = gmdate('i', $contest_end_time);
-		$end_second = gmdate('s', $contest_end_time);
-		$username = $row['JUDGE_USER'];
-		$password = $row['JUDGE_PASS'];
-		$base_directory = $row['BASE_DIRECTORY'];
-		$num_problems = $row['NUM_PROBLEMS'];
-		if($row['TEAM_SHOW'] == 1)
-			$team_show = "checked";
-		else
-			$team_show = "";
-		
-		if ($row['IGNORE_STDERR'] == true) {
-			$stderr_checked = "checked";
-		}
-		else {
-			$stderr_checked = "";
-		}
-		$language_specifics = mysqli_query($link, "SELECT * FROM LANGUAGE");
-		if (!$language_specifics) {
-			echo "Could not find language specific info<br />";
-			echo "Please contact an administrator.";
-		}
-		while ($lang_row = mysqli_fetch_assoc($language_specifics)) {
-			if ($lang_row['LANGUAGE_NAME'] == 'C') {
-				$headers_c_checked = $lang_row['REPLACE_HEADERS'];
-				$forbidden_c_checked = $lang_row['CHECK_BAD_WORDS'];
-				if ($headers_c_checked) {
-					$headers_c_checked = "checked";
-				}
-				if ($forbidden_c_checked) {
-					$forbidden_c_checked = "checked";
-				}
-			}
-			elseif ($lang_row['LANGUAGE_NAME'] == "CXX") {
-				$headers_cpp_checked = $lang_row['REPLACE_HEADERS'];
-				$forbidden_cpp_checked = $lang_row['CHECK_BAD_WORDS'];
-				if ($headers_cpp_checked) {
-					$headers_cpp_checked = "checked";
-				}
-				if ($forbidden_cpp_checked) {
-					$forbidden_cpp_checked = "checked";
-				}
-			}
-			elseif ($lang_row['LANGUAGE_NAME'] == "JAVA") {
-				$headers_java_checked = $lang_row['REPLACE_HEADERS'];
-				$forbidden_java_checked = $lang_row['CHECK_BAD_WORDS'];
-				if ($headers_java_checked) {
-					$headers_java_checked = "checked";
-				}
-				if ($forbidden_java_checked) {
-					$forbidden_java_checked = "checked";
-				}
-			}
-			elseif ($lang_row['LANGUAGE_NAME'] == "Python") {
-				$headers_python_checked = $lang_row['REPLACE_HEADERS'];
-				$forbidden_python_checked = $lang_row['CHECK_BAD_WORDS'];
-				if ($headers_python_checked) {
-					$headers_python_checked = "checked";
-				}
-				if ($forbidden_python_checked) {
-					$forbidden_python_checked = "checked";
-				}
-			}
-		}
+	}
+	echo "</center>";
+	echo "<p>";
+	echo "<form method=POST action=setup_contest.php>\n";
+	echo "<table align=center bgcolor=#ffffff cellpadding=0 cellspacing=0 border=0<tr><td>";
+	echo "<table width=100% cellpadding=5 cellspacing=1 border=0>\n";
+	echo "<tr><td><b>$status_msg</b></td></tr>";
+	echo "  <tr bgcolor=\"$hd_bg_color1\">\n";
+	echo "		<td align=\"center\" colspan=\"2\"><font color=\"$hd_txt_color1\"><b>Edit Contest Info</b></font></td>\n";
+	echo "	</tr>";
+	echo "	<tr bgcolor=\"$hd_bg_color2\">";
+	echo "		<td colspan=\"2\">Which aspect of your contest would you like to change?</td>";
+	echo "	</tr>";
+	$host = $row['HOST'];
+	$contest_name = $row['CONTEST_NAME'];
+	$today_month  = date('m', $contest_start_ts);
+	$today_day    = date('d', $contest_start_ts);
+	$today_year   = date('Y', $contest_start_ts);
+	$today_hour   = date('H', $contest_start_ts);
+	$today_minute = date('i', $contest_start_ts);
+	//calculating the number of seconds since January 1 1970 at midnight
+	//for our particular freeze/contest end values in seconds
+	$freeze_hour = gmdate('H', $contest_freeze_time);
+	$freeze_minute = gmdate('i', $contest_freeze_time);
+	$freeze_second = gmdate('s', $contest_freeze_time);
+	$end_hour = gmdate('H', $contest_end_time);
+	$end_minute = gmdate('i', $contest_end_time);
+	$end_second = gmdate('s', $contest_end_time);
+	$username = $row['JUDGE_USER'];
+	$password = $row['JUDGE_PASS'];
+	$base_directory = $row['BASE_DIRECTORY'];
+	$num_problems = $row['NUM_PROBLEMS'];
+	if($row['TEAM_SHOW'] == 1)
+		$team_show = "checked";
+	else
+		$team_show = "";
+
+	if ($row['IGNORE_STDERR'] == true) {
+		$stderr_checked = "checked";
 	}
 	else {
-		$contest=false;
-		echo "<center>\n";
-		echo "<b>Set up a Contest</b><br><br>\n";
-		echo "</center>\n";
-		echo "<form method=POST action=setup_contest.php>\n";
-		echo "<p>";
-		echo "<table align=center bgcolor=#ffffff cellpadding=0 cellspacing=0 border=0<tr><td>";
-		echo "<table width=100% cellpadding=5 cellspacing=1 border=0>\n";
-		echo "  <tr bgcolor=\"$hd_bg_color1\">\n";
-		echo "		<td align=\"center\" colspan=\"2\"><font color=\"$hd_txt_color1\">";
-		echo "			<b>Contest Info</b></font></td>\n";
-		$host = "";
-		$contest_name = "";
-		$today_month  = date('m');
-		$today_day    = date('d');
-		$today_year   = date('Y');
-		$today_hour   = date('H');
-		$today_minute = date('i');
-		$freeze_hour = "04";
-		$freeze_minute = "00";
-		$freeze_second = "00";
-		$end_hour = "05";
-		$end_minute = "00";
-		$end_second = "00";
-		$base_directory = "";
 		$stderr_checked = "";
-		$forbidden_c_checked = "";
-		$forbidden_cpp_checked = "";
-		$forbidden_java_checked = "";
-		$forbidden_python_checked = "";
-		$headers_c_checked = "";
-		$headers_cpp_checked = "";
-		$headers_java_checked = "";
-		$headers_python_checked = "";
-		$num_problems = 8;
-		$username = "judge";
-		$password = "";
 	}
+	$language_specifics = mysqli_query($link, "SELECT * FROM LANGUAGE");
+	if (!$language_specifics) {
+		echo "Could not find language specific info<br />";
+		echo "Please contact an administrator.";
+	}
+	while ($lang_row = mysqli_fetch_assoc($language_specifics)) {
+		if ($lang_row['LANGUAGE_NAME'] == 'C') {
+			$headers_c_checked = $lang_row['REPLACE_HEADERS'];
+			$forbidden_c_checked = $lang_row['CHECK_BAD_WORDS'];
+			if ($headers_c_checked) {
+				$headers_c_checked = "checked";
+			}
+			if ($forbidden_c_checked) {
+				$forbidden_c_checked = "checked";
+			}
+		}
+		elseif ($lang_row['LANGUAGE_NAME'] == "CXX") {
+			$headers_cpp_checked = $lang_row['REPLACE_HEADERS'];
+			$forbidden_cpp_checked = $lang_row['CHECK_BAD_WORDS'];
+			if ($headers_cpp_checked) {
+				$headers_cpp_checked = "checked";
+			}
+			if ($forbidden_cpp_checked) {
+				$forbidden_cpp_checked = "checked";
+			}
+		}
+		elseif ($lang_row['LANGUAGE_NAME'] == "JAVA") {
+			$headers_java_checked = $lang_row['REPLACE_HEADERS'];
+			$forbidden_java_checked = $lang_row['CHECK_BAD_WORDS'];
+			if ($headers_java_checked) {
+				$headers_java_checked = "checked";
+			}
+			if ($forbidden_java_checked) {
+				$forbidden_java_checked = "checked";
+			}
+		}
+		elseif ($lang_row['LANGUAGE_NAME'] == "Python") {
+			$headers_python_checked = $lang_row['REPLACE_HEADERS'];
+			$forbidden_python_checked = $lang_row['CHECK_BAD_WORDS'];
+			if ($headers_python_checked) {
+				$headers_python_checked = "checked";
+			}
+			if ($forbidden_python_checked) {
+				$forbidden_python_checked = "checked";
+			}
+		}
+	}
+}
+else {
+	$contest=false;
+	echo "<center>\n";
+	echo "<b>Set up a Contest</b><br><br>\n";
+	echo "</center>\n";
+	echo "<form method=POST action=setup_contest.php>\n";
+	echo "<p>";
+	echo "<table align=center bgcolor=#ffffff cellpadding=0 cellspacing=0 border=0<tr><td>";
+	echo "<table width=100% cellpadding=5 cellspacing=1 border=0>\n";
+	echo "  <tr bgcolor=\"$hd_bg_color1\">\n";
+	echo "		<td align=\"center\" colspan=\"2\"><font color=\"$hd_txt_color1\">";
+	echo "			<b>Contest Info</b></font></td>\n";
+	$host = "";
+	$contest_name = "";
+	$today_month  = date('m');
+	$today_day    = date('d');
+	$today_year   = date('Y');
+	$today_hour   = date('H');
+	$today_minute = date('i');
+	$freeze_hour = "04";
+	$freeze_minute = "00";
+	$freeze_second = "00";
+	$end_hour = "05";
+	$end_minute = "00";
+	$end_second = "00";
+	$base_directory = "";
+	$stderr_checked = "";
+	$forbidden_c_checked = "";
+	$forbidden_cpp_checked = "";
+	$forbidden_java_checked = "";
+	$forbidden_python_checked = "";
+	$headers_c_checked = "";
+	$headers_cpp_checked = "";
+	$headers_java_checked = "";
+	$headers_python_checked = "";
+	$num_problems = 8;
+	$username = "judge";
+	$password = "";
+}
 
 
 //let's prompt for some content
 
-	echo "		<tr bgcolor=\"$data_bg_color1\">";
-	echo "			<td>Name of the contest <b>host</b>:</td>";
-	echo "			<td><input type=\"text\" name=\"contest_host\" ";
-	echo "				size=\"20\" value=\"$host\">";
-	echo "				</input></td>";
-	echo "		</tr>";
-	echo "		<tr bgcolor=\"$data_bg_color1\">";
-	echo "			<td>The contest's <b>name</b>:</td>";
-	echo "			<td><input type=\"text\" name=\"contest_name\" ";
-	echo "				size=\"20\" value=\"$contest_name\">";
-	echo "				</input></td>";
-	echo "		</tr>";
+echo "		<tr bgcolor=\"$data_bg_color1\">";
+echo "			<td>Name of the contest <b>host</b>:</td>";
+echo "			<td><input type=\"text\" name=\"contest_host\" ";
+echo "				size=\"20\" value=\"$host\">";
+echo "				</input></td>";
+echo "		</tr>";
+echo "		<tr bgcolor=\"$data_bg_color1\">";
+echo "			<td>The contest's <b>name</b>:</td>";
+echo "			<td><input type=\"text\" name=\"contest_name\" ";
+echo "				size=\"20\" value=\"$contest_name\">";
+echo "				</input></td>";
+echo "		</tr>";
 #	echo "		<tr bgcolor=\"$data_bg_color1\">";
 #	echo "			<td>Number of problems:</td>";
 #	echo "			<td><input type=\"text\" name=\"num_problems\" ";
@@ -417,84 +416,84 @@ End of POST section
 #	echo "			<input type=\"text\" name=\"contest_year\" size=\"2\" ";
 #	echo "				maxlength=4 value=\"$today_year\"></td>";
 #	echo "		</tr> ";
-	echo "		<tr bgcolor=\"$data_bg_color1\"> ";
-	echo "			<td>Amount of time (HH:mm:ss) until the standings are frozen:</td> ";
-	echo "			<td><input type=\"text\" name=\"freeze_hour\" ";
-	echo "				size=\"2\" maxlength=2 value=\"$freeze_hour\"></input>:";
-	echo "			<input type=\"text\" name=\"freeze_minute\" ";
-	echo "				size=\"2\" maxlength=2 value=\"$freeze_minute\"></input>:";
-	echo "			<input type=\"text\" name=\"freeze_second\" ";
-	echo "				size=\"2\" maxlength=2 value=\"$freeze_second\"></input></td>";
-	echo "		</tr>";
-	echo "		<tr bgcolor=\"$data_bg_color1\">";
-	echo "			<td>Duration of the contest (HH:mm:ss)</td> ";
-	echo "			<td><input type=\"text\" name=\"end_hour\" size=\"2\"";
-	echo "				maxlength=2 value=\"$end_hour\"></input>:";
-	echo "			<input type=\"text\" name=\"end_minute\" size=\"2\"";
-	echo "				maxlength=2 value=\"$end_minute\"></input>:";
-	echo "			<input type=\"text\" name=\"end_second\" size=\"2\"";
-	echo "				maxlength=2 value=\"$end_second\"></input></td> ";
-	echo "		</tr>";
-	echo "		<tr bgcolor=\"$data_bg_color1\">";
-	echo "			<td>Base directory of the contest information (ex: ";
-	echo "			/usr/home/contest):</td> ";
-	echo "			<td><input type=\"text\" name=\"base_directory\" ";
-	echo "				size=\"30\" value=\"$base_directory\"></td>";
-	echo "		</tr>";
-	echo "		<tr bgcolor=\"$data_bg_color1\">";
-	echo "			<td>Username for all the judges to use</td> ";
-	echo "			<td><input type=\"text\" name=\"username\" ";
-	echo "				size=\"20\" value=\"$username\"></td>";
-	echo "		</tr>";
-	echo "		<tr bgcolor=\"$data_bg_color1\">";
-	echo "			<td>Password for the judge account</td> ";
-	echo "			<td><input type=password name=\"password\" ";
-	echo "				size=\"20\" value=\"$password\"></td>";
-	echo "		</tr>";
-	echo "		<tr bgcolor=\"$hd_bg_color2\">";
-	echo "			<td colspan=2>Customize the judging experience</td>";
-	echo "		</tr>";
-	echo "		<tr bgcolor=\"$data_bg_color1\">";
-	echo "			<td>Ignore standard error?</td>";
-	echo "			<td><input type=checkbox name=stderr $stderr_checked >";
-	echo "				</input>";
-	echo "		</tr>";
-	echo "		<tr bgcolor=\"$data_bg_color1\">";
-	echo "			<td>Check for forbidden words (C, C++, Java, Python)?</td>";
-	echo "			<td> C: &nbsp";
-	echo "			<input type=checkbox name=forbidden_c $forbidden_c_checked >";
-	echo "				</input> &nbsp C++: &nbsp";
-	echo "			<input type=checkbox name=forbidden_cpp $forbidden_cpp_checked >";
-	echo "				</input> &nbsp Java: &nbsp";
-	echo "			<input type=checkbox name=forbidden_java $forbidden_java_checked >";
-	echo "				</input> &nbsp Python: &nbsp";
-	echo "			<input type=checkbox name=forbidden_python $forbidden_python_checked >";
-	echo "				</input></td>";
-	echo "		</tr>";
-	echo "		<tr bgcolor=\"$data_bg_color1\">";
-	echo "			<td>Automatically include standard headers";
-	echo "				(C, C++, Java, Python)?</td>";
-	echo "			<td> C: &nbsp";
-	echo "			<input type=checkbox name=headers_c $headers_c_checked >";
-	echo "				</input> &nbsp C++: &nbsp";
-	echo "			<input type=checkbox name=headers_cpp $headers_cpp_checked >";
-	echo "				</input> &nbsp Java: &nbsp";
-	echo "			<input type=checkbox name=headers_java $headers_java_checked >";
-	echo "				</input> &nbsp Python: &nbsp";
-	echo "			<input type=checkbox name=headers_python $headers_python_checked >";
-	echo "				</input></td>";
-	echo "		</tr>";
-        echo "          <tr bgcolor=\"$data_bg_color1\">";
-        echo "                  <td>Display team names to judges?</td>";
-        echo "                  <td><input type=checkbox name=team_show $team_show >";
-        echo "                          </input>";
-        echo "          </tr>";
-	echo "		<tr align=center bgcolor=\"$data_bg_color1\">";
-	echo "			<td colspan=2> <input type=\"submit\" value=";
-	echo 			"\"Submit\" name=\"B1\"></input></td> ";
-	echo "		</tr>";
-	echo "	</table>";
-	echo "	</form>";
+echo "		<tr bgcolor=\"$data_bg_color1\"> ";
+echo "			<td>Amount of time (HH:mm:ss) until the standings are frozen:</td> ";
+echo "			<td><input type=\"text\" name=\"freeze_hour\" ";
+echo "				size=\"2\" maxlength=2 value=\"$freeze_hour\"></input>:";
+echo "			<input type=\"text\" name=\"freeze_minute\" ";
+echo "				size=\"2\" maxlength=2 value=\"$freeze_minute\"></input>:";
+echo "			<input type=\"text\" name=\"freeze_second\" ";
+echo "				size=\"2\" maxlength=2 value=\"$freeze_second\"></input></td>";
+echo "		</tr>";
+echo "		<tr bgcolor=\"$data_bg_color1\">";
+echo "			<td>Duration of the contest (HH:mm:ss)</td> ";
+echo "			<td><input type=\"text\" name=\"end_hour\" size=\"2\"";
+echo "				maxlength=2 value=\"$end_hour\"></input>:";
+echo "			<input type=\"text\" name=\"end_minute\" size=\"2\"";
+echo "				maxlength=2 value=\"$end_minute\"></input>:";
+echo "			<input type=\"text\" name=\"end_second\" size=\"2\"";
+echo "				maxlength=2 value=\"$end_second\"></input></td> ";
+echo "		</tr>";
+echo "		<tr bgcolor=\"$data_bg_color1\">";
+echo "			<td>Base directory of the contest information (ex: ";
+echo "			/usr/home/contest):</td> ";
+echo "			<td><input type=\"text\" name=\"base_directory\" ";
+echo "				size=\"30\" value=\"$base_directory\"></td>";
+echo "		</tr>";
+echo "		<tr bgcolor=\"$data_bg_color1\">";
+echo "			<td>Username for all the judges to use</td> ";
+echo "			<td><input type=\"text\" name=\"username\" ";
+echo "				size=\"20\" value=\"$username\"></td>";
+echo "		</tr>";
+echo "		<tr bgcolor=\"$data_bg_color1\">";
+echo "			<td>Password for the judge account</td> ";
+echo "			<td><input type=password name=\"password\" ";
+echo "				size=\"20\" value=\"$password\"></td>";
+echo "		</tr>";
+echo "		<tr bgcolor=\"$hd_bg_color2\">";
+echo "			<td colspan=2>Customize the judging experience</td>";
+echo "		</tr>";
+echo "		<tr bgcolor=\"$data_bg_color1\">";
+echo "			<td>Ignore standard error?</td>";
+echo "			<td><input type=checkbox name=stderr $stderr_checked >";
+echo "				</input>";
+echo "		</tr>";
+echo "		<tr bgcolor=\"$data_bg_color1\">";
+echo "			<td>Check for forbidden words (C, C++, Java, Python)?</td>";
+echo "			<td> C: &nbsp";
+echo "			<input type=checkbox name=forbidden_c $forbidden_c_checked >";
+echo "				</input> &nbsp C++: &nbsp";
+echo "			<input type=checkbox name=forbidden_cpp $forbidden_cpp_checked >";
+echo "				</input> &nbsp Java: &nbsp";
+echo "			<input type=checkbox name=forbidden_java $forbidden_java_checked >";
+echo "				</input> &nbsp Python: &nbsp";
+echo "			<input type=checkbox name=forbidden_python $forbidden_python_checked >";
+echo "				</input></td>";
+echo "		</tr>";
+echo "		<tr bgcolor=\"$data_bg_color1\">";
+echo "			<td>Automatically include standard headers";
+echo "				(C, C++, Java, Python)?</td>";
+echo "			<td> C: &nbsp";
+echo "			<input type=checkbox name=headers_c $headers_c_checked >";
+echo "				</input> &nbsp C++: &nbsp";
+echo "			<input type=checkbox name=headers_cpp $headers_cpp_checked >";
+echo "				</input> &nbsp Java: &nbsp";
+echo "			<input type=checkbox name=headers_java $headers_java_checked >";
+echo "				</input> &nbsp Python: &nbsp";
+echo "			<input type=checkbox name=headers_python $headers_python_checked >";
+echo "				</input></td>";
+echo "		</tr>";
+echo "          <tr bgcolor=\"$data_bg_color1\">";
+echo "                  <td>Display team names to judges?</td>";
+echo "                  <td><input type=checkbox name=team_show $team_show >";
+echo "                          </input>";
+echo "          </tr>";
+echo "		<tr align=center bgcolor=\"$data_bg_color1\">";
+echo "			<td colspan=2> <input type=\"submit\" value=";
+echo 			"\"Submit\" name=\"B1\"></input></td> ";
+echo "		</tr>";
+echo "	</table>";
+echo "	</form>";
 
-		include("lib/footer.inc");
+include("lib/footer.inc");
 ?>

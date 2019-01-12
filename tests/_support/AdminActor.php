@@ -68,7 +68,6 @@ class AdminActor extends AcceptanceTester
         $I->amOnMyPage("setup_teams.php");
         $I->fillField('team_name', $name);
         $I->fillField('username', $username);
-        $I->fillField('organization', $organization);
         $I->fillField('password', $password);
         $I->click('submit');
     }
@@ -304,4 +303,241 @@ class AdminActor extends AcceptanceTester
         $I->fillFieldWithAttr('site_name','site_name');
         $I->click('submit');
     }
+
+/* Duration Actions */
+    /**
+     * Edit the length of a contest
+     */
+    public function editContestLength($hours, $minutes, $seconds)
+    {
+        $I = $this;
+        $I->amOnMyPage('setup_contest.php');
+        $I->fillField('end_hour', $hours);
+        $I->fillField('end_minute', $minutes);
+        $I->fillField('end_second', $seconds);
+        $I->click("Submit");
+    }
+
+    /**
+     * Clean up ContestEndCest by resetting time
+     */
+    public function resetContestTime()
+    {
+        $I = $this;
+        $I->amOnMyPage('setup_contest.php');
+        $I->fillField('end_hour', $I->attr["default_start_hour"]);
+        $I->fillField('end_minute', $I->attr["default_start_minute"]);
+        $I->fillField('end_second', $I->attr["default_start_second"]);
+        $I->click("Submit");
+    }
+
+    /**
+     * Extend the contest
+     */
+    public function extendContest($hours,$minutes,$seconds)
+    {
+        $I = $this;
+        $I->amOnMyPage("misc.php");
+        $I->fillField("ext_hour", $hours);
+        $I->fillField("ext_minute", $minutes);
+        $I->fillField("ext_second", $seconds);
+        $I->click("Extend Contest");
+    }
+
+    /**
+     * Set the time until the freeze
+     */
+    public function editFreezeTime($hours, $minutes, $seconds)
+    {
+        $I = $this;
+        $I->amOnMyPage('setup_contest.php');
+        $I->fillField('freeze_hour', $hours);
+        $I->fillField('freeze_minute', $minutes);
+        $I->fillField('freeze_second', $seconds);
+        $I->click("Submit");
+    }
+
+    /**
+     * Reset the freeze time
+     */
+    public function resetFreezeTime()
+    {
+        $I = $this;
+        $I->amOnMyPage('setup_contest.php');
+        $I->fillField('freeze_hour', $I->attr["default_freeze_hour"]);
+        $I->fillField('freeze_minute', $I->attr["default_freeze_minute"]);
+        $I->fillField('freeze_second', $I->attr["default_freeze_minute"]);
+        $I->click("Submit");
+    }
+
+/* Category Actions */
+
+    /**
+     * Creates a new category
+     */
+    public function createCategory($catName)
+    {
+        $I = $this;
+        $I->amOnMyPage("setup_categories.php");
+        $I->fillField('category_name', $catName);
+        $I->click("Submit");
+    }
+
+    /**
+     *  Edits the first category
+     */
+    public function editCategory($catName)
+    {
+        $I = $this;
+        $I->amOnMyPage("setup_categories.php");
+        $I->click("Edit");
+        $I->fillField('category_name', $catName);
+        $I->click("Submit");
+    }
+
+    /**
+     * Deletes the first category
+     */
+    public function deleteCategory()
+    {
+        $I = $this;
+        $I->amOnMyPage("setup_categories.php");
+        $I->click("Delete");
+    }
+
+    /**
+     * Start to edit a problem and then navigate away
+     */
+    public function categoryEditCancel()
+    {
+        $I = $this;
+        $I->amOnMyPage("setup_categories.php");
+        $I->click("Edit");
+        $I->fillField("category_name", "Its nice to see you again.");
+        $I->click("Problems");
+    }
+
+    private function getCheckBoxName($catName)
+    {
+        $I = $this;
+        $category_id_array = $I->grabFromDatabase('CATEGORIES', 'CATEGORY_ID',
+            array('CATEGORY_NAME' => $catName));
+        $team_id_array = $I->grabFromDatabase('TEAMS','TEAM_ID',array());
+        return "$team_id_array[0]|$category_id_array[0]";
+    }
+    /**
+     * Check the first team's first category box
+     */
+    public function checkTeamCategoryBox($catName)
+    {
+        $I = $this;
+        $I->amOnMyPage("setup_team_category.php");
+        $checkBox = $I->getCheckBoxName($catName);
+        $I->checkOption($checkBox);
+        $I->click("Make Changes");
+        return $checkBox;
+    }
+
+    /**
+     * Unheck the first team's first category box
+     */
+    public function uncheckTeamCategoryBox($catName)
+    {
+        $I = $this;
+        $I->amOnMyPage("setup_team_category.php");
+        $checkBox = $I->getCheckBoxName($catName);
+        $I->uncheckOption($checkBox);
+        $I->click("Make Changes");
+        return $checkBox;
+    }
+
+/* Header and Forbidden Actions */
+
+    /**
+     * Add a $headerFile to $language's headers
+     */
+    public function addHeader($language, $headerFile)
+    {
+        $I = $this;
+        $I->amOnMyPage("setup_headers");
+        $I->click(['name' => $language."Edit"]);
+        $I->appendField("edit_headers", $headerFile);
+        $I->click("Submit");
+    }
+
+    /**
+     * Delete a $headerFile from $language's headers
+     */
+    public function deleteHeader($language, $headerFile)
+    {
+        $I = $this;
+        $I->amOnMyPage("setup_headers");
+        $I->click(['name' => $language."Edit"]);
+        $I->removeFromField("textarea", $headerFile);
+        $I->click("Submit");
+    }
+
+    /**
+     * Remove $text from a field specified by $field
+     */
+    public function removeFromField($field, $text)
+    {
+        $I = $this;
+        $originalText = $I->grabTextFrom($field);
+        $stringToBeDeletedPos = strpos($originalText, $text);
+        $replacementTextBeginning = substr($originalText, 0, $stringToBeDeletedPos);
+        $replacementTextEnding = substr($originalText, $stringToBeDeletedPos + strlen($text));
+        $I->fillField($field, $replacementTextBeginning);
+        $I->appendField($field, $replacementTextEnding);
+    }
+
+    /**
+     * Add a $word to the $language's forbidden words list
+     */
+    public function addForbiddenWord($language, $word)
+    {
+        $I = $this;
+        $I->amOnMyPage("setup_forbidden");
+        $I->click(['name' => $language."Edit"]);
+        $I->appendField("edit_forbidden_words", $word);
+        $I->click("Submit");
+    }
+
+    /**
+     * Delete a $word from the $language's forbidden words list
+     */
+    public function deleteForbiddenWord($language, $word)
+    {
+        $I = $this;
+        $I->amOnMyPage("setup_forbidden");
+        $I->click(['name' => $language."Edit"]);
+        $I->removeFromField("textarea", $word);
+        $I->click("Submit");
+    }
+
+/* Clearing Actions */
+
+    /**
+     * Navigate to Misc and clear a contest
+     */
+    public function clearContest()
+    {
+        $I = $this;
+        $I->amOnMyPage("misc.php");
+        $I->click("Clear Contest");
+    }
+
+ /* Cloning Actions */
+
+    /**
+     * Create new cloned contest with name $newContestName
+     */
+    public function cloneContest($newContestName)
+    {
+        $I = $this;
+        $I->amOnMyPage("misc.php");
+        $I->fillField("clone_name", $newContestName);
+        $I->click("Clone Contest");
+    }
+
 }

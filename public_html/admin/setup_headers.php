@@ -66,7 +66,7 @@ else if($_POST)
 			//clear out the DB
 			$sql = "delete from HEADERS where LANGUAGE_ID = '";
 			$sql .= $_SESSION['edit_language'] . "'";
-			$result = mysqli_query($sql);
+			$result = mysqli_query($link,$sql);
 			if(!$result)
 			{
 				$error_msg .= "Error: " . mysqli_error($link);
@@ -114,7 +114,7 @@ if(mysqli_num_rows($result) > 0) {
 	while($row = mysqli_fetch_assoc($result)){
 		$cur_headers .= "<tr><td>" . $row['LANGUAGE_NAME']; 
 		$cur_headers .= " </td><td><font size=-1>";
-		$cur_headers .= "<a href=setup_headers.php?lang_id=" . $row['LANGUAGE_ID'] . ">Edit</a>";
+		$cur_headers .= "<a href=setup_headers.php?lang_id=" . $row['LANGUAGE_ID'] . " name =" . $row['LANGUAGE_NAME'] . "Edit>Edit</a>";
 		$cur_headers .= "</font>";
 		$cur_headers .= "</td></tr>";
 	}

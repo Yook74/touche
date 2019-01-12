@@ -1,12 +1,17 @@
 <?php
 
 
-class EditHeadersCest
+class EditHeadersForbiddenCest
 {
     # Valid source file extensions.
-    private static $src_extensions = array("C" => ".c", "Java" => ".java", "C++" => ".cpp");
+    private static $src_extensions_headers = array("C" => ".c", "Java" => ".java", "C++" => ".cpp");
+
+    private static $src_extensions_forbidden = array("C" => ".c", "C++" => ".cpp");
 
     private static $top_dir = "example_submissions";
+
+    # These languages are checked for forbidden words
+    private static $forbidden_word = array("C", "C++");
 
     # A list of teams that will be submitting problems. Populated in createTeams
     private $teams = array();
@@ -16,8 +21,8 @@ class EditHeadersCest
      * @param AdminActor $admin will be used to create the team in the contest
      * @param \Codeception\Scenario $scenario Needed to construct TeamActors
      */
-    public function _createTeams(AdminActor $admin, \Codeception\Scenario $scenario){
-        foreach (self::$src_extensions as $lang_name => $extension){
+    private function createTeams(AdminActor $admin, \Codeception\Scenario $scenario, $src_extensions){
+        foreach ($src_extensions as $lang_name => $extension){
             $admin->attrLogin();
 
             $teamName = "$lang_name team";
@@ -29,7 +34,7 @@ class EditHeadersCest
             $team->attr["name"] = $teamName;
             $team->attr["username"] = $username;
             $team->attr["password"] = $password;
-
+            $team->attr["forbidden_word"] = in_array($lang_name, self::$forbidden_word);
             $team->attr["extension"] = $extension; # The file extension this team submits
 
             array_push($this->teams, $team);
@@ -40,23 +45,23 @@ class EditHeadersCest
      * Deletes all the teams and re-creates the default team.
      * @param AdminActor $admin some admin actor
      */
-//    public function _deleteTeams(AdminActor $admin){
-//        $admin->attrLogin();
-//        foreach ($this->teams as $_){
-//            $admin->deleteTeam();
-//        }
-//        $admin->deleteTeam();
-//        $admin->addDefaultTeam();
-//
-//        $this->teams = array();
-//    }
+    private function deleteTeams(AdminActor $admin){
+        $admin->attrLogin();
+        foreach ($this->teams as $_){
+            $admin->deleteTeam();
+        }
+        $admin->deleteTeam();
+        $admin->addDefaultTeam();
+
+        $this->teams = array();
+    }
 
     /**
      * Wrapper around TeamActor->submitSolution
      * @param TeamActor $I one of the elements of the $teams array
      * @param string $sub_dir a subdirectory listed in dirs_results
      */
-    public function _submitSolution(TeamActor $I, $sub_dir){
+    private function submitSolution(TeamActor $I, $sub_dir){
         $I->attrLogin();
         $extension = $I->attr['extension'];
 
@@ -70,7 +75,7 @@ class EditHeadersCest
      * @param JudgeActor $I must be logged in
      * @param bool $status true if accepted is desired; false otherwise
      */
-    public function _assertJudgmentsMatch(JudgeActor $I, $status){
+    private function assertJudgmentsMatch(JudgeActor $I, $status){
         $I->amOnMyPage("judge.php");
         if($status == true)
             $I->see("Accepted");
@@ -84,28 +89,28 @@ class EditHeadersCest
      * @param \Codeception\Scenario $scenario opaque variable passed through for creating a team actor
      * @param $acceptBool true if accepted is desired; false otherwise
      */
-    public function _submitBatch(JudgeActor $judge, \Codeception\Scenario $scenario, $acceptBool)
+    private function submitBatch(JudgeActor $judge, \Codeception\Scenario $scenario, $acceptBool, $dir)
     {
         $num_submissions = 0;
         $wait_per_submission = 13; # How long each submission takes to be judged
         foreach ($this->teams as $team){
-            $this->_submitSolution($team, "additional_headers");
+            $this->submitSolution($team, $dir);
             $num_submissions++;
         }
         $judge->attrLogin();
         $judge->waitForAutoJudging($wait_per_submission * $num_submissions, 75);
 
-        $this->_assertJudgmentsMatch($judge, $acceptBool);
+        $this->assertJudgmentsMatch($judge, $acceptBool);
         for (; $num_submissions > 0; $num_submissions--) {
-            $judge->rejectSubmission();
+            $judge->judgeSubmission();
         }
     }
     
     public function invalidHeaderFiles(AdminActor $admin, JudgeActor $judge, \Codeception\Scenario $scenario)
     {
         $judge->wantTo("Judge files with invalid header files");
-        $this->_createTeams($admin, $scenario);
-        $this->_submitBatch($judge, $scenario, false);
+        $this->createTeams($admin, $scenario, self::$src_extensions_headers);
+        $this->submitBatch($judge, $scenario, false, "additional_headers");
     }
 
     public function addHeaders(AdminActor $I)
@@ -122,7 +127,7 @@ class EditHeadersCest
     public function validHeaderFiles(JudgeActor $judge, \Codeception\Scenario $scenario)
     {
         $judge->wantTo("Judge files with now valid header files");
-        $this->_submitBatch($judge, $scenario, true);
+        $this->submitBatch($judge, $scenario, true, "additional_headers");
     }
 
     public function deleteHeaders(AdminActor $I)
@@ -134,6 +139,42 @@ class EditHeadersCest
         $I->see("Header changed successfully");
         $I->deleteHeader("JAVA","java.text.*");
         $I->see("Header changed successfully");
-        $this->_deleteTeams($I);
+        $this->deleteTeams($I);
+    }
+
+    public function forbiddenWordsPresent(AdminActor $admin, JudgeActor $judge, \Codeception\Scenario $scenario)
+    {
+        $judge->wantTo("Judge files with forbidden words and have them fail");
+        $this->createTeams($admin, $scenario, self::$src_extensions_forbidden);
+        $this->submitBatch($judge, $scenario, false, "forbidden_word");
+    }
+
+    public function deleteForbiddenWords(AdminActor $I)
+    {
+        $I->wantTo("Delete forbidden words to test the system");
+        $I->deleteForbiddenWord("C", "system");
+        $I->see("Forbidden Word changed successfully");
+        $I->deleteForbiddenWord("CXX", "open");
+        $I->see("Forbidden Word changed successfully");
+        $I->deleteForbiddenWord("CXX", "fstream");
+        $I->see("Forbidden Word changed successfully");
+    }
+
+    public function forbiddenWordRemoved(JudgeActor $judge, \Codeception\Scenario $scenario)
+    {
+        $judge->wantTo("Judge files with forbidden words and have them succeed");
+        $this->submitBatch($judge, $scenario, true, "forbidden_word");
+    }
+
+    public function addForbiddenWords(AdminActor $I)
+    {
+        $I->wantTo("Add forbidden words back to reset to default");
+        $I->addForbiddenWord("C", "system");
+        $I->see("Forbidden Word changed successfully");
+        $I->addForbiddenWord("CXX", "open");
+        $I->see("Forbidden Word changed successfully");
+        $I->addForbiddenWord("CXX", "fstream");
+        $I->see("Forbidden Word changed successfully");
+        $this->deleteTeams($I);
     }
 }

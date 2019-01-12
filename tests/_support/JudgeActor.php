@@ -104,22 +104,25 @@ class JudgeActor extends AcceptanceTester
 
 /* Judging actions */
     /**
-     * Rejects the first problem on the judging page with "Error (reason unknown)"
-     * In future, this should probably be able to pick which submission to reject
+     * Judges the first problem on the judging page
+     * $result is the response given to the team
+     * $page is which page the submission should be reviewed on
      */
-    public function rejectSubmission(){
+    public function judgeSubmission($result = "Error (Reason Unknown)", $page = "judge.php")
+    {
         $I = $this;
-        $I->amOnMyPage("judge.php");
+        $I->amOnMyPage($page);
         $I->click("judge submission");
-        $I->selectOption("result", "Error (Reason Unknown)");
+        $I->selectOption("result", $result);
         $I->click("Submit Results");
     }
 
     /**
      * Waits until any submission is ready for judging and then waits a little longer for the auto judgement to be made
      * @param int $expected_time how long the auto judging should take
+     * @param int $autoJudgeTime is the default amount of time to wait until timeout
      */
-    public function waitForAutoJudging($expected_time = 7){
+    public function waitForAutoJudging($expected_time = 7, $autoJudgeTime = 65){
         $I = $this;
         $I->amOnMyPage('judge.php');
         if($this->attr['invoke_cronscript']){
@@ -127,8 +130,52 @@ class JudgeActor extends AcceptanceTester
            $result = system("php ../public_html/$c_name/judge/cronScript.php > /dev/null");
            if($result != 0) throw new RuntimeException("Cronscript invocation failed");
         } else {
-            $I->waitForText('judge submission', 65); #wait for cron to call the cronscript
+            $I->waitForText('judge submission', $autoJudgeTime); #wait for cron to call the cronscript
         }
         $I->wait($expected_time);
+    }
+
+    public function getEndHour()
+    {
+        $I = $this;
+        $pageSource = $I->grabPageSource();
+        $contestStringPos = strpos($pageSource, "Time Till Contest End");
+        $contestString = substr($pageSource, $contestStringPos);
+        $judgeEndHour = substr($contestString, 23, 2);
+        return $judgeEndHour;
+    }
+
+/* Category Actions */
+
+    /**
+     * View the category page
+     */
+    public function viewCategory($catName)
+    {
+        $I = $this;
+        $I->amOnMyPage("standings.php");
+        $I->click($catName);
+    }
+
+/* Submission Actions */
+
+    /**
+     * Filter by selected $problemName
+     */
+    public function filterProblem($problemName)
+    {
+        $I = $this;
+        $I->amOnMyPage("judge.php");
+        $I->click($problemName);
+    }
+
+    /**
+     * Filter by selected $teamName
+     */
+    public function filterByTeam($teamID)
+    {
+        $I = $this;
+        $I->amOnMyPage("judge.php");
+        $I->selectOption("team", $teamID);
     }
 }
