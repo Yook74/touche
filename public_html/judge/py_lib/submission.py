@@ -1,7 +1,7 @@
 import subprocess
 import shutil
 import re
-from os import path
+from os import path, chdir
 from configparser import ConfigParser
 from glob import glob
 
@@ -92,7 +92,10 @@ class Submission:
             raise IOError("Something went wrong when opening file %s" % path.abspath(config_path))
 
         for key in parsed_config['list']:
-            self.config[key] = parsed_config['list'][key].split(' ')
+            if parsed_config['list'][key] == '':
+                self.config[key] = []
+            else:
+                self.config[key] = parsed_config['list'][key].split(' ')
 
         self.config.update(dict(parsed_config['singleton']))  # Adds the singleton items into the config
 
@@ -235,6 +238,7 @@ class Submission:
         self.source_path = path.join(self.submission_dir, source_name)
 
         self.get_io_paths()
+        chdir(self.submission_dir)
 
     def pre_compile(self):
         self.strip_headers()

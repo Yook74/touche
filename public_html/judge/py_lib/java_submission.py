@@ -27,7 +27,7 @@ class JavaSubmission(Submission):
         """
         out = ''
         for header in self.config['headers']:
-            out += '#import %s;\n' % header
+            out += 'import %s;\n' % header
 
         return out
 
@@ -36,22 +36,17 @@ class JavaSubmission(Submission):
         Compiles the source file using the compiler information specified in the config file
         :raises CompileError
         """
-        '''
-        self.executable_path = path.join(self.dirs['judged'], self.base_name)
-        self.error_path = path.join(self.dirs['judged'], self.base_name + '.err')
-        with open(self.error_path, 'w') as error_file:
+        self.error_path = path.join(self.submission_dir, 'compile-err.txt')
+        compiler_path = path.join(self.config['java_path'], self.config['compiler_name'])
 
-            args = [self.config['compiler']] + \
-                   self.config['compiler_flags'] + \
-                   [self.executable_path, self.source_path] + \
-                   self.config['linker_flags']
+        with open(self.error_path, 'w') as error_file:
+            args = [compiler_path, self.source_path] + self.config['compiler_flags']
             try:
                 subprocess.run(args, stderr=error_file, check=True)
 
             except subprocess.CalledProcessError as err:
                 raise CompileError(err.returncode)
-                '''
-        pass
 
     def get_bare_execute_cmd(self):
-        pass
+        jvm_path = path.join(self.config['java_path'], self.config['jvm_name'])
+        return [jvm_path] + self.config['jvm_flags'] + [self.config['main_class_name']]
