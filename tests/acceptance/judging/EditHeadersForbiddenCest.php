@@ -102,7 +102,7 @@ class EditHeadersForbiddenCest
 
         $this->assertJudgmentsMatch($judge, $acceptBool);
         for (; $num_submissions > 0; $num_submissions--) {
-            $judge->rejectSubmission();
+            $judge->judgeSubmission();
         }
     }
     

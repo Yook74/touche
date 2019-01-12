@@ -59,6 +59,6 @@ class TeamVisibilityCest
      */
     public function teamsStillInvisible(JudgeActor $I){
         $this->dontSeeTeams($I);
-        $I->rejectSubmission();
+        $I->judgeSubmission();
     }
 }

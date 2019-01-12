@@ -104,25 +104,16 @@ class JudgeActor extends AcceptanceTester
 
 /* Judging actions */
     /**
-     * Rejects the first problem on the judging page with "Error (reason unknown)"
-     * In future, this should probably be able to pick which submission to reject
+     * Judges the first problem on the judging page
+     * $result is the response given to the team
+     * $page is which page the submission should be reviewed on
      */
-    public function rejectSubmission(){
+    public function judgeSubmission($result = "Error (Reason Unknown)", $page = "judge.php")
+    {
         $I = $this;
-        $I->amOnMyPage("judge.php");
+        $I->amOnMyPage($page);
         $I->click("judge submission");
-        $I->selectOption("result", "Error (Reason Unknown)");
-        $I->click("Submit Results");
-    }
-
-    /**
-     * Accepts submission
-     */
-    public function acceptSubmission(){
-        $I = $this;
-        $I->amOnMyPage("judge.php");
-        $I->click("judge submission");
-        $I->selectOption("result", "Accepted");
+        $I->selectOption("result", $result);
         $I->click("Submit Results");
     }
 

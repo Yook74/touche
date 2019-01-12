@@ -202,7 +202,7 @@ class JudgingCest
             $this->assertJudgmentsMatch($judge, $judgement);
             $this->testJudgeResponse($judge, $judgement);
             for (; $num_submissions > 0; $num_submissions--){
-                $judge->rejectSubmission();
+                $judge->judgeSubmission();
             }
         }
 
