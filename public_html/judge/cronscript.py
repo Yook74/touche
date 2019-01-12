@@ -74,7 +74,7 @@ def construct_submission(one_submission_info, db_driver: DBDriver):
     if extension not in EXTENSION_NAME:
         raise UndefinedFileTypeError(extension)
 
-    submission_dir = str(one_submission_info[2]) + '-' + str(one_submission_info[1]) + '-' + str(one_submission_info[3])
+    submission_dir = '%d-%d-%d' % one_submission_info[1:4]
     lang_name = EXTENSION_NAME[extension]
     lang_info = db_driver.get_language_info(lang_name)
     class_to_construct = NAME_CLASS[lang_name]

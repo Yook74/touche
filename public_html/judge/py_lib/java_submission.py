@@ -48,5 +48,6 @@ class JavaSubmission(Submission):
                 raise CompileError(err.returncode)
 
     def get_bare_execute_cmd(self):
+        java_chdir = "-Duser.dir=%s" % self.submission_dir  # This makes java run the Main class in the submission dir
         jvm_path = path.join(self.config['java_path'], self.config['jvm_name'])
-        return [jvm_path] + self.config['jvm_flags'] + [self.config['main_class_name']]
+        return [jvm_path] + self.config['jvm_flags'] + [java_chdir, self.config['main_class_name']]

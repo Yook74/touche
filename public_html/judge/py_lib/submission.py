@@ -238,7 +238,6 @@ class Submission:
         self.source_path = path.join(self.submission_dir, source_name)
 
         self.get_io_paths()
-        chdir(self.submission_dir)
 
     def pre_compile(self):
         self.strip_headers()
