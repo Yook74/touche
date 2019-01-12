@@ -78,7 +78,7 @@
 
 	$file_name = $_FILES['source_file']['name'];
 	$submission_dir = "$base_dir/queue/$team_id-$problem_id-$ts";
-	mkdir($submission_dir, 775);
+	mkdir($submission_dir, 0775);
     $result = move_uploaded_file($_FILES['source_file']['tmp_name'],
 		       "$submission_dir/$file_name");
     if(!$result){
