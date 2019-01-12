@@ -7,6 +7,6 @@ if [ `ls $HOME/active-contests | wc -l` -gt 0 ] ; then
 	do
 		dir=`basename $file`
 		cd "$HOME/public_html/$dir/judge"
-		./cronScript.php > ./errorLog.txt &
+		python3 cronscript.py > ./errorLog.txt &
 	done
 fi
