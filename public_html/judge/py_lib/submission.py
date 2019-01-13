@@ -1,11 +1,9 @@
 import subprocess
 import shutil
 import re
-from os import path, chdir
+from os import path
 from configparser import ConfigParser
 from glob import glob
-
-from .exceptions import *
 
 
 class Submission:
@@ -47,36 +45,6 @@ class Submission:
         self.compare_out_paths = []  # paths to the files outputted by the submitted solution given an in_file
         self.correct_out_paths = []  # paths to the correct output for this problem
 
-# Helpers
-
-    def replace_in_source(self, regex, repl):
-        """
-        Replaces all instances of the given regex with the repl string in the source file
-        :return Everything that was deleted from the source file
-        """
-        with open(self.source_path, 'r+') as source_file:
-            file_string = source_file.read()
-            matches = re.findall(regex, file_string)
-            file_string = re.sub(regex, repl, file_string)
-
-            source_file.seek(0)
-            source_file.write(file_string)
-            source_file.truncate()
-
-        return matches
-
-    def prefix_source(self, prefix_str):
-        """
-        Writes the given prefix string to the beginning of the source file
-        """
-        with open(self.source_path, 'r+') as source_file:
-            file_string = source_file.read()
-            file_string = prefix_str + file_string
-
-            source_file.seek(0)
-            source_file.write(file_string)
-            source_file.truncate()
-
     def parse_config(self, config_path):
         """
         Parses the config file.
@@ -116,74 +84,33 @@ class Submission:
             out_path = path.join(self.submission_dir, out_name)
             self.compare_out_paths.append(out_path)
 
-    def get_bare_execute_cmd(self):
+    def replace_in_source(self, regex, repl):
         """
-        :return: The command needed to run the compiled code without any piping etc
+        Replaces all instances of the given regex with the repl string in the source file
+        :return Everything that was deleted from the source file
         """
-        return self.executable_path
+        with open(self.source_path, 'r+') as source_file:
+            file_string = source_file.read()
+            matches = re.findall(regex, file_string)
+            file_string = re.sub(regex, repl, file_string)
 
-    def execute_one_test(self, input_path, output_path):
+            source_file.seek(0)
+            source_file.write(file_string)
+            source_file.truncate()
+
+        return matches
+
+    def prefix_source(self, prefix_str):
         """
-        Executes the command from get_bare_execute_cmd with piping to the given input and output files
-        :param input_path: path to one of the input files for a problem
-        :param output_path: path to an empty file which will be written to by the executed program
-        :raises TimeExceededError if max_cpu_time is exceeded
-        :raises ExternalRuntimeError if the executable produces a runtime error
+        Writes the given prefix string to the beginning of the source file
         """
-        input_file = open(input_path, 'r')
-        output_file = open(output_path, 'w')
+        with open(self.source_path, 'r+') as source_file:
+            file_string = source_file.read()
+            file_string = prefix_str + file_string
 
-        kwargs = {'args': self.get_bare_execute_cmd(),
-                  'stdin': input_file,
-                  'stdout': output_file,
-                  'timeout': self.config['max_cpu_time'],
-                  'check': True}
-
-        if not self.config['ignore_stderr']:
-            kwargs['stderr'] = output_file
-
-        try:
-            subprocess.run(**kwargs)
-
-        except subprocess.TimeoutExpired as err:
-            raise TimeExceededError()
-
-        except subprocess.CalledProcessError as err:
-            raise ExternalRuntimeError()
-
-        finally:
-            input_file.close()
-            output_file.close()
-
-    @staticmethod
-    def diff(correct_path, compare_path, diff_path=None, no_ws=False):
-        """
-        Uses the linux diff tool to determine if the files located by correct_path and compare_path are the same
-        :param correct_path: The path to the known correct file
-        :param compare_path: The path to the questionable file
-        :param diff_path: The output of the diff will be placed here
-        :param no_ws: True if the diff should ignore whitespace characters
-        :return: True if compare_path and correct_path are the same and False otherwise
-        """
-        if no_ws:
-            flags = ['-b', '-B', '-q']
-        else:
-            flags = ['-u']
-
-        args = ['diff'] + flags + [correct_path, compare_path]
-        if diff_path is None:
-            completed_process = subprocess.run(args, stdout=subprocess.DEVNULL)
-        else:
-            diff_file = open(diff_path, 'w')
-            completed_process = subprocess.run(args, stdout=diff_file)
-            diff_file.close()
-
-        if completed_process.returncode == 0:
-            return True
-        elif completed_process.returncode == 1:
-            return False
-        else:
-            raise subprocess.CalledProcessError(completed_process.returncode, args)
+            source_file.seek(0)
+            source_file.write(file_string)
+            source_file.truncate()
 
     def strip_headers(self):
         raise NotImplementedError()
@@ -221,9 +148,67 @@ class Submission:
 
         for word in self.config['forbidden_words']:
             if word in file_string:
-                raise ForbiddenWordError(word)
+                pass  # TODO report forbidden word
 
-# API methods
+    def pre_compile(self):
+        self.strip_headers()
+        self.check_bad_words()
+        self.insert_headers()
+
+    def compile(self):
+        raise NotImplementedError()
+
+    def get_bare_execute_cmd(self):
+        """
+        :return: The command needed to run the compiled code without any piping etc
+        """
+        return self.executable_path
+
+    def execute_one_test(self, input_path, output_path):
+        """
+        Executes the command from get_bare_execute_cmd with piping to the given input and output files
+        :param input_path: path to one of the input files for a problem
+        :param output_path: path to an empty file which will be written to by the executed program
+        :raises TimeExceededError if max_cpu_time is exceeded
+        :raises ExternalRuntimeError if the executable produces a runtime error
+        """
+        input_file = open(input_path, 'r')
+        output_file = open(output_path, 'w')
+
+        kwargs = {'args': self.get_bare_execute_cmd(),
+                  'stdin': input_file,
+                  'stdout': output_file,
+                  'timeout': self.config['max_cpu_time'],
+                  'check': True}
+
+        if not self.config['ignore_stderr']:
+            kwargs['stderr'] = output_file
+
+        try:
+            subprocess.run(**kwargs)
+
+        except subprocess.TimeoutExpired as err:
+            pass  # TODO report Timeout error
+
+        except subprocess.CalledProcessError as err:
+            pass  # TODO report Runtime error
+
+        finally:
+            input_file.close()
+            output_file.close()
+
+    def execute(self):
+        """
+        Executes the compiled code for all of the test cases.
+        If the compiled submission produces a runtime error, the other test cases will still be run,
+        but the runtime error will be re-raised afterward
+        """
+        reported_error = None
+        for in_path, compare_out_path in zip(self.in_paths, self.compare_out_paths):
+            self.execute_one_test(in_path, compare_out_path)
+            # TODO handle timeout and runtime errors
+        if reported_error is not None:
+            raise reported_error
 
     def move_to_judged(self):
         """
@@ -239,40 +224,41 @@ class Submission:
 
         self.get_io_paths()
 
-    def pre_compile(self):
-        self.strip_headers()
-        self.check_bad_words()
-        self.insert_headers()
-
-    def compile(self):
-        raise NotImplementedError()
-
     def move_to_jail(self):
         pass
 
-    def execute(self):
-        """
-        Executes the compiled code for all of the test cases.
-        If the compiled submission produces a runtime error, the other test cases will still be run,
-        but the runtime error will be re-raised afterward
-        """
-        reported_error = None
-        for in_path, compare_out_path in zip(self.in_paths, self.compare_out_paths):
-            try:
-                self.execute_one_test(in_path, compare_out_path)
-
-            except ExternalRuntimeError as thrown:
-                reported_error = thrown
-
-            except TimeExceededError as thrown:
-                if reported_error is None:
-                    reported_error = thrown
-
-        if reported_error is not None:
-            raise reported_error
-
     def move_from_jail(self):
         pass
+
+    @staticmethod
+    def diff(correct_path, compare_path, diff_path=None, no_ws=False):
+        """
+        Uses the linux diff tool to determine if the files located by correct_path and compare_path are the same
+        :param correct_path: The path to the known correct file
+        :param compare_path: The path to the questionable file
+        :param diff_path: The output of the diff will be placed here
+        :param no_ws: True if the diff should ignore whitespace characters
+        :return: True if compare_path and correct_path are the same and False otherwise
+        """
+        if no_ws:
+            flags = ['-b', '-B', '-q']
+        else:
+            flags = ['-u']
+
+        args = ['diff'] + flags + [correct_path, compare_path]
+        if diff_path is None:
+            completed_process = subprocess.run(args, stdout=subprocess.DEVNULL)
+        else:
+            diff_file = open(diff_path, 'w')
+            completed_process = subprocess.run(args, stdout=diff_file)
+            diff_file.close()
+
+        if completed_process.returncode == 0:
+            return True
+        elif completed_process.returncode == 1:
+            return False
+        else:
+            raise subprocess.CalledProcessError(completed_process.returncode, args)
 
     def judge_output(self):
         """
@@ -287,12 +273,12 @@ class Submission:
 
             if not self.diff(correct_out_path, compare_out_path, diff_path):
                 if not self.diff(correct_out_path, compare_out_path, no_ws=True):
-                    reported_error = IncorrectOutputError()
+                    pass  # TODO report Incorrect Output
                 else:
                     if reported_error is None:
-                        reported_error = FormatError()
+                        pass  # TODO report Format Error
             else:
-                pass  # This was correct
+                pass  # TODO report accepted
 
         if reported_error is not None:
             raise reported_error
