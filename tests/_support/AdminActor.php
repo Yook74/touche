@@ -292,6 +292,16 @@ class AdminActor extends AcceptanceTester
         $I->click("Submit");
     }
 
+    /**
+     * Delete the first dataset
+     */
+    public function deleteDataset()
+    {
+        $I = $this;
+        $I->amOnMyPage("setup_data_sets.php");
+        $I->click("Delete");
+    }
+
 /* Site Actions */
     /**
      * Create a site described in adminAtr.ini
@@ -540,7 +550,7 @@ class AdminActor extends AcceptanceTester
         $I->click("Clone Contest");
     }
 
-/* Misc. Contest Edit Details */
+/* Misc. */
 
     /**
      * Check the 'Ignore Standard Error?' checkbox
@@ -562,5 +572,16 @@ class AdminActor extends AcceptanceTester
         $I->amOnMyPage("setup_contest.php");
         $I->uncheckOption("stderr");
         $I->click("Submit");
+    }
+
+    /**
+     * Click the recalculate responses button
+     */
+    public function recalculateResponses()
+    {
+        $I = $this;
+        $I->amOnMyPage("misc.php");
+        $I->click("recalculate responses");
+        $I->acceptPopup();
     }
 }
