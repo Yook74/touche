@@ -540,4 +540,27 @@ class AdminActor extends AcceptanceTester
         $I->click("Clone Contest");
     }
 
+/* Misc. Contest Edit Details */
+
+    /**
+     * Check the 'Ignore Standard Error?' checkbox
+     */
+    public function checkStdErrorCheckbox()
+    {
+        $I = $this;
+        $I->amOnMyPage("setup_contest.php");
+        $I->checkOption("stderr");
+        $I->click("Submit");
+    }
+
+    /**
+     * Uncheck the 'Ignore Standard Error?' checkbox
+     */
+    public function uncheckStdErrorCheckbox()
+    {
+        $I = $this;
+        $I->amOnMyPage("setup_contest.php");
+        $I->uncheckOption("stderr");
+        $I->click("Submit");
+    }
 }
