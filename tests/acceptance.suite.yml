@@ -8,8 +8,14 @@ actor: AcceptanceTester
 modules:
     enabled:
         - WebDriver:
-            url: http://10.120.160.20/~USERNAME HERE/
-            browser: phantomjs
+            url: http://10.120.160.20/~USERNAMEHERE/
+            window_size: false
+            port: 9515
+            browser: chrome
+            capabilities:
+                chromeOptions:
+                    args: ["--headless", "--disable-gpu", "--disable-extensions"]
+                    binary: "/usr/bin/google-chrome"
         - Asserts
         - Db:
             dsn: 'mysql:host=localhost;dbname=placeholder'
