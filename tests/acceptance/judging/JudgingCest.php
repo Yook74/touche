@@ -138,18 +138,15 @@ class JudgingCest
                 $I->see("White space diff succeeded");
             case "Incorrect Output":
                 $I->see($file1);
-                //get the link for the page that "Output Files" links to, since tab actions don't work in codeception
-                $link = $I->grabMultiple("[name=\"$file1\"]", 'href');
-                $newPage = substr($link[0], strpos($link[0], "test_contest"));
-                //use amOnPage instead of amOnUrl because codeception doesn't like it
-                $I->amOnPage($newPage);
+                $I->click("[name=\"$file1\"]");
+                $I->switchToNextTab();
                 $I->see("Comparing Output Files");
-                $I->moveBack();
+                $I->closeTab();
                 $I->see($file2);
-                $link = $I->grabMultiple("[name=\"$file2\"]", 'href');
-                $newPage = substr($link[0], strpos($link[0], "test_contest"));
-                $I->amOnPage($newPage);
+                $I->click("[name=\"$file2\"]");
+                $I->switchToNextTab();
                 $I->see("Comparing Output Files");
+                $I->closeTab();
                 break;
             default:
                 $I->see($judgment);
