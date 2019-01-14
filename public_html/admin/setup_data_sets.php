@@ -23,7 +23,7 @@ if($_POST)
 	{
 		$problem_id = $_POST['problem_id'];
 		$_SESSION['edit_problem'] = $problem_id;
-		$error_msg = "Successfull: New data set created";
+		$error_msg = "Successful: New data set created";
 		$sql = "select * from PROBLEMS WHERE PROBLEM_ID = '$problem_id'";
 		$result = mysqli_query($link, $sql);
 		if(!$result)
