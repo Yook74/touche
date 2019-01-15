@@ -179,4 +179,40 @@ class JudgeActor extends AcceptanceTester
         $I->amOnMyPage("judge.php");
         $I->selectOption("team", $teamID);
     }
+
+//Standings Actions
+
+    /**
+     * @return bool returns true if $team1 is ahead of $team2 on the leaderboard
+     */
+    public function isAheadOf($team1, $team2)
+    {
+        $pageSource = $this->grabPageSource();
+        $team1POS = strrpos($pageSource, $team1);
+        $team2POS = strrpos($pageSource, $team2);
+        return $team1POS < $team2POS;
+    }
+
+    /**
+     * Find and return the problem score for a given $teamName and $problemNumber
+     */
+    public function getAProblemScore($teamName, $problemNumber = "1")
+    {
+        $problemNumber = $problemNumber - 1; //Judge standings is 0 indexed
+        $score = $this->grabTextFrom("[name=\"$teamName Score $problemNumber\"]");
+        $scoreArray = explode('/', $score);
+        return $scoreArray[0];
+    }
+
+    /**
+     * Find and return the overall score for a given $teamName
+     */
+    public function getAnOverallScore($teamName)
+    {
+        $score = $this->grabTextFrom("[name=\"$teamName Overall Score\"]");
+        $scoreArray = explode('(', $score);
+        return $scoreArray[0];
+    }
 }
+
+
