@@ -242,7 +242,7 @@
 	$min = $row['PROBLEM_ID'];
 	for($j=$min; $j<($min + $num_problems); $j++) { // change this later
 	    echo "<td align=center>\n";
-	    echo "<font face=arial size=3>\n";
+		echo "<font name=\"" . $standings[$i]['team_name'] . " Score $i\" face=arial size=3>\n";
 	    if(isset($standings[$i]['problems'][$j]['ts'])) {
 		echo gmdate("H:i", $standings[$i]['problems'][$j]['ts'] - $site_start_ts);
 	    } else {
@@ -258,7 +258,7 @@
 	    echo "</td>\n";
 	}
 
-	echo "<td align=center>\n";
+	echo "<td align=center name=\"" . $standings[$i]['team_name'] . " Overall Score\" >\n";
 	if(!isset($standings[$i]['problems_completed']) || $standings[$i]['problems_completed']==0) {
 	    echo "0";
 	} else {
