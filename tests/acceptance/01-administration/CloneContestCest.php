@@ -34,6 +34,12 @@ class CloneContestCest
         $I->see(self::$newCat);
     }
 
+    public function editProblemInClonedContest(AdminActor $I)
+    {
+        $I->wantTo("Edit a problem in the cloned contest");
+        $I->editProblem();
+    }
+
     public function correctTeamLogin(TeamActor $I)
     {
         $I->wantTo('Try to log in as Team');
@@ -45,6 +51,14 @@ class CloneContestCest
         $I->wantTo("Delete the cloned contest");
         $I->deleteContest($helper);
         CreatorActor::switchContest(self::$path, self::$newContestName, $this->originalContestName, $I);
+    }
+
+    public function viewProblems(AdminActor $I)
+    {
+        $I->wantTo("Make sure that the edited clone contest problem is not present in the original contest");
+        $I->amOnMyPage("setup_problems.php");
+        $I->click("Edit");
+        $I->dontSee("Hello, tester");
     }
 
     public function cleanup(AdminActor $I)
