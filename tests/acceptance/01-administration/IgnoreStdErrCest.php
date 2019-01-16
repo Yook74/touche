@@ -29,6 +29,7 @@ class IgnoreStdErrCest
     {
         $I->wantTo("Submit the same solution again");
         $I->submitSolution(self::$stdErrorFilePath);
+        $I->see("Judging pending. ");
     }
 
     public function successfulSubmission(JudgeActor $I)
