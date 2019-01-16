@@ -229,7 +229,7 @@ if(mysqli_num_rows($result) > 0) {
 		$cur_problems .= " </td><td><font size=-1>";
 		$cur_problems .= "<a href=setup_problems.php?problem_id=" . $row['PROBLEM_ID'] . ">Edit</a>";
 		$cur_problems .= "</font></td><td><font size=-1>";;
-		$cur_problems .= "<a href=setup_problems.php?remove_id=" . $row['PROBLEM_ID'] . ">Delete</a>";
+		$cur_problems .= "<a name=delete" . $row['PROBLEM_ID'] . " href=setup_problems.php?remove_id=" . $row['PROBLEM_ID'] . ">Delete</a>";
 		$cur_problems .= "</font><br>\n";
 		$cur_problems .= "</td></tr>";
 	}
