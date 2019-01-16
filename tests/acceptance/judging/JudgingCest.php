@@ -139,19 +139,19 @@ class JudgingCest
                 $I->assertNotEquals("", $fullField);
                 break;
             case "Format Error":
-                $I->see("White space diff succeeded");
+                $I->see("No-whitespace diff Succeeded");
             case "Incorrect Output":
                 $I->see($file1);
                 //get the link for the page that "Output Files" links to, since tab actions don't work in codeception
                 $link = $I->grabMultiple("[name=\"$file1\"]", 'href');
-                $newPage = substr($link[0], strpos($link[0], "test_contest"));
+                $newPage = substr($link[0], strpos($link[0], CreatorActor::getContestName()));
                 //use amOnPage instead of amOnUrl because codeception doesn't like it
                 $I->amOnPage($newPage);
                 $I->see("Comparing Output Files");
                 $I->moveBack();
                 $I->see($file2);
                 $link = $I->grabMultiple("[name=\"$file2\"]", 'href');
-                $newPage = substr($link[0], strpos($link[0], "test_contest"));
+                $newPage = substr($link[0], strpos($link[0], CreatorActor::getContestName()));
                 $I->amOnPage($newPage);
                 $I->see("Comparing Output Files");
                 break;

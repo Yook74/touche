@@ -20,7 +20,7 @@
 	}
 	
 	if ($state == 2) {
-		echo "<center><br><font color=\"#ee0000\">You have alread solved this problem!</font><br></center>\n";
+		echo "<center><br><font color=\"#ee0000\">You have already solved this problem!</font><br></center>\n";
 	}
 	
 	if ($state == 3) {
@@ -75,7 +75,7 @@
 		$sql .= "ORDER BY ATTEMPT ASC";
 		$result = mysqli_query($link, $sql);
 		echo mysqli_error($link);
-		$sql2 =  "SELECT TS, ATTEMPT   ";
+		$sql2 =  "SELECT TS, ATTEMPT ";
 		$sql2 .= "FROM QUEUED_SUBMISSIONS ";
 		$sql2 .= "WHERE ";
 		$sql2 .= "    PROBLEM_ID='$problem[id]' AND TEAM_ID='$team_id' ";
@@ -89,33 +89,21 @@
 			echo "		<td align=\"center\" width=\"34%\">Result</td>\n";
 			echo "	</tr>\n";
 			while($row = mysqli_fetch_array($result)) {
-				// --- START HACK ALERT ---
-                                // sb hack - 2007-09-27
-                                // Should be ECORRECT, not 9
-                                // Was the following line.
-                                //if($row['RESPONSE_ID'] == 0) {
-
-                                if($row['RESPONSE_ID'] == 9) {
-                                // --- END HACK ALERT ---
-					$color = "green";
-				}
-				else {
-					$color = "red";
-				}
+                $color = $responses[$row['RESPONSE_ID']]['COLOR'];
 				echo "<tr bgcolor=\"$data_bg_color1\">\n";
-				echo "<td align=\"center\"><font color=\"$color\">".$row['ATTEMPT']."</font></td>\n";
-				echo "<td align=\"center\"><font color=\"$color\">".
+				echo "<td align=\"center\"><font color=\"black\">".$row['ATTEMPT']."</font></td>\n";
+				echo "<td align=\"center\"><font color=\"black\">".
 					date("g:i:s a", $row['TS'])."</font></td>\n";
 				echo "<td align=center><font color=\"$color\">";
-				echo $responses[$row['RESPONSE_ID']]['response'];
+				echo $responses[$row['RESPONSE_ID']]['DISPLAY_TEXT'];
 				echo "</font></td>\n";
 				echo "</tr>\n";
 			}
 			while($row = mysqli_fetch_array($result2)) {
-				$color = "red";
+                $color = "red";
 				echo "<tr bgcolor=\"$data_bg_color1\">\n";
-				echo "<td align=\"center\"><font color=\"$color\">".$row['ATTEMPT']."</font></td>\n";
-				echo "<td align=\"center\"><font color=\"$color\">".
+				echo "<td align=\"center\"><font color=\"black\">".$row['ATTEMPT']."</font></td>\n";
+				echo "<td align=\"center\"><font color=\"black\">".
 					date("g:i:s a", $row['TS'])."</font></td>\n";
 				echo "<td align=center><font color=\"$color\">";
 				echo "Queued for judging";

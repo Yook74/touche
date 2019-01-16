@@ -137,8 +137,8 @@ if (!$responses_query) {
 }
 while ($row = mysqli_fetch_assoc($responses_query)) {
     $response_id = $row['RESPONSE_ID'];
-    $responses[$response_id]['response'] = $row['RESPONSE'];
-    $responses[$response_id]['color'] = $row['RESPONSE_COLOR'];
+    $responses[$response_id]['response'] = $row['DISPLAY_TEXT'];
+    $responses[$response_id]['color'] = $row['COLOR'];
 }
 }
 ?>
