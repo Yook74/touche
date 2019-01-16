@@ -37,7 +37,7 @@ class FreezeCest
     {
         $I->wantTo("Accept a submission after the freeze");
         $I->waitForAutoJudging();
-        $I->acceptSubmission();
+        $I->judgeSubmission("Accepted");
     }
 
     public function viewUpdatedStandings(JudgeActor $I)
