@@ -71,6 +71,8 @@ At the end of your test session, run `$ ./vendor/bin/codecept run tests/acceptan
 The numbers in front of the test folders allow you to run `$ ./vendor/bin/codecept run tests/acceptance/` 
 and have the tests execute in a correct order.
 
+Contest_duration runs right before delete_contest because nothing should happen after the contest ends.
+
 After a set of tests runs, the results of the test can be reviewed.
 By pointing your browser to `src/tests/_output/records.html`, you can view the results of the most recently run set of tests. 
  
