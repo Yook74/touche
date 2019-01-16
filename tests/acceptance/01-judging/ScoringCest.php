@@ -71,7 +71,7 @@ class ScoringCest
         $I->wantTo("See if the scoring has updated correctly as a judge");
         $I->amOnMyPage("standings.php");
         $I->see("/1");
-        $score = $I->getAProblemScore();
+        $score = $I->getAProblemScore(parse_ini_file("tests/_support/teamAttr.ini")["name"]);
         $I->dontSee("00:0$score");
         $I->assertGreaterThanOrEqual(0, $score);
         $I->assertLessThanOrEqual(5, $score);
