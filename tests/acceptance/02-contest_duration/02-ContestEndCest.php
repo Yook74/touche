@@ -29,11 +29,4 @@ class ContestEndCest
         $I->amOnMyPage("main.php");
         $I->dontSee("Time Till Contest End");
     }
-
-    public function resetTime(AdminActor $I)
-    {
-        $I->wantTo("Reset the contest information back to normal");
-        $I->resetContestTime();
-        $I->see("Contest Edited Successfully");
-    }
 }
