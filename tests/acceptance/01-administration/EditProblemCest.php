@@ -90,14 +90,14 @@ class EditProblemCest
     {
         $I->wantTo("Get rejected when the user tries to create a problem without a location");
         $I->createProblemNoLocation();
-        $I->see("You forget to set the problem location");
+        $I->see("You forgot to set the problem location");
     }
 
     public function noNameCreation(AdminActor $I)
     {
         $I->wantTo("Get rejected when the user tries to create a problem without a name");
         $I->createProblemNoName();
-        $I->see("You forget to set the problem name");
+        $I->see("You forgot to set the problem name");
     }
 
     public function cleanup(AdminActor $I)
