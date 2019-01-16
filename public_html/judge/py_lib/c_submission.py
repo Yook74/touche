@@ -1,5 +1,4 @@
-from .submission import Submission
-from .exceptions import *
+from .submission import *
 
 import shutil
 from os import path
@@ -64,8 +63,8 @@ class CSubmission(Submission):
         :raises CompileError
         """
         self.executable_path = path.join(self.submission_dir, 'executable')
-        self.error_path = path.join(self.submission_dir, 'compile-err.txt')
-        with open(self.error_path, 'w') as error_file:
+        error_path = path.join(self.submission_dir, ERROR_FILE_NAME)
+        with open(error_path, 'w') as error_file:
 
             args = [self.config['compiler']] + \
                    self.config['compiler_flags'] + \
@@ -75,5 +74,5 @@ class CSubmission(Submission):
                 subprocess.run(args, stderr=error_file, check=True)
 
             except subprocess.CalledProcessError as err:
-                raise CompileError(err.returncode)
+                self.results.report_pre_exec_error(ECOMPILE, ERROR_FILE_NAME, error_no=err.returncode)
 

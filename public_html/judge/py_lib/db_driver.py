@@ -62,6 +62,7 @@ class DBDriver:
                      'judged': os.path.join(base_dir, JUDGED_DIR_NAME),
                      'data': os.path.join(base_dir, DATA_DIR_NAME)}
 
+        return self.dirs
         curs.close()
 
     def get_forbidden(self, lang_id):
@@ -135,23 +136,47 @@ class DBDriver:
         curs.close()
         return row_id
 
-    def report_judgement(self, judged_id, judgement_code, in_file, error_no=None):
+    def report_auto_judgement(self, judged_id, judgement_code, input_file, output_file, error_no=None):
         """
-        Reports that the given submission has been judged and what the results of the judgement were
+        Inserts a row into the AUTO_JUDGMENT table
         :param judged_id: returned by report_pending
         :param judgement_code: a code that indicates which judgement was made
-        :param in_file: TODO seems to be used for a lot of things
-        :param error_no: the error number from a runtime or compile error
+        :param input_file: The name of the file which served as input for this run of the program (may be None if error)
+        :param output_file: The name of the file which was outputted by the program. May contain error text.
+        :param error_no: the error number if applicable
         """
         curs = self.__connection.cursor()
+        columns = ['JUDGED_ID', 'OUTPUT_FILE', 'RESPONSE_ID']
+        values = [judged_id, output_file, judgement_code]
+        formats = ['%d', "'%s'", '%d']
+
+        if input_file is not None:
+            columns.append('INPUT_FILE')
+            values.append(input_file)
+            formats.append("'%s'")
+
         if error_no is not None:
-            curs.execute('''INSERT INTO AUTO_RESPONSES (JUDGED_ID, IN_FILE, AUTO_RESPONSE, ERROR_NO)
-                            VALUES (%d, '%s', %d, %d)''' % (judged_id, in_file, judgement_code, error_no))
-        else:
-            curs.execute('''INSERT INTO AUTO_RESPONSES (JUDGED_ID, IN_FILE, AUTO_RESPONSE)
-                            VALUES (%d, '%s', %d)''' % (judged_id, in_file, judgement_code))
+            columns.append('ERROR_NO')
+            values.append(error_no)
+            formats.append('%d')
+
+        columns = '(%s)' % ', '.join(columns)
+        formats = '(%s)' % ', '.join(formats)
+        value_clause = formats % tuple(values)
+
+        curs.execute('INSERT INTO AUTO_RESPONSES ' + columns + ' VALUES ' + value_clause)
         self.__connection.commit()
         curs.close()
+
+    def get_response_codes(self):
+        """
+        :return: A dictionary which associates response keywords with their IDs
+        """
+        curs = self.__connection.cursor()
+        curs.execute('''SELECT RESPONSE_ID, KEYWORD FROM RESPONSES''')
+        out = {tupl[1]: tupl[0] for tupl in curs.fetchall()}
+        curs.close()
+        return out
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.__del__()

@@ -1,13 +1,15 @@
 import fcntl
-import os
-import re
 import traceback
+import sys
+from os import path
+from os import mkdir
 
 from py_lib.c_submission import CSubmission
 from py_lib.java_submission import JavaSubmission
 from py_lib.python_submission import PythonSubmission
 from py_lib.db_driver import DBDriver
-from py_lib.exceptions import *
+from py_lib.submission_results import *
+from py_lib.submission import ERROR_FILE_NAME
 
 
 EXTENSION_NAME = {  # TODO document .py2 and put this information in the database
@@ -25,23 +27,6 @@ NAME_CLASS = {  # Associates the names used in the database with the Submission 
     'Python2': PythonSubmission,
     'Python3': PythonSubmission}
 
-ERROR_CODE_PATH = 'lib/responses.inc'
-error_codes = {}
-
-
-def parse_error_codes():
-    with open(ERROR_CODE_PATH, 'r') as code_file:
-        file_string = code_file.read()
-
-    defines = re.findall(r'define\w*\(\w*"[^"]*"\w*,[0-9]*\w*\)\w*;', file_string)
-    for define in defines:
-        split = define.split('"')
-        key = split[1]
-        value = split[2]
-        value = re.findall(r'[0-9]+', value)[0]
-        value = int(value)
-        error_codes[key] = value
-
 
 def acquire_lock(file_handle):
     """
@@ -51,6 +36,7 @@ def acquire_lock(file_handle):
     try:
         fcntl.lockf(file_handle, fcntl.LOCK_EX | fcntl.LOCK_NB)
     except IOError:
+        print('Failed to acquire file lock. Exiting.', file=sys.stderr)
         exit(1)
 
 
@@ -60,6 +46,34 @@ def release_lock(file_handle):
     :param file_handle: The same parameter you passed to acquire_lock
     """
     fcntl.lockf(file_handle, fcntl.LOCK_UN)
+
+
+def report_error(judgement_code, one_submission_info, db_driver: DBDriver):
+    """
+    Reports an EFILETYPE or EUNKNOWN error to the database
+    :param judgement_code: EFILETYPE or EUNKNOWN
+    :param one_submission_info: a row from the QUEUED_SUBMISSIONS table
+    :param db_driver: a DBDriver object
+    """
+    if judgement_code == EFILETYPE:
+        message = 'Unknown file type'
+    elif judgement_code == EUNKNOWN:
+        message = 'Something went wrong, probably on our end.'
+    else:
+        raise ValueError('report_error cannot handle the error code %d' % judgement_code)
+
+    results = SubmissionResults()
+    judged_dir = db_driver.dirs['judged']
+    submission_dir = '%d-%d-%d' % one_submission_info[1:4]
+    submission_dir = path.join(judged_dir, submission_dir)
+    if not path.isdir(submission_dir):
+        mkdir(submission_dir)
+
+    error_path = path.join(submission_dir, ERROR_FILE_NAME)
+    results.report_pre_exec_error(judgement_code, ERROR_FILE_NAME, message, error_path)
+
+    judgement_info = results.get_auto_judgements()[0]
+    db_driver.report_auto_judgement(one_submission_info[0], **judgement_info)
 
 
 def construct_submission(one_submission_info, db_driver: DBDriver):
@@ -72,7 +86,7 @@ def construct_submission(one_submission_info, db_driver: DBDriver):
     extension = extension.lower()
 
     if extension not in EXTENSION_NAME:
-        raise UndefinedFileTypeError(extension)
+        return None
 
     submission_dir = '%d-%d-%d' % one_submission_info[1:4]
     lang_name = EXTENSION_NAME[extension]
@@ -93,65 +107,40 @@ def construct_submission(one_submission_info, db_driver: DBDriver):
                               headers=db_driver.get_headers(lang_info[0]))
 
 
-def process_submission(submission):
-    """
-    Performs all the steps necessary to determine if a submission is correct.
-    """
-    submission.move_to_judged()
-    submission.pre_compile()
-    submission.compile()
-    submission.move_to_jail()
-    submission.execute()
-    submission.move_from_jail()
-    submission.judge_output()
-
-
 def judge_submissions(db_driver: DBDriver):
     """
-    Assigns an autoresponse to every queued submission in the database
+    Creates one or more entries in the AUTO_RESPONSE table for every queued submission
     """
     for row in db_driver.get_submission_info():
         sub_id = db_driver.report_pending(row)
 
         try:
             submission = construct_submission(row, db_driver)
-            process_submission(submission)
 
-        except UndefinedFileTypeError as err:
-            db_driver.report_judgement(sub_id, error_codes['EFILETYPE'], '')
+            if submission is None:
+                report_error(EFILETYPE, row, db_driver)
+                continue
+            else:
+                results = submission.get_results()
 
-        except ForbiddenWordError as err:
-            db_driver.report_judgement(sub_id, error_codes['EFORBIDDEN'], '')
-
-        except CompileError as err:
-            db_driver.report_judgement(sub_id, error_codes['ECOMPILE'], '')
-
-        except TimeExceededError as err:
-            db_driver.report_judgement(sub_id, error_codes['ERUNLENGTH'], '')
-
-        except ExternalRuntimeError as err:
-            db_driver.report_judgement(sub_id, error_codes['ERUNTIME'], '')
-
-        except IncorrectOutputError as err:
-            db_driver.report_judgement(sub_id, error_codes['EINCORRECT'], '')
-
-        except FormatError as err:
-            db_driver.report_judgement(sub_id, error_codes['EFORMAT'], '')
-
-        except BaseException as err:
-            db_driver.report_judgement(sub_id, error_codes['EUNKNOWN'], '')
+        except:
+            report_error(EUNKNOWN, row, db_driver)
             traceback.print_exc()
+            continue
 
-        else:  # Accepted
-            db_driver.report_judgement(sub_id, error_codes['ECORRECT'], '')
+        if results.get_overall_judgement_code() is None:
+            report_error(EUNKNOWN, row, db_driver)
+            print("Something goofed when getting the overall judgement code", file=sys.stderr)
+            continue
+
+        for judgement in results.get_auto_judgements():
+                db_driver.report_auto_judgement(sub_id, **judgement)
 
 
 def main():
     with DBDriver() as db:
         lock_file = open(os.path.join(db.dirs['base'], "lockfile.lock"), 'w')
         acquire_lock(lock_file)
-
-        parse_error_codes()
 
         judge_submissions(db)
 

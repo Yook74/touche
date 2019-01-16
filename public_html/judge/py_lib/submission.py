@@ -5,6 +5,10 @@ from os import path
 from configparser import ConfigParser
 from glob import glob
 
+from .submission_results import *
+
+ERROR_FILE_NAME = 'error.txt'
+
 
 class Submission:
     def __init__(self, **kwargs):
@@ -39,11 +43,12 @@ class Submission:
 
         self.stripped_headers = None
         self.executable_path = None
-        self.error_path = None
 
         self.in_paths = []  # paths to the .in files of the problem's test data
         self.compare_out_paths = []  # paths to the files outputted by the submitted solution given an in_file
         self.correct_out_paths = []  # paths to the correct output for this problem
+
+        self.results = SubmissionResults()
 
     def parse_config(self, config_path):
         """
@@ -148,7 +153,10 @@ class Submission:
 
         for word in self.config['forbidden_words']:
             if word in file_string:
-                pass  # TODO report forbidden word
+                err_path = path.join(self.submission_dir, ERROR_FILE_NAME)
+                self.results.report_pre_exec_error(EFORBIDDEN, ERROR_FILE_NAME,
+                                                   'Forbidden word in source: %s' % word, err_path)
+                return
 
     def pre_compile(self):
         self.strip_headers()
@@ -164,55 +172,42 @@ class Submission:
         """
         return self.executable_path
 
-    def execute_one_test(self, input_path, output_path):
-        """
-        Executes the command from get_bare_execute_cmd with piping to the given input and output files
-        :param input_path: path to one of the input files for a problem
-        :param output_path: path to an empty file which will be written to by the executed program
-        :raises TimeExceededError if max_cpu_time is exceeded
-        :raises ExternalRuntimeError if the executable produces a runtime error
-        """
-        input_file = open(input_path, 'r')
-        output_file = open(output_path, 'w')
-
-        kwargs = {'args': self.get_bare_execute_cmd(),
-                  'stdin': input_file,
-                  'stdout': output_file,
-                  'timeout': self.config['max_cpu_time'],
-                  'check': True}
-
-        if not self.config['ignore_stderr']:
-            kwargs['stderr'] = output_file
-
-        try:
-            subprocess.run(**kwargs)
-
-        except subprocess.TimeoutExpired as err:
-            pass  # TODO report Timeout error
-
-        except subprocess.CalledProcessError as err:
-            pass  # TODO report Runtime error
-
-        finally:
-            input_file.close()
-            output_file.close()
-
     def execute(self):
         """
-        Executes the compiled code for all of the test cases.
-        If the compiled submission produces a runtime error, the other test cases will still be run,
-        but the runtime error will be re-raised afterward
+        Executes the command given by get_bare_execute_command once per input/output file combination.
+        Reports a ETIMEOUT or ERUNTIME error if the called process takes too long to run or trips over its shoelaces
         """
-        reported_error = None
-        for in_path, compare_out_path in zip(self.in_paths, self.compare_out_paths):
-            self.execute_one_test(in_path, compare_out_path)
-            # TODO handle timeout and runtime errors
-        if reported_error is not None:
-            raise reported_error
+        for input_path, output_path in zip(self.in_paths, self.compare_out_paths):
+            input_file = open(input_path, 'r')
+            output_file = open(output_path, 'w')
+
+            kwargs = {'args': self.get_bare_execute_cmd(),
+                      'stdin': input_file,
+                      'stdout': output_file,
+                      'timeout': self.config['max_cpu_time'],
+                      'check': True}
+
+            if not self.config['ignore_stderr']:
+                kwargs['stderr'] = output_file
+
+            try:
+                subprocess.run(**kwargs)
+
+            except subprocess.TimeoutExpired:
+                self.results.add_sub_judgment(ETIMEOUT, path.split(input_path)[-1], path.split(output_path)[-1],
+                                              'The program took too long to execute', output_path)
+
+            except subprocess.CalledProcessError as err:
+                self.results.add_sub_judgment(ERUNTIME, path.split(input_path)[-1], path.split(output_path)[-1],
+                                              error_no=err.returncode)
+
+            finally:
+                input_file.close()
+                output_file.close()
 
     def move_to_judged(self):
         """
-        Moves the submitted file into the judged directory
+        Moves the submitted file into the judged directory and populates several self.*_path variables
         """
         base_name = path.split(self.submission_dir)[-1]
         new_dir = path.join(self.dirs['judged'], base_name)
@@ -260,25 +255,57 @@ class Submission:
         else:
             raise subprocess.CalledProcessError(completed_process.returncode, args)
 
+    def validate_path_lists(self):
+        if not (len(self.in_paths) == len(self.compare_out_paths) == len(self.correct_out_paths) != 0):
+            raise RuntimeError("Something is wrong with the list of input and output files:\n "
+                               "in_paths: %s\n"
+                               "compare_out_paths: %s\n"
+                               "correct_out_paths: %s" %
+                               (repr(self.in_paths), repr(self.compare_out_paths), repr(self.correct_out_paths)))
+
     def judge_output(self):
         """
         Determines if the solution is correct by comparing its output files to the correct output files
-        :raises IncorrectOutputError if the output is definitely wrong
-        :raises FormatError if the output is only different with whitespace characters
-        If the output is determined to be incorrect, the other tests will be run before the error is raised
+        If the output is determined to be incorrect, the other tests will still be run
         """
-        reported_error = None
-        for correct_out_path, compare_out_path in zip(self.correct_out_paths, self.compare_out_paths):
-            diff_path = path.splitext(compare_out_path)[0] + '.diff'
+        self.validate_path_lists()
+
+        for in_path, correct_out_path, compare_out_path in \
+                zip(self.in_paths, self.correct_out_paths, self.compare_out_paths):
+
+            in_name = path.split(in_path)[-1]
+            compare_out_name = path.split(compare_out_path)[-1]
+
+            if self.results.input_file_has_judgement(in_name):
+                continue
+
+            # This path is not stored in the database but is instead inferred from the output file name
+            diff_path = compare_out_path + '.diff'
 
             if not self.diff(correct_out_path, compare_out_path, diff_path):
                 if not self.diff(correct_out_path, compare_out_path, no_ws=True):
-                    pass  # TODO report Incorrect Output
+                    self.results.add_sub_judgment(EINCORRECT, in_name, compare_out_name)
                 else:
-                    if reported_error is None:
-                        pass  # TODO report Format Error
+                    self.results.add_sub_judgment(EFORMAT, in_name, compare_out_name)
             else:
-                pass  # TODO report accepted
+                self.results.add_sub_judgment(CORRECT, in_name, compare_out_name)
 
-        if reported_error is not None:
-            raise reported_error
+    def get_results(self):
+        """
+        This is the only function the user should need to call; it does everything necessary to judge the submission
+        :return: A SubmissionResults object which describes the results of attempting to process the submission
+        """
+        self.move_to_judged()
+        self.pre_compile()
+        if self.results.is_err():
+            return self.results
+
+        self.compile()
+        if self.results.is_err():
+            return self.results
+
+        self.move_to_jail()
+        self.execute()
+        self.move_from_jail()
+        self.judge_output()
+        return self.results

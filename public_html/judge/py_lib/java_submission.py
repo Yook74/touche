@@ -1,9 +1,6 @@
-from .submission import Submission
-from .exceptions import *
+from .submission import *
 
-import shutil
 from os import path
-from os import mkdir
 import subprocess
 
 CONFIG_PATH = 'py_lib/java_config.ini'
@@ -36,16 +33,16 @@ class JavaSubmission(Submission):
         Compiles the source file using the compiler information specified in the config file
         :raises CompileError
         """
-        self.error_path = path.join(self.submission_dir, 'compile-err.txt')
         compiler_path = path.join(self.config['java_path'], self.config['compiler_name'])
+        error_path = path.join(self.submission_dir, ERROR_FILE_NAME)
 
-        with open(self.error_path, 'w') as error_file:
+        with open(error_path, 'w') as error_file:
             args = [compiler_path, self.source_path] + self.config['compiler_flags']
             try:
                 subprocess.run(args, stderr=error_file, check=True)
 
             except subprocess.CalledProcessError as err:
-                raise CompileError(err.returncode)
+                self.results.report_pre_exec_error(ECOMPILE, ERROR_FILE_NAME, error_no=err.returncode)
 
     def get_bare_execute_cmd(self):
         java_chdir = "-Duser.dir=%s" % self.submission_dir  # This makes java run the Main class in the submission dir
