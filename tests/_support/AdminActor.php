@@ -223,11 +223,14 @@ class AdminActor extends AcceptanceTester
     /**
      * Delete a problem
      */
-    public function deleteProblem()
+    public function deleteProblem($deleteID = null)
     {
         $I = $this;
         $I->amOnMyPage("setup_problems.php");
-        $I->click("Delete");
+        if($deleteID == null)
+            $I->click("Delete");
+        else
+            $I->click("[name=\"delete$deleteID\"]");
     }
 
     /**

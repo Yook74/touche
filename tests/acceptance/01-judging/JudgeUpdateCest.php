@@ -71,9 +71,55 @@ class JudgeUpdateCest
         $I->seeInSource('1</font> </td> <td> <font face="Arial" size="3"> '.$firstTeamName);
     }
 
+    public function addNewProblems(AdminActor $I)
+    {
+        $I->wantTo("Add two new problems and delete the team that didn't submit anything for testing");
+        $I->deleteTeam();
+        $I->createProblem();
+        $I->createProblem();
+    }
+
+    public function submitSolutions(TeamActor $I)
+    {
+        $I->wantTo("Submit solutions to each problem");
+        $I->submitSolution(self::$incorrectSolutionPath, 2);
+        $I->submitSolution(self::$incorrectSolutionPath, 3);
+    }
+
+    public function judgeSolutions(JudgeActor $I)
+    {
+        $I->wantTo("Judge the solutions that were submitted");
+        $I->waitForAutoJudging();
+        $I->judgeSubmission();
+        $I->waitForAutoJudging();
+        $I->judgeSubmission("Accepted");
+        $I->amOnMyPage("standings.php");
+    }
+
+    public function deleteSecondProblem(AdminActor $I)
+    {
+        $I->wantTo("Delete the middle problem to see if it gets overwritten or not");
+        $I->deleteProblem(2);
+    }
+
+    public function viewStandingsAfterDeletionTeam(TeamActor $I)
+    {
+        $I->wantTo("See how the standings have updated after a problem was deleted as a team");
+        $I->amOnMyPage("standings.php");
+        $I->dontSee("--/");
+    }
+
+    public function viewStandingsAfterDeletionJudge(JudgeActor $I)
+    {
+        $I->wantTo("See how the standings have updated after a problem was deleted as a judge");
+        $I->amOnMyPage("standings.php");
+        $I->dontSee("--/");
+    }
+
     public function cleanup(AdminActor $I)
     {
         $I->wantTo("Reset the teams back to default");
-        $I->deleteTeam();
+        $I->deleteProblem();
+        $I->deleteProblem();
     }
 }
