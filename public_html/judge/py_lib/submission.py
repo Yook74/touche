@@ -43,6 +43,7 @@ class Submission:
 
         self.stripped_headers = None
         self.executable_path = None
+        self.jail_dir = None  # Should be set by child class
 
         self.in_paths = []  # paths to the .in files of the problem's test data
         self.compare_out_paths = []  # paths to the files outputted by the submitted solution given an in_file

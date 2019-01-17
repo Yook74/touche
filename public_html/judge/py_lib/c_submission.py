@@ -22,6 +22,7 @@ class CSubmission(Submission):
                              "'%s' is not a valid lang_name" % kwargs['lang_name'])
 
         super().__init__(**kwargs, config_path=config_path)
+        self.jail_dir = path.join(self.dirs['base'], self.config['jail_name'])
 
     def strip_headers(self):
         """

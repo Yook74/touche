@@ -10,6 +10,8 @@ class JavaSubmission(Submission):
     def __init__(self, **kwargs):
         super().__init__(**kwargs, config_path=CONFIG_PATH)
 
+        self.jail_dir = path.join(self.dirs['base'], self.config['jail_name'])
+
     def strip_headers(self):
         self.stripped_headers = self.replace_in_source(r'import\s*(\w|[-_=.^%$#!*]|\s)*;', '')
 
