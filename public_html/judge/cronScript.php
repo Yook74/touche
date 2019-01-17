@@ -72,7 +72,7 @@ while($submits = mysqli_fetch_assoc($submits_result)) {
     if(mysqli_num_rows($sql_result) == 0) {
 		$auto_response_number = EFILETYPE;
 		$submission_output = "File name: $source_file";
-		update_submission($judged_id, $auto_response_number, $source_filei, $link);
+		update_submission($judged_id, $auto_response_number, $source_file);
     }
     else {
 		$row = mysqli_fetch_assoc($sql_result);
@@ -205,6 +205,13 @@ while($submits = mysqli_fetch_assoc($submits_result)) {
 				$cur_input = $tmp[0];
 				$problem_name = $tmp[1];
 				echo "\ncur_input: $cur_input\n";
+
+				$filesize = get_file_size($cur_input, $problem_handle['data_dir']) * 2;
+				if ($filesize < 1000000) {
+					$filesize = 1000000;
+				}
+				echo "filesize: $filesize\n";
+
 				$auto_response_number = ENONE;
 			//      the program now runs through all data sets regardless of results
 			//	if($auto_response_number == ENONE 
@@ -216,6 +223,7 @@ while($submits = mysqli_fetch_assoc($submits_result)) {
 					$problem_handle['output'] .= $problem_handle['file_name'];
 					$problem_handle['output'] .= "_";
 					$problem_handle['output'] .= $problem_name;
+					$problem_handle['err_output'] = $problem_handle['output'] . ".stderr";
 					$problem_handle['output'] .= ".out";
 										
 					$sys_command = $problem_handle['execute']();
@@ -235,13 +243,15 @@ while($submits = mysqli_fetch_assoc($submits_result)) {
 							$arg_cmd = "$base_dir/chroot_wrapper.exe" . 
 								" " .
 
-								$use_proc_fs . " " . 
+								$use_proc_fs . " " .
 								$chroot_directory . " " .
 								$sys_command . " " . 
 								$problem_handle['data_dir'] . $cur_input . " " .
 								$problem_handle['output'] . " " .
-								"$judged_id-";
-
+								$problem_handle['err_output'] . " " .
+								"$judged_id-$cur_input" . " " .
+								"$filesize";
+#								"1000000";
 #make use of bash'es built in ulimit capabilities
 							$args = array("-c","ulimit -t $safe_max_cpu_time;$arg_cmd");
 							$envs = array("HOME" => "$base_dir/..");
@@ -339,12 +349,18 @@ while($submits = mysqli_fetch_assoc($submits_result)) {
 						$run_time_errorno = 2000;
 					}
 
-					if($run_time_errorno && $auto_response_number != ERUNLENGTH) {
+					if ($run_time_errorno && $auto_response_number != ERUNLENGTH) {
 						$submission_output = read_entire_file(
 						$problem_handle['judged_dir'] . 
 						$problem_handle['file_name'] . 
 								"_" . $problem_name . ".out");
-						$auto_response_number = ERUNTIME;
+						#if ($run_time_errorno == 1025) {
+						if ($run_time_errno == 1025 || $run_time_errorno == 25 + 128) {
+							echo "Too much output!";
+							$auto_response_number = EMAXOUTPUT;
+						} else {
+							$auto_response_number = ERUNTIME;
+						}
 					}
 					elseif (!pcntl_waitpid($pid, $child_status, WNOHANG)){
 						posix_kill($pid+1, SIGKILL);
@@ -381,6 +397,7 @@ while($submits = mysqli_fetch_assoc($submits_result)) {
 						$chroot_filename = $chroot_directory;
 						$chroot_filename .= $problem_handle['judged_dir'];
 						$chroot_filename .= $problem_handle['file_name'];
+						$chroot_stderr = "$chroot_filename_$problem_name.stderr";
 						$chroot_filename .= "_$problem_name.out";
 						$tmp_cmd = "cp -f $chroot_filename";
 						$tmp_cmd .= " ";
@@ -394,6 +411,14 @@ while($submits = mysqli_fetch_assoc($submits_result)) {
 						chmod($chroot_filename, 0600);
 						system($tmp_cmd, $result);
 						echo "\n\nsys 395: $tmp_cmd\n\n";
+						chmod($chroot_stderr, 0600);
+						$tmp_cmd = "cp -f $chroot_stderr";
+						$tmp_cmd .= " ";
+						$tmp_cmd .= $problem_handle['judged_dir'];
+						$tmp_cmd .= $problem_handle['file_name'];
+						$tmp_cmd .= "_$problem_name.stderr";
+						system($tmp_cmd, $result);
+						echo "\n\nsys 395b: $tmp_cmd\n\n";
 						#Perform the diffs
 						$tmp = explode(".", $cur_input);
 						$outfile = $tmp[0] . ".out";
@@ -409,7 +434,7 @@ while($submits = mysqli_fetch_assoc($submits_result)) {
 						system("diff -u $judge_out_file $team_out_file > $diff_out_file", $result);
 						echo "\n\nsys 409: ";
 						echo "diff -u $judge_out_file $team_out_file > $diff_out_file\n\n\n";
-					  	if($auto_response_number != ERUNTIME && $auto_response_number != ERUNLENGTH){ 	
+					  	if($auto_response_number != ERUNTIME && $auto_response_number != ERUNLENGTH && $auto_response_number != EMAXOUTPUT){
 							if(filesize($diff_out_file) != 0 || $result != 0){
 							
 								#we need to do a non-white space diff now
@@ -448,8 +473,8 @@ while($submits = mysqli_fetch_assoc($submits_result)) {
 
                                                 $sub_source =
                                                         $problem_handle['file_name'] . "_" . $outfile;
-				echo "\nauto_resopnse_number: $auto_response_number\n";	        
-    				if($auto_response_number != ERUNTIME){
+				echo "\nauto_response_number: $auto_response_number\n";
+    				if($auto_response_number == ERUNTIME){
 					echo "\nerror: $run_time_errorno\n";
 					update_submission($judged_id,$auto_response_number, $cur_input, $link, $run_time_errorno);
 				}
@@ -542,6 +567,15 @@ function save_file($filename,$file) {
     else{
 		echo "Error: Unable to open the file!";
 	}
+}
+
+function get_file_size($input_file, $directory) {
+	$tmp = explode(".", $input_file);
+	$outfile = $tmp[0] . ".out";
+	$output_file = $directory;
+	$output_file .= $outfile;
+
+	return filesize($output_file);
 }
 
 # Update the judged submission

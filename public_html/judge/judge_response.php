@@ -103,6 +103,7 @@ while($auto_response_info = mysqli_fetch_assoc($auto_response_query)){
         case $response_keywords['EINCORRECT']:
         case $response_keywords['EFORMAT']:
         case $response_keywords['ETIMEOUT']:
+        case $response_keywords['EMAXOUTPUT']:
         case $response_keywords['ERUNTIME']:
         case $response_keywords['CORRECT']:
             $program_output_path = "$submission_dir/$auto_response_info[OUTPUT_FILE]";
@@ -114,6 +115,12 @@ while($auto_response_info = mysqli_fetch_assoc($auto_response_query)){
                     $title = "Standard Diff Failed";
                     $color = $data_txt_color4;
                     $display_path = $diff_path;
+                    break;
+
+                case $response_keywords['EMAXOUTPUT']:
+                    $title = "Exceeded Maximum Output Length";
+                    $color = $data_txt_color4;
+                    $display_path = $program_output_path;
                     break;
 
                 case $response_keywords['ETIMEOUT']:

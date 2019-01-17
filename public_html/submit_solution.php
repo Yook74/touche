@@ -30,7 +30,7 @@
 	
 	// check to see if we already have a successful submission 
 	$sql  = "SELECT * FROM JUDGED_SUBMISSIONS ";
-	$sql .= "WHERE TEAM_ID='$team_id' AND PROBLEM_ID='$problem_id' AND RESPONSE_ID='9' ";
+	$sql .= "WHERE TEAM_ID='$team_id' AND PROBLEM_ID='$problem_id' AND RESPONSE_ID='10' ";
 	$result = mysqli_query($link, $sql);
 	echo mysqli_error($link);
 	if (mysqli_num_rows($result)>0) {

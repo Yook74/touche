@@ -36,25 +36,26 @@ const int JUDGE_UID = 5001;
 const int JUDGE_GID = 100;
 const char *JUDGE_HOME = "/home/#USER-NAME/#CONTEST-NAME/logs/";
 
-const int MAX_OUTPUT_SIZE = 1000000;
 const int MAX_ARGS = 10;
 
 FILE* pErrFileC;
 FILE* pErrFileP;
 
 void check_argc(int argc) {
-	if(argc != 7) {
+	if(argc != 9) {
 		printf("Not right number of arguments\n");
-		printf("Got %d, expected 6 arguments\n", argc - 1);
+		printf("Got %d, expected 9 arguments\n", argc);
 		printf("Usage\n");
-		printf("chroot_wrapper OPTIONS PATH COMMAND INPUT OUTPUT LOG_ID\n\n");
+		printf("chroot_wrapper OPTIONS PATH COMMAND INPUT OUTPUT ERR_OUT LOG_ID MAX_OUTPUT_SIZE\n\n");
 		printf("OPTIONS - 0 if not using a filesystem, 1 if you are using /proc, 2 if you are using /dev/urandom\n");
 		printf("PATH - the path for the new chroot\n");
 		printf("COMMAND - the command to execute within the new chroot");
 		printf(" (local to the new chroot)\n");
-		printf("INPUT - the inputfile (stdin will be redirected from here)\n");
+		printf("INPUT - the input file (stdin will be redirected from here)\n");
 		printf("OUTPUT - the output file (stdout will be redirected here)\n");
-		printf("LOG ID - the unique identifier for the log file\n");
+		printf("ERR_OUT - the error file (stderr will be redirected here)\n");
+		printf("LOG_ID - the unique identifier for the log file\n");
+		printf("MAX_OUTPUT_SIZE - the most number of bytes to accept as output\n");
 
 		exit(0);
 	}
@@ -215,9 +216,12 @@ void reassociate_file(const char *path, const char *mode, FILE *file) {
 	}
 }
 
-void reassociate_input_and_limited_output(const char *input, const char *output, int limit) {
+void reassociate_input_and_limited_output(const char *input, const char *output,
+					  const char *err_out, int limit)
+{
 	reassociate_file(input, "r", stdin);
 	reassociate_file(output, "w", stdout);
+	reassociate_file(err_out, "w", stderr);
 
 	struct rlimit file_limit;
 	file_limit.rlim_cur = file_limit.rlim_max = limit;
@@ -288,7 +292,10 @@ char **create_execv_from_command(char *command) {
 	return execv;
 }
 
-void execute_command(const char *path, const char *command, const char *input, const char *output) {
+void execute_command(const char *path, const char *command, const char *input,
+		     const char *output, const char *err_out,
+		     const char *max_output_size)
+{
 	do_chroot(path);
 	do_chdir("/");
 	child_log("Child: Successful chroot\n");
@@ -296,7 +303,7 @@ void execute_command(const char *path, const char *command, const char *input, c
 	do_setresgid(JUDGE_GID);
 	do_setresuid(JUDGE_UID);
 
-	reassociate_input_and_limited_output(input, output, MAX_OUTPUT_SIZE);
+	reassociate_input_and_limited_output(input, output, err_out, atoi(max_output_size));
 			
 	char *exec_argv = create_command_copy(command);
 	char **execv = create_execv_from_command(exec_argv);
@@ -322,7 +329,7 @@ int wait_for_process(pid_t pid) {
 int main(int argc, char** argv) {
 	check_argc(argc);
 
-	open_log_files(argv[6]);
+	open_log_files(argv[7]);
 	both_logs("chroot_wrapper.exe log file\n");
 	for (int x = 0; x < argc; x++) {
 		both_logs("Arg #%d: %s\n", x, argv[x]);
@@ -348,7 +355,7 @@ int main(int argc, char** argv) {
 
 	pid_t pid;
 	if ((pid=fork()) == 0) {
-		execute_command(argv[2], argv[3], argv[4], argv[5]);
+		execute_command(argv[2], argv[3], argv[4], argv[5], argv[6], argv[8]);
 	} else if (pid > 0) {
 		int child_exit_status = wait_for_process(pid);
 				
@@ -358,11 +365,15 @@ int main(int argc, char** argv) {
 		}
 
 		if (WIFEXITED(child_exit_status)) {
-			parent_log("Parent: Child exited\n");
-			exit(WEXITSTATUS(child_exit_status));
+			int real_exit_status = WEXITSTATUS(child_exit_status);
+
+			parent_log("Parent: Child exited (%i)\n", real_exit_status);
+			exit(real_exit_status);
 		} else if (WIFSIGNALED(child_exit_status)) {
-			parent_log("Parent: Child signalled\n");
-			raise(WTERMSIG(child_exit_status));
+			int signal_number = WTERMSIG(child_exit_status);
+
+			parent_log("Parent: Child signalled (%i)\n", signal_number);
+			raise(signal_number);
 		}
 	} else {
 		both_logs("Unable to create child process.\n");
