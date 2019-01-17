@@ -202,7 +202,7 @@ if ($_POST)
 		$insert_sql_c.= "WHERE LANGUAGE_NAME = 'C'";
 		$insert_sql_cpp = "UPDATE LANGUAGE SET REPLACE_HEADERS = '$headers_cpp',";
 		$insert_sql_cpp.= "			CHECK_BAD_WORDS = '$forbidden_cpp' ";
-		$insert_sql_cpp.= "WHERE LANGUAGE_NAME = 'C++'";
+		$insert_sql_cpp.= "WHERE LANGUAGE_NAME = 'CXX'";
 		$insert_sql_java = "UPDATE LANGUAGE SET REPLACE_HEADERS = '$headers_java',";
 		$insert_sql_java.= "			CHECK_BAD_WORDS = '$forbidden_java' ";
 		$insert_sql_java.= "WHERE LANGUAGE_NAME = 'JAVA'";
