@@ -224,14 +224,16 @@ if(mysqli_num_rows($result) > 0) {
 	$cur_problems = "<font size=+1><a href=setup_problems.php>Add New Problem</a></font><br>";
 	$cur_problems .= "<br><table>";
 	$cur_problems .= "<tr><td><font size=+1><b>Edit Current Problems</b></font></td></tr>";
+	$counter = 0; //Create counter for testing - NOT problem ID
 	while($row = mysqli_fetch_assoc($result)){
 		$cur_problems .= "<tr><td>" . $row['PROBLEM_NAME']; 
 		$cur_problems .= " </td><td><font size=-1>";
 		$cur_problems .= "<a href=setup_problems.php?problem_id=" . $row['PROBLEM_ID'] . ">Edit</a>";
-		$cur_problems .= "</font></td><td><font size=-1>";;
-		$cur_problems .= "<a name=delete" . $row['PROBLEM_ID'] . " href=setup_problems.php?remove_id=" . $row['PROBLEM_ID'] . ">Delete</a>";
+		$cur_problems .= "</font></td><td><font size=-1>";
+		$cur_problems .= "<a name=delete" . $counter . " href=setup_problems.php?remove_id=" . $row['PROBLEM_ID'] . ">Delete</a>";
 		$cur_problems .= "</font><br>\n";
 		$cur_problems .= "</td></tr>";
+		$counter++;
 	}
 	$cur_problems .= "</table>";
 }

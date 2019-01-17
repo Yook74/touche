@@ -99,7 +99,7 @@ class JudgeUpdateCest
     public function deleteSecondProblem(AdminActor $I)
     {
         $I->wantTo("Delete the middle problem to see if it gets overwritten or not");
-        $I->deleteProblem(2);
+        $I->deleteProblem(1);
     }
 
     public function viewStandingsAfterDeletionTeam(TeamActor $I)
@@ -121,5 +121,6 @@ class JudgeUpdateCest
         $I->wantTo("Reset the teams back to default");
         $I->deleteProblem();
         $I->deleteProblem();
+        $I->createProblem();
     }
 }
