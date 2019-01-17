@@ -12,7 +12,6 @@
 #
 
 include_once('database.inc');
-include_once('responses.inc');
 
 $link = mysqli_connect($db_host, $db_user, $db_pass, $db_name);
 if (!$link) {
@@ -138,8 +137,7 @@ if (!$responses_query) {
 }
 while ($row = mysqli_fetch_assoc($responses_query)) {
     $response_id = $row['RESPONSE_ID'];
-    $responses[$response_id]['id'] = $response_id;
-    $responses[$response_id]['response'] = $row['RESPONSE'];
-    $responses[$response_id]['color'] = $row['RESPONSE_COLOR'];
+    $responses[$response_id]['DISPLAY_TEXT'] = $row['DISPLAY_TEXT'];
+    $responses[$response_id]['COLOR'] = $row['COLOR'];
 }
 ?>

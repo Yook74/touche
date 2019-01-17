@@ -49,7 +49,7 @@ CREATE TABLE JUDGED_SUBMISSIONS (
   PROBLEM_ID int(11) NOT NULL default '0',
   TS int(11) NOT NULL default '0',
   ATTEMPT int(11) NOT NULL default '0',
-  SOURCE_FILE char(255) NOT NULL default '',
+  SOURCE_NAME char(255) NOT NULL default '',
   RESPONSE_ID int(11) NOT NULL default '0',
   VIEWED int(11) NOT NULL default '0',
   JUDGED int(10) NOT NULL default '0',
@@ -68,36 +68,40 @@ CREATE TABLE QUEUED_SUBMISSIONS (
   PROBLEM_ID int(11) NOT NULL default '0',
   TS int(11) NOT NULL default '0',
   ATTEMPT int(11) NOT NULL default '0',
-  SOURCE_FILE char(255) NOT NULL default '',
+  SOURCE_NAME char(10) NOT NULL default '',
   PRIMARY KEY  (QUEUE_ID)
 );
 # --------------------------------------------------------
 
 #
-# Table structure for table `RESPONSES`
+# Responses which are possible when a team submits a file.
 #
 DROP TABLE IF EXISTS RESPONSES;
 
 CREATE TABLE RESPONSES (
   RESPONSE_ID int(11) NOT NULL,
-  RESPONSE char(50) NOT NULL default '',
-  RESPONSE_COLOR char(255) NOT NULL default '',
+  KEYWORD char(20) NOT NULL,
+  DISPLAY_TEXT char(50) NOT NULL,
+  COLOR char(255) NOT NULL default '',
   PRIMARY KEY  (RESPONSE_ID)
 );
 
 #
-# Set default table data
+# The order indicates severity, where 0 is the most severe.
+# The idea is that the submitting team will see the most severe error.
 #
-INSERT INTO RESPONSES VALUES("0","Pending","FFFF00");
-INSERT INTO RESPONSES VALUES("9","Accepted","00FF00");
-INSERT INTO RESPONSES VALUES("2","Forbidden Word in Source","FF0000");
-INSERT INTO RESPONSES VALUES("1","Undefined File Type","FF0000");
-INSERT INTO RESPONSES VALUES("3","Compile Error","FF0000");
-INSERT INTO RESPONSES VALUES("4","Exceeds Time Limit","FF0000");
-INSERT INTO RESPONSES VALUES("6","Incorrect Output","FF0000");
-INSERT INTO RESPONSES VALUES("7","Format Error","FF0000");
-INSERT INTO RESPONSES VALUES("5","Runtime Error","FF0000");
-INSERT INTO RESPONSES VALUES("8","Error (Reason Unknown)","FF0000");
+
+INSERT INTO RESPONSES VALUES("0", "PENDING", "Pending","FFFF00");
+INSERT INTO RESPONSES VALUES("1", "EFILETYPE", "Undefined File Type","FF0000");
+INSERT INTO RESPONSES VALUES("2", "EFORBIDDEN", "Forbidden Word in Source","FF0000");
+INSERT INTO RESPONSES VALUES("3", "ECOMPILE", "Compile Error","FF0000");
+INSERT INTO RESPONSES VALUES("4", "ERUNTIME", "Runtime Error","FF0000");
+INSERT INTO RESPONSES VALUES("5", "EMAXOUTPUT", "Exceeds Output Limit","FF0000");
+INSERT INTO RESPONSES VALUES("6", "EINCORRECT", "Incorrect Output","FF0000");
+INSERT INTO RESPONSES VALUES("7", "ETIMEOUT", "Exceeds Time Limit","FF0000");
+INSERT INTO RESPONSES VALUES("8", "EFORMAT", "Format Error","FF0000");
+INSERT INTO RESPONSES VALUES("9", "EUNKNOWN", "Error (Reason Unknown)","FF0000");
+INSERT INTO RESPONSES VALUES("10", "CORRECT", "Accepted","00FF00");
 # --------------------------------------------------------
 
 #
@@ -392,14 +396,22 @@ INSERT INTO HEADERS VALUES("3","java.math.*");
 #);
 
 #
-# Table structure for table AUTO_RESPONSES
+# Rows in this table contain the result of running one input file through the compiled submission.
+# If the submission was not successfully compiled, there will be exactly one entry in this table describing the error and no other entries with that JUDGED_ID
+# The INPUT_FILE is the name of a file (not absolute path) which contains the input for this one run.
+# If a pre-execution error has occurred, this field is null
+# The OUTPUT_FILE contains the output of the program or error text.
+# RESPONSE_CODE is taken from the RESPONSES table and is the response for this set of input/output files (not the whole submission)
+# ERROR_NO contains the error number in the case of a compile or runtime error
 #
 
 DROP TABLE IF EXISTS AUTO_RESPONSES;
 
 CREATE TABLE AUTO_RESPONSES (
   JUDGED_ID int(11) NOT NULL default '0',
-  IN_FILE varchar(255) NOT NULL, 
-  AUTO_RESPONSE int(10) NOT NULL default '0',
-  ERROR_NO int(10) default NULL
+  INPUT_FILE varchar(255) default NULL,
+  OUTPUT_FILE varchar(255) NOT NULL,
+  RESPONSE_ID int(10) NOT NULL default '0',
+  ERROR_NO int(10) default NULL,
+  PRIMARY KEY (JUDGED_ID, OUTPUT_FILE)
 );

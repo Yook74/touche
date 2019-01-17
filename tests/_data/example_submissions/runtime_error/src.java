@@ -1,9 +1,15 @@
 import java.util.Scanner;
 
-class Main{ //it is important that this does not read "public class Main"
+class Main{
     //adds two numbers
     public static void main(String[] args){
-        throw new RuntimeException("Hi mom");
+		Scanner reader = new Scanner(System.in);
+		int one, two;
+		one = reader.nextInt();
+		if (one == 0)
+			throw new RuntimeException("Hi mom");
+   		two = reader.nextInt();
+   		System.out.println(one+two);
     }
 }
 

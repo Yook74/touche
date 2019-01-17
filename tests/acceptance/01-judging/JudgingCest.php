@@ -97,7 +97,11 @@ class JudgingCest
         else
             $extension = $I->attr['extension'];
 
-        $path = self::$top_dir . "/$sub_dir/src$extension";
+        if ($sub_dir == "accepted" && $extension == '.java')
+            $path = self::$top_dir . "/$sub_dir/Main$extension"; # This one file is special because it's a public class
+        else
+            $path = self::$top_dir . "/$sub_dir/src$extension";
+
         $I->submitSolution($path);
         $I->see("Queued for judging");
     }
@@ -136,7 +140,7 @@ class JudgingCest
                 $I->assertNotEquals("", $fullField);
                 break;
             case "Format Error":
-                $I->see("White space diff succeeded");
+                $I->see("No-whitespace diff Succeeded");
             case "Incorrect Output":
                 $I->see($file1);
                 $I->click("[name=\"$file1\"]");

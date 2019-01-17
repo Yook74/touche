@@ -16,10 +16,10 @@
 #
 judge_header(60, $link);
 
-if (!isset($HTTP_GET_VARS['selected_category'])) {
+if (!isset($_GET['selected_category'])) {
     $selected_category = "Overall";
 } else {
-    $selected_category = $HTTP_GET_VARS['selected_category'];
+    $selected_category = $_GET['selected_category'];
 }
 
 echo "<center>Categories: \n";
@@ -81,7 +81,7 @@ for ($i = 0; $i < count($standings); $i++) {
     $result = mysqli_query($link, $sql);
 
     while($row = mysqli_fetch_assoc($result)) {
-	if($row['RESPONSE_ID'] == 9) {
+	if($row['RESPONSE_ID'] == 10) {
 	    // each incorrect submission counts as 20 penalty points
 	    $incorrect_submission_penalty = ($row['ATTEMPT'] - 1) * 20;
 	    // each minute counts as one penalty point
@@ -105,8 +105,10 @@ for($i=0; $i < count($standings); $i++) {
 	    if(!isset($standings[$i]['problems'])){
 		$standings[$i]['problems'] = 0;
 	    }
-	    $standings[$i]['penalty'] 
-		+= $standings[$i]['problems'][$problem['id']]['penalty'];
+	    if (isSet($standings[$i]['problems'][$problem['id']]['penalty'])) {
+	        $standings[$i]['penalty']
+		    += $standings[$i]['problems'][$problem['id']]['penalty'];
+	    }
 	}
     }
 }

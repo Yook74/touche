@@ -210,7 +210,7 @@ if($row = mysqli_fetch_assoc($sql_result)){
 		if ($page == "judge.php"){
 			$viewed = $row['VIEWED'];
 			$sql = "SELECT * ";
-			$sql .= "FROM AUTO_RESPONSES AR INNER JOIN RESPONSES R ON R.RESPONSE_ID = AR.AUTO_RESPONSE ";
+			$sql .= "FROM AUTO_RESPONSES AR INNER JOIN RESPONSES R ON R.RESPONSE_ID = AR.RESPONSE_ID ";
 			$sql .= "WHERE AR.JUDGED_ID = " . $row['JUDGED_ID']. " ";
 		
 			$response_result = mysqli_query($link, $sql);
@@ -219,29 +219,23 @@ if($row = mysqli_fetch_assoc($sql_result)){
         		}
 			
 			if (mysqli_num_rows($response_result) == 0){
-				$response = "pending";
+				$response_text = "pending";
 			}
 			else{
 				$response_row = mysqli_fetch_assoc($response_result);
-				$response = $response_row['RESPONSE'];
-				$response_id = $response_row['RESPONSE_ID'];
+				$response_text = $response_row['DISPLAY_TEXT'];
+				$response_code = $response_row['RESPONSE_ID'];
 				while($response_row = mysqli_fetch_assoc($response_result)){
-					if($response_id != ECORRECT){
-						if($response_id != $response_row['RESPONSE_ID'] && $response_row['RESPONSE_ID'] != ECORRECT){
-							$response = "Multiple Responses";
-						}
-					}
-					elseif ($response_row['RESPONSE_ID'] != ECORRECT){
-						$response = $response_row['RESPONSE'];
-						$response_id = $response_row['RESPONSE_ID'];
-					}
-							
+				    if ($response_row['RESPONSE_ID'] < $response_code) {
+                        $response_text = $response_row['DISPLAY_TEXT'];
+                        $response_code = $response_row['RESPONSE_ID'];
+                    }
 				}
 			}
 		}
 		else{
 			$viewed = $row['JUDGED'] - 1;
-			$response = $row['RESPONSE'];
+			$response_text = $row['DISPLAY_TEXT'];
 		}
 
 		$color_preserve = $data_bg_color1;
@@ -260,7 +254,7 @@ if($row = mysqli_fetch_assoc($sql_result)){
 		echo "<td bgcolor=$data_bg_color1 align=center>" . $row['PROBLEM_NAME'] . "</td>\n";
 		echo "<td bgcolor=$data_bg_color1 align=center>" . $team_id . "</td>\n";
 		echo "<td bgcolor=$data_bg_color1 align=center>" . $row['ATTEMPT'] . "</td>\n";
-		echo "<td bgcolor=$data_bg_color1 align=center>$response</td>\n";
+		echo "<td bgcolor=$data_bg_color1 align=center>$response_text</td>\n";
 		echo "<td bgcolor=$data_bg_color1 align=center><a href='judge_response.php?judged_id=" . 
 			$row['JUDGED_ID'] . "&team_id=" . $team_id . 
 			"&problem=" . $row['PROBLEM_ID'] . "&attempt=" . $row['ATTEMPT'] . "&page=$page'>judge submission</a></td>\n";

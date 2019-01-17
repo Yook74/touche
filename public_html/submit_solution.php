@@ -30,7 +30,7 @@
 	
 	// check to see if we already have a successful submission 
 	$sql  = "SELECT * FROM JUDGED_SUBMISSIONS ";
-	$sql .= "WHERE TEAM_ID='$team_id' AND PROBLEM_ID='$problem_id' AND RESPONSE_ID='9' ";
+	$sql .= "WHERE TEAM_ID='$team_id' AND PROBLEM_ID='$problem_id' AND RESPONSE_ID='10' ";
 	$result = mysqli_query($link, $sql);
 	echo mysqli_error($link);
 	if (mysqli_num_rows($result)>0) {
@@ -76,25 +76,19 @@
 	$ts = $ts - $site_start_offset;
 	
 
-	$extension="";
-	for ($i=strlen($_FILES['source_file']['name'])-1; $i>=0; $i--) {
-		if ($_FILES['source_file']['name'][$i]==".") {
-			break;
-		}
-		$extension = $_FILES['source_file']['name'][$i].$extension;
-	}
-
-	$queue_file_name = "$team_id-$problem_id-$ts.$extension";
+	$file_name = $_FILES['source_file']['name'];
+	$submission_dir = "$base_dir/queue/$team_id-$problem_id-$ts";
+	mkdir($submission_dir, 0775);
     $result = move_uploaded_file($_FILES['source_file']['tmp_name'],
-		       "$base_dir/queue/$queue_file_name");
+		       "$submission_dir/$file_name");
     if(!$result){
 		print "Failed to upload submission. Please contact administrator.";
 	}
 
-	chmod("$base_dir/queue/$queue_file_name", 0644);
+	chmod("$submission_dir/$file_name", 0644);
 
-	$sql  = "INSERT INTO QUEUED_SUBMISSIONS (TEAM_ID, PROBLEM_ID, ATTEMPT, TS, SOURCE_FILE) ";
-	$sql .= "VALUES ('$team_id','$problem_id', '$attempt', '$ts','$queue_file_name') ";
+	$sql  = "INSERT INTO QUEUED_SUBMISSIONS (TEAM_ID, PROBLEM_ID, ATTEMPT, TS, SOURCE_NAME) ";
+	$sql .= "VALUES ('$team_id','$problem_id', '$attempt', '$ts','$file_name') ";
 	$result = mysqli_query($link, $sql);
 
 	header("location: submissions.php?state=3");

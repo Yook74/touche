@@ -16,7 +16,7 @@ class Main{ //it is important that this does not read "public class Main"
         int one, two;
         one = reader.nextInt();
 		two = reader.nextInt();
-		System.out.println(one+two);
+		System.out.println(Adder.add(one, two));
     }
 
     private static void die(String msg){
@@ -91,3 +91,9 @@ class Main{ //it is important that this does not read "public class Main"
     }
 }
 
+class Adder{
+//Tests multiple class definitions in one file
+	public static int add(int one, int two){
+		return one + two;
+	}
+}
