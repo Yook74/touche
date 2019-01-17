@@ -14,6 +14,8 @@ class JavaSubmission(Submission):
 
     def strip_headers(self):
         self.stripped_headers = self.replace_in_source(r'import\s*(\w|[-_=.^%$#!*]|\s)*;', '')
+        self.stripped_headers = '\n'.join(self.stripped_headers)
+        self.stripped_headers += '\n'
 
     def pre_compile(self):
         self.check_bad_words()
