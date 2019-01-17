@@ -528,6 +528,62 @@ class AdminActor extends AcceptanceTester
         $I->click("Submit");
     }
 
+    /**
+     * Uncheck all the boxes in the forbidden words row
+     */
+    public function uncheckForbiddenWordsBoxes()
+    {
+       $I = $this;
+       $I->amOnMyPage("setup_contest.php");
+       $I->uncheckOption("forbidden_c");
+       $I->uncheckOption("forbidden_cpp");
+       $I->uncheckOption("forbidden_java");
+       $I->uncheckOption("forbidden_python");
+       $I->click("Submit");
+    }
+
+    /**
+     * Check all the boxes in the forbidden words row
+     */
+    public function checkForbiddenWordsBoxes()
+    {
+        $I = $this;
+        $I->amOnMyPage("setup_contest.php");
+        $I->checkOption("forbidden_c");
+        $I->checkOption("forbidden_cpp");
+        $I->checkOption("forbidden_java");
+        $I->checkOption("forbidden_python");
+        $I->click("Submit");
+    }
+
+    /**
+     * Uncheck all the boxes in the headers row
+     */
+    public function uncheckHeadersBoxes()
+    {
+        $I = $this;
+        $I->amOnMyPage("setup_contest.php");
+        $I->uncheckOption("headers_c");
+        $I->uncheckOption("headers_cpp");
+        $I->uncheckOption("headers_java");
+        $I->uncheckOption("headers_python");
+        $I->click("Submit");
+    }
+
+    /**
+     * Check all the boxes in the headers row
+     */
+    public function checkHeadersBoxes()
+    {
+        $I = $this;
+        $I->amOnMyPage("setup_contest.php");
+        $I->checkOption("headers_c");
+        $I->checkOption("headers_cpp");
+        $I->checkOption("headers_java");
+        $I->checkOption("headers_python");
+        $I->click("Submit");
+    }
+
 /* Clearing Actions */
 
     /**
