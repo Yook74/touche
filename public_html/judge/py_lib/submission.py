@@ -1,6 +1,7 @@
 import subprocess
 import shutil
 import re
+import os
 from os import path
 from configparser import ConfigParser
 from glob import glob
@@ -97,7 +98,8 @@ class Submission:
         """
         with open(self.source_path, 'r+') as source_file:
             file_string = source_file.read()
-            matches = re.findall(regex, file_string)
+            matches = re.findall('(' + regex + ')', file_string)
+            matches = [match[0] for match in matches]
             file_string = re.sub(regex, repl, file_string)
 
             source_file.seek(0)
