@@ -122,5 +122,6 @@ class JudgeUpdateCest
         $I->deleteProblem();
         $I->deleteProblem();
         $I->createProblem();
+        $I->addDatasets();
     }
 }

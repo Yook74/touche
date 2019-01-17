@@ -49,6 +49,7 @@ class JudgeSubmissionsCest
         $I->deleteProblem();
         $I->deleteProblem();
         $I->createProblem();
+        $I->addDatasets();
     }
 
 }
