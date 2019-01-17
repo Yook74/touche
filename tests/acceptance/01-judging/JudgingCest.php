@@ -3,8 +3,8 @@ use Codeception\Util\Locator;
 
 class JudgingCest
 {
-    public static $outputFile1 = "1_input1.out";
-    public static $outputFile2 = "1_input2.out";
+    public static $outputFile1 = "_input1.out";
+    public static $outputFile2 = "_input2.out";
 
     # This describes all the source file directories and the results their code should give
     private static $dir_judgement = array(
@@ -125,8 +125,9 @@ class JudgingCest
     private function testJudgeResponse(JudgeActor $I, $judgment){
         $I->amOnMyPage("judge.php");
         $I->click("judge submission");
-        $file1 = self::$outputFile1;
-        $file2 = self::$outputFile2;
+        $problemNumber = $I->getProblemNumber();
+        $file1 = $problemNumber . self::$outputFile1;
+        $file2 = $problemNumber . self::$outputFile2;
         switch($judgment){
             case "Forbidden Word In Source":
             case "Compile Error":

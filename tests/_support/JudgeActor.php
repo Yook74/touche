@@ -127,7 +127,7 @@ class JudgeActor extends AcceptanceTester
         $I->amOnMyPage('judge.php');
         if($this->attr['invoke_cronscript']){
            $c_name = CreatorActor::getContestName();
-           $result = system("php ../public_html/$c_name/judge/cronScript.php > /dev/null");
+           $result = system("php ../public_html/$c_name/judge/cronScript.php > /dev/null 2>&1");
            if($result != 0) throw new RuntimeException("Cronscript invocation failed");
         } else {
             $I->waitForText('judge submission', $autoJudgeTime); #wait for cron to call the cronscript
@@ -213,6 +213,18 @@ class JudgeActor extends AcceptanceTester
         $scoreArray = explode('(', $score);
         return $scoreArray[0];
     }
+
+//Problem Actions
+
+    public function getProblemNumber()
+    {
+        $I = $this;
+        $problemName = parse_ini_file("adminAttr.ini")["problem_name"];
+        return $I->grabFromDatabase('PROBLEMS', 'PROBLEM_ID',
+            array('PROBLEM_NAME' => $problemName));
+    }
 }
+
+
 
 
