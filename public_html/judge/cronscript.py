@@ -58,7 +58,7 @@ def report_error(judgement_code, one_submission_info, db_driver: DBDriver):
     if judgement_code == EFILETYPE:
         message = 'Unknown file type'
     elif judgement_code == EUNKNOWN:
-        message = 'Something went wrong, probably on our end.'
+        message = 'Something went wrong, probably on our end. Check public_html/judge/errorLog.txt'
     else:
         raise ValueError('report_error cannot handle the error code %d' % judgement_code)
 

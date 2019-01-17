@@ -328,12 +328,12 @@ if (mysqli_num_rows($sql) > 0) {
 		else {
 			$stderr_checked = "";
 		}
-		$language_specifics = mysql_query("SELECT * FROM LANGUAGE");
+		$language_specifics = mysqli_query($link, "SELECT * FROM LANGUAGE");
 		if (!$language_specifics) {
 			echo "Could not find language specific info<br />";
 			echo "Please contact an administrator.";
 		}
-		while ($lang_row = mysql_fetch_assoc($language_specifics)) {
+		while ($lang_row = mysqli_fetch_assoc($language_specifics)) {
 			if ($lang_row['LANGUAGE_NAME'] == 'C') {
 				$headers_c_checked = $lang_row['REPLACE_HEADERS'];
 				$forbidden_c_checked = $lang_row['CHECK_BAD_WORDS'];
