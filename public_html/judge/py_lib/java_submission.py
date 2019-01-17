@@ -20,7 +20,7 @@ class JavaSubmission(Submission):
     def pre_compile(self):
         self.check_bad_words()
         self.strip_headers()
-        self.prefix_source(self.get_headers())
+        self.insert_headers()
 
     def get_headers(self):
         """
