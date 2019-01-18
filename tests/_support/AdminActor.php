@@ -538,7 +538,8 @@ class AdminActor extends AcceptanceTester
        $I->uncheckOption("forbidden_c");
        $I->uncheckOption("forbidden_cpp");
        $I->uncheckOption("forbidden_java");
-       $I->uncheckOption("forbidden_python");
+       $I->uncheckOption("forbidden_python2");
+       $I->uncheckOption("forbidden_python3");
        $I->click("Submit");
     }
 
@@ -552,7 +553,8 @@ class AdminActor extends AcceptanceTester
         $I->checkOption("forbidden_c");
         $I->checkOption("forbidden_cpp");
         $I->checkOption("forbidden_java");
-        $I->checkOption("forbidden_python");
+        $I->checkOption("forbidden_python2");
+        $I->checkOption("forbidden_python3");
         $I->click("Submit");
     }
 
@@ -566,7 +568,8 @@ class AdminActor extends AcceptanceTester
         $I->uncheckOption("headers_c");
         $I->uncheckOption("headers_cpp");
         $I->uncheckOption("headers_java");
-        $I->uncheckOption("headers_python");
+        $I->uncheckOption("headers_python2");
+        $I->uncheckOption("headers_python3");
         $I->click("Submit");
     }
 
@@ -580,7 +583,8 @@ class AdminActor extends AcceptanceTester
         $I->checkOption("headers_c");
         $I->checkOption("headers_cpp");
         $I->checkOption("headers_java");
-        $I->checkOption("headers_python");
+        $I->checkOption("headers_python2");
+        $I->checkOption("headers_python3");
         $I->click("Submit");
     }
 
