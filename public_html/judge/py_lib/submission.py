@@ -83,7 +83,7 @@ class Submission:
         self.in_paths.sort()
 
         self.correct_out_paths = list(glob(glob_path + '.out'))
-        self.in_paths.sort()
+        self.correct_out_paths.sort()
 
         self.compare_out_paths = []
         for out_path in self.correct_out_paths:
