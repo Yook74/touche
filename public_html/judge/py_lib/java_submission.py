@@ -13,7 +13,7 @@ class JavaSubmission(Submission):
         self.jail_dir = path.join(self.dirs['base'], self.config['jail_name'])
 
     def strip_headers(self):
-        self.stripped_headers = self.replace_in_source(r'import\s*(\w|[-_=.^%$#!*]|\s)*;', '')
+        self.stripped_headers = self.replace_in_source(r'(import\s+[\w_=.^%$#!*\s]+;)', '')
         self.stripped_headers = '\n'.join(self.stripped_headers)
         self.stripped_headers += '\n'
 

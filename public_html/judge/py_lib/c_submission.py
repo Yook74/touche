@@ -28,7 +28,7 @@ class CSubmission(Submission):
         """
         Removes the headers from the source file and saves them for later
         """
-        self.stripped_headers = self.replace_in_source(r'#include\s*["<](\w|[-_=.^%$#!*]|\s)*[">]', '')
+        self.stripped_headers = self.replace_in_source(r'(#include\s+["<][\w_=.^%$#!*\s]+[">])', '')
         self.stripped_headers = '\n'.join(self.stripped_headers)
         self.stripped_headers += '\n'
 
