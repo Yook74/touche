@@ -1,14 +1,9 @@
 //David Crim - spring 2005
 //Stefan Brandle - fall 2006
 
-/*
-   Usage
-
-   chroot_wrapper OPTIONS PATH COMMAND INPUT OUTPUT LOG_ID
-
-   PATH - the path for the new chroot
-   COMMAND - the command to execute within the new chroot (local to the new chroot)
-*/
+//--------------------------------------
+// See check_argc() for usage information
+//--------------------------------------
 
 // for chroot()
 #define _DEFAULT_SOURCE
@@ -40,6 +35,25 @@ const int MAX_ARGS = 10;
 
 FILE* pErrFileC;
 FILE* pErrFileP;
+
+pid_t child_pid = -1;
+
+// Kill the child process before exiting
+void catch_sigterm(int sig_num){
+    kill(child_pid, SIGKILL);
+}
+
+// Register catch_sigterm to be called a SIGTERM is received
+void register_signal_handler(){
+    struct sigaction act;
+    act.sa_handler = catch_sigterm;
+    sigemptyset(&act.sa_mask);
+    act.sa_flags = 0;
+
+    if (sigaction(SIGTERM, &act, NULL) < 0){
+        exit(-1);
+    }
+}
 
 void check_argc(int argc) {
 	if(argc != 9) {
@@ -327,6 +341,8 @@ int wait_for_process(pid_t pid) {
 }
 
 int main(int argc, char** argv) {
+    register_signal_handler();
+
 	check_argc(argc);
 
 	open_log_files(argv[7]);
@@ -353,11 +369,10 @@ int main(int argc, char** argv) {
 		break;
 	}
 
-	pid_t pid;
-	if ((pid=fork()) == 0) {
+	if ((child_pid=fork()) == 0) {
 		execute_command(argv[2], argv[3], argv[4], argv[5], argv[6], argv[8]);
-	} else if (pid > 0) {
-		int child_exit_status = wait_for_process(pid);
+	} else if (child_pid > 0) {
+		int child_exit_status = wait_for_process(child_pid);
 				
 		if(mountpoint){
 			umount(mountpoint);

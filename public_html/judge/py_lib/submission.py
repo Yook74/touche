@@ -9,6 +9,8 @@ from glob import glob
 from .submission_results import *
 
 ERROR_FILE_NAME = 'error.txt'
+CHROOT_WRAPPER_NAME = 'chroot_wrapper.exe'
+MAX_OUTPUT_SIZE = 1000 * 1000  # Number of bytes which can be written by a submission (1M)
 
 
 class Submission:
@@ -175,38 +177,73 @@ class Submission:
         """
         return self.executable_path
 
+    def get_chroot_options(self):
+        """
+        Chroot_wrapper takes an options argument which can be 0, 1, or 2.
+        0 does nothing special
+        1 mounts the proc filesystem which is necessary for java
+        2 mounts the urandom filesystem which is necessary for python
+        """
+        options = 0
+        if 'mount_proc_fs' in self.config and self.config['mount_proc_fs'] == 'True':
+            options = 1
+        if 'mount_urandom' in self.config and self.config['mount_urandom'] == 'True':
+            if options == 1:
+                raise ValueError("Cannot mount both urandom and proc fs. Check the language's .ini file")
+            options = 2
+
+        return options
+
+    def get_chroot_command(self, input_path, output_path):
+        """
+        Strings together a call to chroot_wrapper for the given input and output files
+        :return: a list that can be handed to subprocess.run
+        """
+        if self.config['ignore_stderr']:
+            stderr = output_path + ".err"  # /dev/null was not an option and this file will be ignored
+        else:
+            stderr = output_path
+
+        log_name = path.split(self.submission_dir)[-1] + "-" + path.split(input_path)[-1]
+
+        return [path.join(self.dirs['base'], CHROOT_WRAPPER_NAME),
+                str(self.get_chroot_options()),
+                self.jail_dir,
+                self.get_bare_execute_cmd(),
+                input_path,
+                output_path,
+                stderr,
+                log_name,
+                str(MAX_OUTPUT_SIZE)]
+
     def execute(self):
         """
         Executes the command given by get_bare_execute_command once per input/output file combination.
-        Reports a ETIMEOUT or ERUNTIME error if the called process takes too long to run or trips over its shoelaces
+        If something goes wrong, a EMAXOUTPUT, ERUNTIME, or ETIMEOUT error will be reported
+
+        We are using subprocess.Popen here instead of subprocess.run because we need to send a SIGTERM signal to
+            the child instead of a SIGKILL so that chroot_wrapper can kill it's child process
         """
         for input_path, output_path in zip(self.in_paths, self.compare_out_paths):
-            input_file = open(input_path, 'r')
-            output_file = open(output_path, 'w')
+            input_name = path.split(input_path)[-1]
+            output_name = path.split(output_path)[-1]
 
-            kwargs = {'args': self.get_bare_execute_cmd(),
-                      'stdin': input_file,
-                      'stdout': output_file,
-                      'timeout': self.config['max_cpu_time'],
-                      'check': True}
+            with subprocess.Popen(self.get_chroot_command(input_path, output_path)) as child_process:
+                try:
+                    child_process.wait(timeout=self.config['max_cpu_time'])
 
-            if not self.config['ignore_stderr']:
-                kwargs['stderr'] = output_file
+                except subprocess.TimeoutExpired:
+                    child_process.terminate()
+                    child_process.wait()
+                    self.results.add_sub_judgment(ETIMEOUT, input_name, output_name,
+                                                  'The program took too long to execute', output_path)
+                    continue
 
-            try:
-                subprocess.run(**kwargs)
-
-            except subprocess.TimeoutExpired:
-                self.results.add_sub_judgment(ETIMEOUT, path.split(input_path)[-1], path.split(output_path)[-1],
-                                              'The program took too long to execute', output_path)
-
-            except subprocess.CalledProcessError as err:
-                self.results.add_sub_judgment(ERUNTIME, path.split(input_path)[-1], path.split(output_path)[-1],
-                                              error_no=err.returncode)
-
-            finally:
-                input_file.close()
-                output_file.close()
+                if child_process.returncode != 0:
+                    if child_process.returncode == -25:  # a negative number indicates a signal
+                        self.results.add_sub_judgment(EMAXOUTPUT, input_name, output_name)
+                    else:
+                        self.results.add_sub_judgment(ERUNTIME, input_name, output_name, error_no=child_process.returncode)
 
     def move_to_judged(self):
         """
@@ -222,11 +259,25 @@ class Submission:
 
         self.get_io_paths()
 
+    def insert_jail_path(self, old_path):
+        """
+        Adds the jail path to the beginning of the given path.
+        The given path may be absolute or relative
+        """
+        if path.isabs(old_path):
+            old_path = old_path[1:]
+
+        return path.join(self.jail_dir, old_path)
+
     def move_to_jail(self):
-        pass
+        shutil.copytree(self.submission_dir, self.insert_jail_path(self.submission_dir))
+        for input_path in self.in_paths:
+            shutil.copy(input_path, self.insert_jail_path(input_path), follow_symlinks=True)
 
     def move_from_jail(self):
-        pass
+        for output_path in self.compare_out_paths:
+            shutil.copy(self.insert_jail_path(output_path), output_path, follow_symlinks=True)
+        shutil.rmtree(self.insert_jail_path(self.submission_dir[1:]))
 
     @staticmethod
     def diff(correct_path, compare_path, diff_path=None, no_ws=False):
