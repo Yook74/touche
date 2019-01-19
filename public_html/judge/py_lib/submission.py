@@ -1,7 +1,7 @@
 import subprocess
 import shutil
 import re
-import os
+from os import stat
 from os import path
 from configparser import ConfigParser
 from glob import glob
@@ -10,7 +10,7 @@ from .submission_results import *
 
 ERROR_FILE_NAME = 'error.txt'
 CHROOT_WRAPPER_NAME = 'chroot_wrapper.exe'
-MAX_OUTPUT_SIZE = 1000 * 1000  # Number of bytes which can be written by a submission (1M)
+MAX_OUTPUT_SIZE = 1000 * 1000  # Number of bytes which can be written by a submission (1MB)
 
 
 class Submission:
@@ -233,6 +233,9 @@ class Submission:
             input_name = path.split(input_path)[-1]
             output_name = path.split(output_path)[-1]
 
+            return_code = 0
+            timed_out = False
+
             with subprocess.Popen(self.get_chroot_command(input_path, output_path)) as child_process:
                 try:
                     child_process.wait(timeout=self.config['max_cpu_time'])
@@ -240,15 +243,17 @@ class Submission:
                 except subprocess.TimeoutExpired:
                     child_process.terminate()
                     child_process.wait()
-                    self.results.add_sub_judgment(ETIMEOUT, input_name, output_name,
-                                                  'The program took too long to execute', output_path)
-                    continue
+                    timed_out = True
 
-                if child_process.returncode != 0:
-                    if child_process.returncode == -25:  # a negative number indicates a signal
-                        self.results.add_sub_judgment(EMAXOUTPUT, input_name, output_name)
-                    else:
-                        self.results.add_sub_judgment(ERUNTIME, input_name, output_name, error_no=child_process.returncode)
+                return_code = child_process.returncode
+
+            if stat(self.insert_jail_path(output_path)).st_size >= MAX_OUTPUT_SIZE:
+                self.results.add_sub_judgment(EMAXOUTPUT, input_name, output_name)
+            elif timed_out:
+                self.results.add_sub_judgment(ETIMEOUT, input_name, output_name,
+                                              'The program took too long to execute', output_path)
+            elif return_code != 0:
+                self.results.add_sub_judgment(ERUNTIME, input_name, output_name, error_no=return_code)
 
     def move_to_judged(self):
         """

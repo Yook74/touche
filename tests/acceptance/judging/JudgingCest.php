@@ -11,7 +11,7 @@ class JudgingCest
         "accepted" => "Accepted",
         "accepted_libraries" => "Accepted",
         "compile_error" => "Compile Error",
-#        "exceeds_output_limit" => "Exceeds Output Limit",
+        "exceeds_output_limit" => "Exceeds Output Limit",
         "exceeds_time_limit" => "Exceeds Time Limit",
         "format_error" => "Format Error",
         "incorrect_output" => "Incorrect Output",
@@ -205,6 +205,9 @@ class JudgingCest
                     case "Compile Error":
                         if(!$team->attr["compile_error"])
                             break;
+
+                    case "Exceeds Output Limit":
+                        $wait_per_submission = 25;
 
                     default:
                         $this->submitSolution($team, $dir);
