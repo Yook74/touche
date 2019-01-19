@@ -11,6 +11,7 @@ class JudgingCest
         "accepted" => "Accepted",
         "accepted_libraries" => "Accepted",
         "compile_error" => "Compile Error",
+#        "exceeds_output_limit" => "Exceeds Output Limit",
         "exceeds_time_limit" => "Exceeds Time Limit",
         "format_error" => "Format Error",
         "incorrect_output" => "Incorrect Output",
@@ -20,7 +21,8 @@ class JudgingCest
     );
 
     # Valid source file extensions. If the contest supports python
-    private static $src_extensions = array("C" => ".c", "Java" => ".java", "C++" => ".cpp");
+    private static $src_extensions = array("C" => ".c", "Java" => ".java", "C++" => ".cpp",
+        "Python2" => ".py2", "Python3" => ".py");
 
     # Invalid file extensions. These exist in the forbidden_word directory
     private static $bogus_extensions = array(".txt", ".o", ".bin");
@@ -28,9 +30,13 @@ class JudgingCest
     # These languages are checked for forbidden words
     private static $forbidden_word = array("C", "C++");
 
+    # These languages are checked for compile errors
+    private static $compile_error = array("C", "C++", "Java");
+
     # All of the possible statuses and judgements
-    private static $judgements = array("Accepted", "Compile Error", "Exceeds Time Limit", "Forbidden Word in Source",
-        "Format Error", "Incorrect Output", "Runtime Error", "Undefined File Type", "Error (Reason Unknown)", "pending");
+    private static $judgements = array("Accepted", "Compile Error", "Exceeds Time Limit", "Exceeds Output Limit",
+        "Forbidden Word in Source", "Format Error", "Incorrect Output", "Runtime Error", "Undefined File Type",
+        "Error (Reason Unknown)", "pending");
 
     private static $top_dir = "example_submissions";
 
@@ -57,10 +63,12 @@ class JudgingCest
             $team->attr["username"] = $username;
             $team->attr["password"] = $password;
 
-            $team->attr["extension"] = $extension; # The file extension this team submits
             $team->attr["bogus_extension"] = self::$bogus_extensions[$sat_counter];
+
+            # Attributes of the languages the team submits
+            $team->attr["extension"] = $extension;
             $team->attr["forbidden_word"] = in_array($lang_name, self::$forbidden_word);
-            # ^ True if this language is checked for forbidden words
+            $team->attr["compile_error"] = in_array($lang_name, self::$compile_error);
 
             array_push($this->teams, $team);
 
@@ -192,6 +200,10 @@ class JudgingCest
 
                     case "Forbidden Word in Source":
                         if(!$team->attr["forbidden_word"])
+                            break;
+
+                    case "Compile Error":
+                        if(!$team->attr["compile_error"])
                             break;
 
                     default:

@@ -120,7 +120,7 @@ while($auto_response_info = mysqli_fetch_assoc($auto_response_query)){
                 case $response_keywords['EMAXOUTPUT']:
                     $title = "Exceeded Maximum Output Length";
                     $color = $data_txt_color4;
-                    $display_path = $program_output_path;
+                    $display_path = null;
                     break;
 
                 case $response_keywords['ETIMEOUT']:
@@ -157,7 +157,8 @@ while($auto_response_info = mysqli_fetch_assoc($auto_response_query)){
                 echo "No-whitespace diff Succeeded</font></b></td></tr>\n";
             }
 
-            if ($auto_response_info['RESPONSE_ID'] != $response_keywords['CORRECT']) {
+            if ($auto_response_info['RESPONSE_ID'] != $response_keywords['CORRECT'] &&
+                $auto_response_info['RESPONSE_ID'] != $response_keywords['EMAXOUTPUT']) {
                 echo "<tr><td><textarea rows=15 cols=62 readonly>";
                 echo read_entire_file($display_path);
                 echo "</textarea></td></tr>";
