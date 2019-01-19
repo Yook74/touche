@@ -9,7 +9,7 @@ import functools
 import operator
 
 
-def my_assert(test: bool, name: str):
+def my_assert(test, name):
     if not test:
         print(name + " test failed")
         exit(1)
@@ -73,11 +73,11 @@ test_functools()
 test_operator()
 
 try:
-    line = input()
+    line = raw_input()
 except EOFError:
     pass
 
 one, two = line.split()
 one = int(one)
 two = int(two)
-print(one + two)
+print one + two
