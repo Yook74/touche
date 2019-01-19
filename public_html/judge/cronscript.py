@@ -20,6 +20,7 @@ Written by Andrew Blomenberg in collaboration with Jonathan Geisler in Jan 2019
 import fcntl
 import traceback
 import sys
+import argparse
 from os import path
 from os import mkdir
 
@@ -46,6 +47,11 @@ NAME_CLASS = {  # Associates the names used in the database with the Submission 
     'Python2': PythonSubmission,
     'Python3': PythonSubmission}
 
+verbose = False
+def print_status(message: str):
+    if verbose:
+        print(message)
+
 
 def acquire_lock(file_handle):
     """
@@ -67,6 +73,10 @@ def release_lock(file_handle):
     fcntl.lockf(file_handle, fcntl.LOCK_UN)
 
 
+def get_submission_name(team_id, problem_id, timestamp):
+    return '%d-%d-%d' % (team_id, problem_id, timestamp)
+
+
 def report_error(judgement_code, one_submission_info, db_driver: DBDriver):
     """
     Reports an EFILETYPE or EUNKNOWN error to the database
@@ -83,7 +93,7 @@ def report_error(judgement_code, one_submission_info, db_driver: DBDriver):
 
     results = SubmissionResults()
     judged_dir = db_driver.dirs['judged']
-    submission_dir = '%d-%d-%d' % one_submission_info[1:4]
+    submission_dir = get_submission_name(*one_submission_info[1:4])
     submission_dir = path.join(judged_dir, submission_dir)
     if not path.isdir(submission_dir):
         mkdir(submission_dir)
@@ -107,7 +117,7 @@ def construct_submission(one_submission_info, db_driver: DBDriver):
     if extension not in EXTENSION_NAME:
         return None
 
-    submission_dir = '%d-%d-%d' % one_submission_info[1:4]
+    submission_dir = get_submission_name(*one_submission_info[1:4])
     lang_name = EXTENSION_NAME[extension]
     lang_info = db_driver.get_language_info(lang_name)
     class_to_construct = NAME_CLASS[lang_name]
@@ -131,15 +141,19 @@ def judge_submissions(db_driver: DBDriver):
     Creates one or more entries in the AUTO_RESPONSE table for every row in the QUEUED_SUBMISSIONS table
     """
     for row in db_driver.get_submission_info():
+        print_status('Reporting submission %s as pending' % get_submission_name(*row[1:4]))
         sub_id = db_driver.report_pending(row)
 
         try:
             submission = construct_submission(row, db_driver)
 
             if submission is None:
+                print_status('Undefined File Type')
                 report_error(EFILETYPE, row, db_driver)
                 continue
+
             else:
+                print_status('Judging submission %s' % get_submission_name(*row[1:4]))
                 results = submission.get_results()
 
         except:
@@ -153,16 +167,35 @@ def judge_submissions(db_driver: DBDriver):
             continue
 
         for judgement in results.get_auto_judgements():
-                db_driver.report_auto_judgement(sub_id, **judgement)
+            print_status("Reporting judgement with code %d" % judgement['judgement_code'])
+            db_driver.report_auto_judgement(sub_id, **judgement)
+
+
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-v', '--verbose', action='store_true', help='Print status messages to stdout')
+    parser.add_argument('-c', '--test-compile', type=str, metavar='Source File Path',
+                        help="Compile the specified file (if applicable) and print the compiler's output to stdout")
+
+    args = parser.parse_args()
+    global verbose
+    verbose = args.verbose
+    return args
 
 
 def main():
+    args = parse_args()
+
+    print_status("Connecting to database")
     with DBDriver() as db:
+
+        print_status("Acquiring file lock")
         lock_file = open(os.path.join(db.dirs['base'], "lockfile.lock"), 'w')
         acquire_lock(lock_file)
 
         judge_submissions(db)
 
+    print_status("Releasing file lock")
     release_lock(lock_file)
 
 
