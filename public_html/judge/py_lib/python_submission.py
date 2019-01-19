@@ -7,6 +7,9 @@ PYTHON3_CONFIG_PATH = 'py_lib/python3_config.ini'
 
 
 class PythonSubmission(Submission):
+    """
+    This handles both Python 2 and 3 submissions
+    """
     def __init__(self, **kwargs):
         if kwargs['lang_name'] == 'Python2':
             config_path = PYTHON2_CONFIG_PATH

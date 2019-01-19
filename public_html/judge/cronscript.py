@@ -1,3 +1,22 @@
+"""
+Checks, compiles, executes, and judges source files submitted by teams to the contest.
+This particular file calls a variety of files found in the py_lib directory.
+This file's main job is to get those files to work together properly, where most of the actual functionality is elsewhere.
+The intention is that this file will mainly be called by cron. See master-crontab.cron
+
+py_lib/submission.py defines a Submission class which acts as a parent for the CSubmmission, JavaSubmission, and PythonSubmission files.
+These files know how to check, compile, execute, and judge source files, but they are completely ignorant of the database.
+
+py_lib/db_driver.py defines a DBDriver class which acts as a layer between this script and the database.
+
+py_lib/submission_results defines a SubmissionResults which the Submission classes use to report the status and results
+    of a user's submitted source file.
+The methods of a SubmissionResults object allow the Submission class to store results in a way that makes sense to it,
+    and allow a DBDriver object to retrieve those data in a way that makes sense to it.
+
+Written by Andrew Blomenberg in collaboration with Jonathan Geisler in Jan 2019
+"""
+
 import fcntl
 import traceback
 import sys
@@ -109,7 +128,7 @@ def construct_submission(one_submission_info, db_driver: DBDriver):
 
 def judge_submissions(db_driver: DBDriver):
     """
-    Creates one or more entries in the AUTO_RESPONSE table for every queued submission
+    Creates one or more entries in the AUTO_RESPONSE table for every row in the QUEUED_SUBMISSIONS table
     """
     for row in db_driver.get_submission_info():
         sub_id = db_driver.report_pending(row)

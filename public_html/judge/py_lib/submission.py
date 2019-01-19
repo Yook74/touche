@@ -14,6 +14,12 @@ MAX_OUTPUT_SIZE = 1000 * 1000  # Number of bytes which can be written by a submi
 
 
 class Submission:
+    """
+    Represents a single source file submitted to the contest
+
+    This class is meant to be a parent class for other classes that can add language-specific functionality.
+    It turns out, however, that most of the functionality is language-independent (which is why this is ~400 lines)
+    """
     def __init__(self, **kwargs):
         """
         :param lang_name: C, CXX, JAVA, Python2, or Python3

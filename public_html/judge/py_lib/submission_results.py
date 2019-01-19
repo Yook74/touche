@@ -27,6 +27,14 @@ parse_error_codes()
 
 
 class SubmissionResults:
+    """
+    Provides accessor and mutator methods to make reporting the status of a Submission easy.
+    The mutator methods are designed to work well with the Submission classes, while
+        the accessor methods are designed to work well with the DBDriver class.
+
+    Nothing complicated going on here, just a run-of-the-mill ADT
+    """
+
     def __init__(self):
         self.__pre_exec_err = False
 
