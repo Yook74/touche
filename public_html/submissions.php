@@ -38,7 +38,7 @@
 			<form method="post" enctype="multipart/form-data" action="submit_solution.php">
 			<tr><td align="center" bgcolor="<?php echo "$data_bg_color1" ?>" colspan="3">
 			<table>
-				<tr><td align="right">Source File (C, C++, or Java) &nbsp</td>
+				<tr><td align="right">Source File (C, C++, Java, or Python 3) &nbsp</td>
 				<td><input type="file" name="source_file"></td></tr>
 				<tr><td align="right">Problem &nbsp</td><td>
 				<select name="problem_id">
