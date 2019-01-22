@@ -32,7 +32,7 @@ from py_lib.submission_results import *
 from py_lib.submission import ERROR_FILE_NAME
 
 
-EXTENSION_NAME = {  # TODO document .py2 and put this information in the database
+EXTENSION_NAME = {  # TODO put this information in the database
     '.c': 'C',
     '.cpp': 'CXX',
     '.cc': 'CXX',

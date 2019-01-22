@@ -83,7 +83,6 @@ cassert, cstdio, cstdlib, cstring, cmath, climits, iostream, sstream, iomanip, s
 	\begin{lstlisting}
 import java.util.Scanner;
 
-//cannot read "public class Main"
 class Main{ 
 	//adds two numbers
 	public static void main(String[] args){
@@ -96,6 +95,14 @@ class Main{
 }
 	\end{lstlisting}
 	
+	\subsection{Classes}
+	You must make a class called Main with a public static void method named main.
+	Otherwise we will not know what function to run as your main function \\
+	
+	Java only lets you define one public class per file. 
+	For this reason we reccomend that you should not define any public classes; instead your file should look like the above listing.
+	If you do end up making a public class, it will not break anything so long as there is only one.
+
 	\subsection{Packages}
 	The contest software (touche) makes these packages avalible for import. 
 	This means that you cannot reference any packages that do not appear in this list.
@@ -107,13 +114,15 @@ java.util.*
 java.math.*
 	\end{lstlisting}
 	
-	\section{Coding Python 2/3}
+	\section{Coding Python 3}
 	\subsection{Sample program}
 	\lstset{language=Python}
 	\begin{lstlisting}
-# Adds two numbers
+try:
+    line = input()
+except EOFError:
+    pass
 
-line = input()
 one, two = line.split()
 one = int(one)
 two = int(two)
@@ -126,4 +135,28 @@ print(one + two)
 numbers, math, cmath, decimal, fractions, random, itertools, functools, operator
 	\end{lstlisting}
 
+	\section{Coding Python 2}
+	\subsection{Sample program}
+	\lstset{language=Python}
+	\begin{lstlisting}
+try:
+    line = raw_input()
+except EOFError:
+    pass
+
+one, two = line.split()
+one = int(one)
+two = int(two)
+print one + two
+	\end{lstlisting}
+	
+	\subsection{Differentiating from Python 3}
+	The contest software assumes that .py files are Python 3, so if you want to submit Python 2 you'll have to change your submission's file extension to .py2.
+	For example: solution.py2
+
+	\subsection{Modules}
+	You may import the following modules in your code:
+	\begin{lstlisting}
+numbers, math, cmath, decimal, fractions, random, itertools, functools, operator
+	\end{lstlisting}
 \end{document}
