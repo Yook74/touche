@@ -3,11 +3,12 @@ if [ ! -d "python3_jail" ]; then
   mkdir python3_jail
 fi
 
-for dir in "bin" "lib64" "usr" "usr/bin" "usr/lib" "lib" "lib/x86_64-linux-gnu" "usr/lib/python3.5" "usr/lib/python3.5/plat-x86_64-linux-gnu"
+for dir in "bin" "lib64" "usr" "usr/bin" "usr/lib" "lib" "lib/x86_64-linux-gnu" "usr/lib/python3.5" "usr/lib/python3.5/plat-x86_64-linux-gnu" "dev"
 do
   mkdir -p ./python3_jail/$dir
 done
 
+touch ./python3_jail/dev/urandom
 cp -lp /bin/sh ./python3_jail/bin/sh
 cp -lp /usr/bin/head ./python3_jail/bin/head
 
