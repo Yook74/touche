@@ -119,18 +119,21 @@ class JudgeActor extends AcceptanceTester
 
     /**
      * Waits until any submission is ready for judging and then waits a little longer for the auto judgement to be made
-     * @param int $expected_time how long the auto judging should take
+     * @param int $expected_time how long the auto judging should take\
+     * @param int $numTeams the total number of teams that submit solutions. This is used to wait for the last submission
+     * to appear on the page
      * @param int $autoJudgeTime is the default amount of time to wait until timeout
      */
-    public function waitForAutoJudging($expected_time = 7, $autoJudgeTime = 65){
+    public function waitForAutoJudging($expected_time = 7, $numTeams = 1, $autoJudgeTime = 65){
         $I = $this;
+        $numTeams = $numTeams - 1;
         $I->amOnMyPage('judge.php');
         if($this->attr['invoke_cronscript']){
            $c_name = CreatorActor::getContestName();
            $result = system("php ../public_html/$c_name/judge/cronScript.php > /dev/null 2>&1");
            if($result != 0) throw new RuntimeException("Cronscript invocation failed");
         } else {
-            $I->waitForText('judge submission', $autoJudgeTime); #wait for cron to call the cronscript
+            $I->waitForElement("[name=\"submission$numTeams\"]", $autoJudgeTime);
         }
         $I->wait($expected_time);
         $I->reloadPage();

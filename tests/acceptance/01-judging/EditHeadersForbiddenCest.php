@@ -104,7 +104,7 @@ class EditHeadersForbiddenCest
             $num_submissions++;
         }
         $judge->attrLogin();
-        $judge->waitForAutoJudging($wait_per_submission * $num_submissions, 75);
+        $judge->waitForAutoJudging($wait_per_submission * $num_submissions, count($this->teams), 75);
 
         $this->assertJudgmentsMatch($judge, $desired_judgment);
         for (; $num_submissions > 0; $num_submissions--) {

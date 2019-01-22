@@ -167,6 +167,7 @@ class JudgingCest
 
         $run_length_submitted = false; # we will only submit one run_length_exceeded file because it takes a long time
         foreach (self::$dir_judgement as $dir => $judgement){
+            $numTeams = count($this->teams);
             $num_submissions = 0;
             $wait_per_submission = 8.5; # How long each submission takes to be judged
             foreach ($this->teams as $team){
@@ -181,6 +182,7 @@ class JudgingCest
 
                         $this->submitSolution($team, $dir);
                         $num_submissions++;
+                        $numTeams = 1;
                         break;
 
                     case "Undefined File Type":
@@ -189,6 +191,7 @@ class JudgingCest
                         break;
 
                     case "Forbidden Word in Source":
+                        $numTeams = count(self::$forbidden_word);
                         if(!$team->attr["forbidden_word"])
                             break;
 
@@ -199,7 +202,7 @@ class JudgingCest
                 }
             }
             $judge->attrLogin();
-            $judge->waitForAutoJudging($wait_per_submission * $num_submissions);
+            $judge->waitForAutoJudging($wait_per_submission * $num_submissions, $numTeams);
 
             $this->assertJudgmentsMatch($judge, $judgement);
             $this->testJudgeResponse($judge, $judgement);
