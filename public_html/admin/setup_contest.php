@@ -224,7 +224,7 @@ if ($_POST)
 		$insert_sql_c.= "WHERE LANGUAGE_NAME = 'C'";
 		$insert_sql_cpp = "UPDATE LANGUAGE SET REPLACE_HEADERS = '$headers_cpp',";
 		$insert_sql_cpp.= "			CHECK_BAD_WORDS = '$forbidden_cpp' ";
-		$insert_sql_cpp.= "WHERE LANGUAGE_NAME = 'C++'";
+		$insert_sql_cpp.= "WHERE LANGUAGE_NAME = 'CXX'";
 		$insert_sql_java = "UPDATE LANGUAGE SET REPLACE_HEADERS = '$headers_java',";
 		$insert_sql_java.= "			CHECK_BAD_WORDS = '$forbidden_java' ";
 		$insert_sql_java.= "WHERE LANGUAGE_NAME = 'JAVA'";
@@ -292,6 +292,7 @@ if (mysqli_num_rows($sql) > 0) {
 		echo "<form method=POST action=setup_contest.php>\n";
 		echo "<table align=center bgcolor=#ffffff cellpadding=0 cellspacing=0 border=0<tr><td>";
 		echo "<table width=100% cellpadding=5 cellspacing=1 border=0>\n";
+		echo "<tr><td><b>$status_msg</b></td></tr>";
 		echo "  <tr bgcolor=\"$hd_bg_color1\">\n";
 		echo "		<td align=\"center\" colspan=\"2\"><font color=\"$hd_txt_color1\"><b>Edit Contest Info</b></font></td>\n";
 		echo "	</tr>";

@@ -3,8 +3,8 @@ use Codeception\Util\Locator;
 
 class JudgingCest
 {
-    public static $outputFile1 = "1_input1.out";
-    public static $outputFile2 = "1_input2.out";
+    public static $outputFile1 = "_input1.out";
+    public static $outputFile2 = "_input2.out";
 
     # This describes all the source file directories and the results their code should give
     private static $dir_judgement = array(
@@ -137,8 +137,9 @@ class JudgingCest
     private function testJudgeResponse(JudgeActor $I, $judgment){
         $I->amOnMyPage("judge.php");
         $I->click("judge submission");
-        $file1 = self::$outputFile1;
-        $file2 = self::$outputFile2;
+        $problemNumber = $I->getProblemNumber();
+        $file1 = $problemNumber . self::$outputFile1;
+        $file2 = $problemNumber . self::$outputFile2;
         switch($judgment){
             case "Forbidden Word In Source":
             case "Compile Error":
@@ -150,18 +151,15 @@ class JudgingCest
                 $I->see("No-whitespace diff Succeeded");
             case "Incorrect Output":
                 $I->see($file1);
-                //get the link for the page that "Output Files" links to, since tab actions don't work in codeception
-                $link = $I->grabMultiple("[name=\"$file1\"]", 'href');
-                $newPage = substr($link[0], strpos($link[0], CreatorActor::getContestName()));
-                //use amOnPage instead of amOnUrl because codeception doesn't like it
-                $I->amOnPage($newPage);
+                $I->click("[name=\"$file1\"]");
+                $I->switchToNextTab();
                 $I->see("Comparing Output Files");
-                $I->moveBack();
+                $I->closeTab();
                 $I->see($file2);
-                $link = $I->grabMultiple("[name=\"$file2\"]", 'href');
-                $newPage = substr($link[0], strpos($link[0], CreatorActor::getContestName()));
-                $I->amOnPage($newPage);
+                $I->click("[name=\"$file2\"]");
+                $I->switchToNextTab();
                 $I->see("Comparing Output Files");
+                $I->closeTab();
                 break;
             default:
                 $I->see($judgment);
@@ -177,6 +175,7 @@ class JudgingCest
 
         $run_length_submitted = false; # we will only submit one run_length_exceeded file because it takes a long time
         foreach (self::$dir_judgement as $dir => $judgement){
+            $numTeams = count($this->teams);
             $num_submissions = 0;
             $wait_per_submission = 8.5; # How long each submission takes to be judged
             foreach ($this->teams as $team){
@@ -191,6 +190,7 @@ class JudgingCest
 
                         $this->submitSolution($team, $dir);
                         $num_submissions++;
+                        $numTeams = 1;
                         break;
 
                     case "Undefined File Type":
@@ -199,6 +199,7 @@ class JudgingCest
                         break;
 
                     case "Forbidden Word in Source":
+                        $numTeams = count(self::$forbidden_word);
                         if(!$team->attr["forbidden_word"])
                             break;
 
@@ -216,7 +217,7 @@ class JudgingCest
                 }
             }
             $judge->attrLogin();
-            $judge->waitForAutoJudging($wait_per_submission * $num_submissions);
+            $judge->waitForAutoJudging($wait_per_submission * $num_submissions, $numTeams);
 
             $this->assertJudgmentsMatch($judge, $judgement);
             $this->testJudgeResponse($judge, $judgement);

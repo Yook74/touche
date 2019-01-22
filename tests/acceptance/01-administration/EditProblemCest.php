@@ -36,14 +36,18 @@ class EditProblemCest
         $I->see("Problem deleted successfully");
     }
 
-    public function uploadPortableDocumentFormatFile(AdminActor $I)
+    public function uploadPDF(AdminActor $I)
     {
         $I->wantTo("Upload a PDF for a problem");
         $I->uploadPDF();
         $I->see("PDF uploaded successfully");
     }
 
-    public function uploadHyperTextMarkupLanguageFile(AdminActor $I)
+    /**
+     * @skip
+     * Uploading HTML is a deprecated feature
+     */
+    public function uploadHTML(AdminActor $I)
     {
         $I->wantTo("Upload an HTML file for a problem");
         $I->uploadHTML();
@@ -64,23 +68,23 @@ class EditProblemCest
         $I->see(self::$newProblem);
     }
 
-    public function judgePDFHTMLView(JudgeActor $I)
+    public function judgePDFView(JudgeActor $I)
     {
-        $I->wantTo("View the PDF or HTML writeup as a Judge");
-        $I->amOnMyPage("problems.php");
-        $I->click("HTML");
-        $I->dontSee("Not Found");
+        $I->wantTo("View the PDF writeup as a Judge");
+//        $I->amOnMyPage("problems.php");
+//        $I->click("HTML");
+//        $I->dontSee("Not Found");
         $I->amOnMyPage("problems.php");
         $I->click("PDF");
         $I->dontSee("Not Found");
     }
 
-    public function teamPDFHTMLView(TeamActor $I)
+    public function teamPDFView(TeamActor $I)
     {
-        $I->wantTo("View the PDF or HTML writeup as a Team");
-        $I->amOnMyPage("problems.php");
-        $I->click("HTML");
-        $I->dontSee("Not Found");
+        $I->wantTo("View the PDF writeup as a Team");
+//        $I->amOnMyPage("problems.php");
+//        $I->click("HTML");
+//        $I->dontSee("Not Found");
         $I->amOnMyPage("problems.php");
         $I->click("PDF");
         $I->dontSee("Not Found");
@@ -90,14 +94,14 @@ class EditProblemCest
     {
         $I->wantTo("Get rejected when the user tries to create a problem without a location");
         $I->createProblemNoLocation();
-        $I->see("You forget to set the problem location");
+        $I->see("You forgot to set the problem location");
     }
 
     public function noNameCreation(AdminActor $I)
     {
         $I->wantTo("Get rejected when the user tries to create a problem without a name");
         $I->createProblemNoName();
-        $I->see("You forget to set the problem name");
+        $I->see("You forgot to set the problem name");
     }
 
     public function cleanup(AdminActor $I)

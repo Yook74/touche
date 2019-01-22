@@ -195,9 +195,10 @@ if($row = mysqli_fetch_assoc($sql_result)){
 		echo "<td bgcolor=$hd_bg_color2 align=center>Current Response</td>\n";
         }
 	echo "<td bgcolor=$hd_bg_color2 align=center>Go to judging page</td></tr>\n";
-	    
+
+    $counter = 0;
 	while($row = mysqli_fetch_assoc($sql_result)){
-		#calculate time sence start of contest
+		#calculate time since start of contest
 		$submit_ts = $row['TS'];
 		// turns out we only want to display min
 		//$hours = intval(($submit_ts - $start_ts)/3600);
@@ -255,13 +256,13 @@ if($row = mysqli_fetch_assoc($sql_result)){
 		echo "<td bgcolor=$data_bg_color1 align=center>" . $team_id . "</td>\n";
 		echo "<td bgcolor=$data_bg_color1 align=center>" . $row['ATTEMPT'] . "</td>\n";
 		echo "<td bgcolor=$data_bg_color1 align=center>$response_text</td>\n";
-		echo "<td bgcolor=$data_bg_color1 align=center><a href='judge_response.php?judged_id=" . 
+		echo "<td bgcolor=$data_bg_color1 align=center><a name= 'submission" . $counter . "'href='judge_response.php?judged_id=" .
 			$row['JUDGED_ID'] . "&team_id=" . $team_id . 
 			"&problem=" . $row['PROBLEM_ID'] . "&attempt=" . $row['ATTEMPT'] . "&page=$page'>judge submission</a></td>\n";
 		echo "</tr>\n";					    
 		
 		$data_bg_color1 = $color_preserve;
-
+		$counter++;
 	}
 	echo "</table></table>\n";
 	echo "<center>$end_string</center>\n";

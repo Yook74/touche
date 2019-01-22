@@ -66,6 +66,48 @@ class TeamActor extends AcceptanceTester
         $I->amOnMyPage("standings.php");
         $I->click($catName);
     }
+
+//Standings Actions
+
+    /**
+     * Looks to see if $secondTeam is ahead of the team calling this function on the leaderboard
+     * @return bool If True, $secondTeam is ahead of $myTeam
+     */
+    public function isAheadOfMe($secondTeam)
+    {
+        $pageSource = $this->grabPageSource();
+        $myTeamPOS = strrpos($pageSource, $this->attr["name"]);
+        $secondTeamPOS = strrpos($pageSource, $secondTeam);
+        return $myTeamPOS > $secondTeamPOS;
+    }
+
+    /**
+     * Gets the score for $problemNumber for $teamName
+     * @return mixed actual problem score
+     */
+    public function getMyProblemScore($problemNumber, $teamName = null)
+    {
+        if($teamName == null)
+            $teamName = $this->attr["name"];
+        //$problemNumber is zero indexed
+        $problemNumber = $problemNumber - 1;
+        $score = $this->grabTextFrom("[name=\"$teamName Score $problemNumber\"]");
+        $scoreArray = explode('/', $score);
+        return $scoreArray[0];
+    }
+
+    /**
+     * Gets the overall score for $teamName
+     * @return mixed actual overall score
+     */
+    public function getMyOverallScore($teamName = null)
+    {
+        if($teamName == null)
+            $teamName = $this->attr["name"];
+        $score = $this->grabTextFrom("[name=\"$teamName Overall Score\"]");
+        $scoreArray = explode('(', $score);
+        return $scoreArray[0];
+    }
 }
 
 

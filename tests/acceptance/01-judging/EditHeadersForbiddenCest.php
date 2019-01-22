@@ -8,6 +8,10 @@ class EditHeadersForbiddenCest
 
     private static $src_extensions_forbidden = array("C" => ".c", "C++" => ".cpp");
 
+    # All of the possible statuses and judgments
+    private static $judgments = array("Accepted", "Compile Error", "Exceeds Time Limit", "Forbidden Word in Source",
+        "Format Error", "Incorrect Output", "Runtime Error", "Undefined File Type", "Error (Reason Unknown)", "pending");
+
     private static $top_dir = "example_submissions";
 
     # These languages are checked for forbidden words
@@ -73,23 +77,25 @@ class EditHeadersForbiddenCest
     /**
      * Checks to see if the desired judgment is the only visible auto judgement
      * @param JudgeActor $I must be logged in
-     * @param bool $status true if accepted is desired; false otherwise
+     * @param string $desired_judgment
      */
-    private function assertJudgmentsMatch(JudgeActor $I, $status){
+    private function assertJudgmentsMatch(JudgeActor $I, $desired_judgment){
         $I->amOnMyPage("judge.php");
-        if($status == true)
-            $I->see("Accepted");
-        else
-            $I->dontSee("Accepted");
+        foreach (self::$judgments as $judgment) {
+            if ($judgment == $desired_judgment)
+                $I->see($judgment);
+            else
+                $I->dontSee($judgment);
+        }
     }
 
     /**
      * Submit several files from different teams and judge them
      * @param JudgeActor $judge does not need to be logged in
      * @param \Codeception\Scenario $scenario opaque variable passed through for creating a team actor
-     * @param $acceptBool true if accepted is desired; false otherwise
+     * @param $desired_judgment true the desired judgment for this solution
      */
-    private function submitBatch(JudgeActor $judge, \Codeception\Scenario $scenario, $acceptBool, $dir)
+    private function submitBatch(JudgeActor $judge, \Codeception\Scenario $scenario, $desired_judgment, $dir)
     {
         $num_submissions = 0;
         $wait_per_submission = 13; # How long each submission takes to be judged
@@ -98,19 +104,71 @@ class EditHeadersForbiddenCest
             $num_submissions++;
         }
         $judge->attrLogin();
-        $judge->waitForAutoJudging($wait_per_submission * $num_submissions, 75);
+        $judge->waitForAutoJudging($wait_per_submission * $num_submissions, count($this->teams), 75);
 
-        $this->assertJudgmentsMatch($judge, $acceptBool);
+        $this->assertJudgmentsMatch($judge, $desired_judgment);
         for (; $num_submissions > 0; $num_submissions--) {
             $judge->judgeSubmission();
         }
+    }
+
+    public function uncheckForbiddenWordsBoxes(AdminActor $I)
+    {
+        $I->wantTo("Uncheck the boxes that check for forbidden words");
+        $I->uncheckForbiddenWordsBoxes();
+        $I->dontSeeCheckboxIsChecked("forbidden_c");
+        $I->dontSeeCheckboxIsChecked("forbidden_cpp");
+        $I->dontSeeCheckboxIsChecked("forbidden_java");
+    }
+
+    public function forbiddenWordsNoCheck(AdminActor $admin, JudgeActor $judge, \Codeception\Scenario $scenario)
+    {
+        $judge->wantTo("Judge files with forbidden words and have them succeed");
+        $this->createTeams($admin, $scenario, self::$src_extensions_forbidden);
+        $this->submitBatch($judge, $scenario, "Accepted", "forbidden_word");
+        $this->deleteTeams($admin);
+    }
+
+    public function checkForbiddenWordsBoxes(AdminActor $I)
+    {
+        $I->wantTo("Check the boxes that check for forbidden words");
+        $I->checkForbiddenWordsBoxes();
+        $I->seeCheckboxIsChecked("forbidden_c");
+        $I->seeCheckboxIsChecked("forbidden_cpp");
+        $I->seeCheckboxIsChecked("forbidden_java");
+    }
+
+    public function uncheckHeadersBoxes(AdminActor $I)
+    {
+        $I->wantTo("Uncheck the boxes that check for headers");
+        $I->uncheckHeadersBoxes();
+        $I->dontSeeCheckboxIsChecked("headers_c");
+        $I->dontSeeCheckboxIsChecked("headers_cpp");
+        $I->dontSeeCheckboxIsChecked("headers_java");
+    }
+
+    public function headersNoCheck(AdminActor $admin, JudgeActor $judge, \Codeception\Scenario $scenario)
+    {
+        $judge->wantTo("Judge files with invalid header files when there is no check for headers");
+        $this->createTeams($admin, $scenario, self::$src_extensions_headers);
+        $this->submitBatch($judge, $scenario, "Accepted", "additional_headers");
+        $this->deleteTeams($admin);
+    }
+
+    public function checkHeadersBoxes(AdminActor $I)
+    {
+        $I->wantTo("check the boxes that check for headers");
+        $I->checkHeadersBoxes();
+        $I->seeCheckboxIsChecked("headers_c");
+        $I->seeCheckboxIsChecked("headers_cpp");
+        $I->seeCheckboxIsChecked("headers_java");
     }
     
     public function invalidHeaderFiles(AdminActor $admin, JudgeActor $judge, \Codeception\Scenario $scenario)
     {
         $judge->wantTo("Judge files with invalid header files");
         $this->createTeams($admin, $scenario, self::$src_extensions_headers);
-        $this->submitBatch($judge, $scenario, false, "additional_headers");
+        $this->submitBatch($judge, $scenario, "Compile Error", "additional_headers");
     }
 
     public function addHeaders(AdminActor $I)
@@ -127,7 +185,7 @@ class EditHeadersForbiddenCest
     public function validHeaderFiles(JudgeActor $judge, \Codeception\Scenario $scenario)
     {
         $judge->wantTo("Judge files with now valid header files");
-        $this->submitBatch($judge, $scenario, true, "additional_headers");
+        $this->submitBatch($judge, $scenario, "Accepted", "additional_headers");
     }
 
     public function deleteHeaders(AdminActor $I)
@@ -146,7 +204,7 @@ class EditHeadersForbiddenCest
     {
         $judge->wantTo("Judge files with forbidden words and have them fail");
         $this->createTeams($admin, $scenario, self::$src_extensions_forbidden);
-        $this->submitBatch($judge, $scenario, false, "forbidden_word");
+        $this->submitBatch($judge, $scenario, "Forbidden Word in Source", "forbidden_word");
     }
 
     public function deleteForbiddenWords(AdminActor $I)
@@ -154,16 +212,14 @@ class EditHeadersForbiddenCest
         $I->wantTo("Delete forbidden words to test the system");
         $I->deleteForbiddenWord("C", "system");
         $I->see("Forbidden Word changed successfully");
-        $I->deleteForbiddenWord("CXX", "open");
-        $I->see("Forbidden Word changed successfully");
-        $I->deleteForbiddenWord("CXX", "fstream");
+        $I->deleteForbiddenWord("CXX", "system");
         $I->see("Forbidden Word changed successfully");
     }
 
     public function forbiddenWordRemoved(JudgeActor $judge, \Codeception\Scenario $scenario)
     {
         $judge->wantTo("Judge files with forbidden words and have them succeed");
-        $this->submitBatch($judge, $scenario, true, "forbidden_word");
+        $this->submitBatch($judge, $scenario, "Accepted", "forbidden_word");
     }
 
     public function addForbiddenWords(AdminActor $I)
@@ -171,10 +227,7 @@ class EditHeadersForbiddenCest
         $I->wantTo("Add forbidden words back to reset to default");
         $I->addForbiddenWord("C", "system");
         $I->see("Forbidden Word changed successfully");
-        $I->addForbiddenWord("CXX", "open");
-        $I->see("Forbidden Word changed successfully");
-        $I->addForbiddenWord("CXX", "fstream");
-        $I->see("Forbidden Word changed successfully");
+        $I->addForbiddenWord("CXX", "system");
         $this->deleteTeams($I);
     }
 }

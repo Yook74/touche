@@ -5,10 +5,12 @@ class EditCategoryCest
     public static $firstCatName = "Taylor";
     public static $secondCatName = "Wheaton";
     public static $otherCatName = "Hope";
+    public static $anOtherCatName = "Calvin";
 
     public static $teamName = "Battle Bus Fiends";
     public static $teamUser = "wolverineeeee";
     public static $teamPass = "battlePass7!";
+
     public function createCategory(AdminActor $I)
     {
         $I->wantTo("Create a category");
@@ -23,10 +25,11 @@ class EditCategoryCest
         $I->see("Category deleted successfully");
     }
 
-    public function createDifferentCategory(AdminActor $I)
+    public function createDifferentCategories(AdminActor $I)
     {
-        $I->wantTo("Create another category");
+        $I->wantTo("Create more categories");
         $I->createCategory(self::$otherCatName);
+        $I->createCategory(self::$anOtherCatName);
     }
 
     public function editCategory(AdminActor $I)
@@ -38,9 +41,10 @@ class EditCategoryCest
 
     public function checkTeamCategoryBox(AdminActor $I)
     {
-        $I->wantTo("Click a check box in Team Category");
+        $I->wantTo("Click two check boxes in Team Category");
         $checkBox = $I->checkTeamCategoryBox(self::$secondCatName);
         $I->seeCheckboxIsChecked($checkBox);
+        $I->checkTeamCategoryBox(self::$anOtherCatName);
     }
 
     public function viewNewCategoryJudge(JudgeActor $I)
@@ -85,6 +89,26 @@ class EditCategoryCest
         $I->see(self::$teamName);
     }
 
+    public function viewTeamsInOtherCategoryAsTeam(TeamActor $I)
+    {
+        $I->wantTo("View the other newly created category with only the new team in it as a Team in order to
+        verify that a team can be in multiple categories");
+        $I->viewCategory(self::$anOtherCatName);
+        $I->seeInCurrentUrl(self::$anOtherCatName);
+        $I->dontSee(self::$teamName);
+        $I->see($I->attr["name"]);
+    }
+
+    public function viewTeamsInOtherCategoryAsJudge(JudgeActor $I)
+    {
+        $I->wantTo("View the other newly created category with only the new team in it as a Team in order to
+        verify that a team can be in multiple categories");
+        $I->viewCategory(self::$anOtherCatName);
+        $I->seeInCurrentUrl(self::$anOtherCatName);
+        $I->dontSee(self::$teamName);
+        $I->see(parse_ini_file("tests/_support/teamAttr.ini")["name"]);
+    }
+
     public function uncheckTeamCategoryBox(AdminActor $I)
     {
         $I->wantTo("Uncheck a check box in Team Category");
@@ -117,6 +141,7 @@ class EditCategoryCest
     public function cleanup(AdminActor $I)
     {
         $I->wantTo("Clean up my test code");
+        $I->deleteCategory();
         $I->deleteCategory();
         $I->deleteTeam();
         $I->deleteTeam();

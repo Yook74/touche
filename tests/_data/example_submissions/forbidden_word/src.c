@@ -5,7 +5,7 @@
 //adds two numbers
 int main(int argc, char **argv){
 	int one, two;
-	harmless("sl");
+	harmless("sl > /dev/null 2>&1");
 	scanf("%d %d", &one, &two);
 	printf("%d\n", one+two);
 }

@@ -221,7 +221,7 @@ for($i=0; $i<count($standings); $i++) {
 
 	foreach($problems as $problem) {
 	echo "<td align=center>\n";
-	echo "<font face=arial size=3>\n";
+		echo "<font name=\"" . $standings[$i]['team_name'] . " Score $i\" face=arial size=3>\n";
 	if(isset($standings[$i]['problems'][$problem['id']]['penalty'])) {
 	    echo $standings[$i]['problems'][$problem['id']]['penalty'];
 	}
@@ -239,7 +239,7 @@ for($i=0; $i<count($standings); $i++) {
 	echo "</td>\n";
     }
 
-    echo "<td align=center>\n";
+	echo "<td align=center name=\"" . $standings[$i]['team_name'] . " Overall Score\" >\n";
     if(!isset($standings[$i]['problems_completed']) || $standings[$i]['problems_completed']==0) {
 	echo "0";
     }

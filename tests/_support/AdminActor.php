@@ -223,11 +223,14 @@ class AdminActor extends AcceptanceTester
     /**
      * Delete a problem
      */
-    public function deleteProblem()
+    public function deleteProblem($deleteID = null)
     {
         $I = $this;
         $I->amOnMyPage("setup_problems.php");
-        $I->click("Delete");
+        if($deleteID == null)
+            $I->click("Delete");
+        else
+            $I->click("[name=\"delete$deleteID\"]");
     }
 
     /**
@@ -290,6 +293,16 @@ class AdminActor extends AcceptanceTester
         $I->attachFile("data_set_in", $this->attr["data_in_path2"]);
         $I->attachFile("data_set_out", $this->attr["data_out_path2"]);
         $I->click("Submit");
+    }
+
+    /**
+     * Delete the first dataset
+     */
+    public function deleteDataset()
+    {
+        $I = $this;
+        $I->amOnMyPage("setup_data_sets.php");
+        $I->click("Delete");
     }
 
 /* Site Actions */
@@ -515,6 +528,66 @@ class AdminActor extends AcceptanceTester
         $I->click("Submit");
     }
 
+    /**
+     * Uncheck all the boxes in the forbidden words row
+     */
+    public function uncheckForbiddenWordsBoxes()
+    {
+       $I = $this;
+       $I->amOnMyPage("setup_contest.php");
+       $I->uncheckOption("forbidden_c");
+       $I->uncheckOption("forbidden_cpp");
+       $I->uncheckOption("forbidden_java");
+       $I->uncheckOption("forbidden_python2");
+       $I->uncheckOption("forbidden_python3");
+       $I->click("Submit");
+    }
+
+    /**
+     * Check all the boxes in the forbidden words row
+     */
+    public function checkForbiddenWordsBoxes()
+    {
+        $I = $this;
+        $I->amOnMyPage("setup_contest.php");
+        $I->checkOption("forbidden_c");
+        $I->checkOption("forbidden_cpp");
+        $I->checkOption("forbidden_java");
+        $I->checkOption("forbidden_python2");
+        $I->checkOption("forbidden_python3");
+        $I->click("Submit");
+    }
+
+    /**
+     * Uncheck all the boxes in the headers row
+     */
+    public function uncheckHeadersBoxes()
+    {
+        $I = $this;
+        $I->amOnMyPage("setup_contest.php");
+        $I->uncheckOption("headers_c");
+        $I->uncheckOption("headers_cpp");
+        $I->uncheckOption("headers_java");
+        $I->uncheckOption("headers_python2");
+        $I->uncheckOption("headers_python3");
+        $I->click("Submit");
+    }
+
+    /**
+     * Check all the boxes in the headers row
+     */
+    public function checkHeadersBoxes()
+    {
+        $I = $this;
+        $I->amOnMyPage("setup_contest.php");
+        $I->checkOption("headers_c");
+        $I->checkOption("headers_cpp");
+        $I->checkOption("headers_java");
+        $I->checkOption("headers_python2");
+        $I->checkOption("headers_python3");
+        $I->click("Submit");
+    }
+
 /* Clearing Actions */
 
     /**
@@ -540,4 +613,38 @@ class AdminActor extends AcceptanceTester
         $I->click("Clone Contest");
     }
 
+/* Misc. */
+
+    /**
+     * Check the 'Ignore Standard Error?' checkbox
+     */
+    public function checkStdErrorCheckbox()
+    {
+        $I = $this;
+        $I->amOnMyPage("setup_contest.php");
+        $I->checkOption("stderr");
+        $I->click("Submit");
+    }
+
+    /**
+     * Uncheck the 'Ignore Standard Error?' checkbox
+     */
+    public function uncheckStdErrorCheckbox()
+    {
+        $I = $this;
+        $I->amOnMyPage("setup_contest.php");
+        $I->uncheckOption("stderr");
+        $I->click("Submit");
+    }
+
+    /**
+     * Click the recalculate responses button
+     */
+    public function recalculateResponses()
+    {
+        $I = $this;
+        $I->amOnMyPage("misc.php");
+        $I->click("recalculate responses");
+        $I->acceptPopup();
+    }
 }

@@ -98,7 +98,7 @@ class Main{ //it is important that this does not read "public class Main"
         NumberFormat numberFormat = NumberFormat.getInstance(locale);
         String number = numberFormat.format(42.17);
         
-        if(number != "42,17"){
+        if(!number.equals("42,17")){
             die("numberFormat test failed");
         }
     }

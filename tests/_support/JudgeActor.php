@@ -119,18 +119,21 @@ class JudgeActor extends AcceptanceTester
 
     /**
      * Waits until any submission is ready for judging and then waits a little longer for the auto judgement to be made
-     * @param int $expected_time how long the auto judging should take
+     * @param int $expected_time how long the auto judging should take\
+     * @param int $numTeams the total number of teams that submit solutions. This is used to wait for the last submission
+     * to appear on the page
      * @param int $autoJudgeTime is the default amount of time to wait until timeout
      */
-    public function waitForAutoJudging($expected_time = 7, $autoJudgeTime = 65){
+    public function waitForAutoJudging($expected_time = 7, $numTeams = 1, $autoJudgeTime = 65){
         $I = $this;
+        $numTeams = $numTeams - 1;
         $I->amOnMyPage('judge.php');
         if($this->attr['invoke_cronscript']){
            $c_name = CreatorActor::getContestName();
-           $result = system("php ../public_html/$c_name/judge/cronScript.php > /dev/null");
+           $result = system("php ../public_html/$c_name/judge/cronScript.php > /dev/null 2>&1");
            if($result != 0) throw new RuntimeException("Cronscript invocation failed");
         } else {
-            $I->waitForText('judge submission', $autoJudgeTime); #wait for cron to call the cronscript
+            $I->waitForElement("[name=\"submission$numTeams\"]", $autoJudgeTime);
         }
         $I->wait($expected_time);
         $I->reloadPage();
@@ -179,4 +182,52 @@ class JudgeActor extends AcceptanceTester
         $I->amOnMyPage("judge.php");
         $I->selectOption("team", $teamID);
     }
+
+//Standings Actions
+
+    /**
+     * @return bool returns true if $team1 is ahead of $team2 on the leaderboard
+     */
+    public function isAheadOf($team1, $team2)
+    {
+        $pageSource = $this->grabPageSource();
+        $team1POS = strrpos($pageSource, $team1);
+        $team2POS = strrpos($pageSource, $team2);
+        return $team1POS < $team2POS;
+    }
+
+    /**
+     * Find and return the problem score for a given $teamName and $problemNumber
+     */
+    public function getAProblemScore($teamName, $problemNumber = "1")
+    {
+        $problemNumber = $problemNumber - 1; //Judge standings is 0 indexed
+        $score = $this->grabTextFrom("[name=\"$teamName Score $problemNumber\"]");
+        $scoreArray = explode('/', $score);
+        return $scoreArray[0];
+    }
+
+    /**
+     * Find and return the overall score for a given $teamName
+     */
+    public function getAnOverallScore($teamName)
+    {
+        $score = $this->grabTextFrom("[name=\"$teamName Overall Score\"]");
+        $scoreArray = explode('(', $score);
+        return $scoreArray[0];
+    }
+
+//Problem Actions
+
+    public function getProblemNumber()
+    {
+        $I = $this;
+        $problemName = parse_ini_file("adminAttr.ini")["problem_name"];
+        return $I->grabFromDatabase('PROBLEMS', 'PROBLEM_ID',
+            array('PROBLEM_NAME' => $problemName));
+    }
 }
+
+
+
+

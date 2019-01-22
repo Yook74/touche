@@ -10,7 +10,7 @@ class EditTeamCest
     public function addNewTeam(AdminActor $I)
     {
         $I->wantTo("Add a new team to the contest");
-        $I->addSimpleTeam(self::$newTeamName, self::$username, self::$organization, self::$password);
+        $I->addSimpleTeam(self::$newTeamName, self::$username, self::$password);
         $originalTeamName = parse_ini_file('tests/_support/teamAttr.ini')["name"];
         $I->see($originalTeamName);
         $I->see(self::$newTeamName);
