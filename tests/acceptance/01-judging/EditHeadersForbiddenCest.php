@@ -93,7 +93,7 @@ class EditHeadersForbiddenCest
      * Submit several files from different teams and judge them
      * @param JudgeActor $judge does not need to be logged in
      * @param \Codeception\Scenario $scenario opaque variable passed through for creating a team actor
-     * @param $desired_judgment true the desired judgment for this solution
+     * @param $desired_judgment string the desired judgment for this solution
      */
     private function submitBatch(JudgeActor $judge, \Codeception\Scenario $scenario, $desired_judgment, $dir)
     {
@@ -104,7 +104,7 @@ class EditHeadersForbiddenCest
             $num_submissions++;
         }
         $judge->attrLogin();
-        $judge->waitForAutoJudging($wait_per_submission * $num_submissions, count($this->teams), 75);
+        $judge->waitForAutoJudging($wait_per_submission, $num_submissions, 75);
 
         $this->assertJudgmentsMatch($judge, $desired_judgment);
         for (; $num_submissions > 0; $num_submissions--) {
