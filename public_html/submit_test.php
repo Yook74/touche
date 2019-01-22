@@ -10,175 +10,137 @@
 #
 # arch-tag: submissions.php
 
-	include_once("lib/config.inc");
-	include_once("lib/session.inc");
-	include_once("lib/data.inc");
-	include_once("judge/lib/responses.inc");
+include_once("lib/config.inc");
+include_once("lib/session.inc");
+include_once("lib/data.inc");
 
-	# Set up default directories
-	$problem_handle['judged_dir'] = "$base_dir/test_compile/";
-	
-    // check to see if a file is actually being submitted
-    if ($_FILES['source_file']['name'] == false) {
-		header("location: testcompile.php?state=1");
-        exit(0);
+define("ERR_NO_FILE", 1);
+define("CLEAN_COMPILE", 2);
+define("ERR_FILE_TYPE", 3);
+define("ERR_FILE_MOVE", 4);
+define("COMPILE_ERR", 5);
+define("FORBIDDEN_WORD", 6);
+
+// check to see if a file is actually being submitted
+if ($_FILES['source_file']['name'] == false) {
+    report_status(ERR_NO_FILE);
+}
+
+list($file_name, $queue_id, $team_id, $ts) = enqueue_submission();
+
+# Get the path of the directory which will store the submitted source code as well as the compiler output
+$submission_dir = "$base_dir/queue/$team_id-T-$ts";
+mkdir($submission_dir);
+$source_path = "$submission_dir/$file_name";
+
+move_submission($source_path);
+execute_cronscript($queue_id);
+
+$submission_dir = "$base_dir/judged/$team_id-T-$ts";
+interpret_response($submission_dir, $ts);
+
+/**
+ * Insert the submitted file into the QUEUED_SUBMISSIONS table and return information about the submission
+ */
+function enqueue_submission()
+{
+    $team_id = $GLOBALS['team_id'];
+    $link = $GLOBALS['link'];
+
+    $file_name = $_FILES['source_file']['name'];
+    $ts = time();
+    $sql = "INSERT INTO QUEUED_SUBMISSIONS (TEAM_ID, TS, SOURCE_NAME, TEST_COMPILE) ";
+    $sql .= "VALUES ('$team_id', '$ts', '$file_name', True) ";
+    execute_query($sql);
+    $queue_id = mysqli_insert_id($link);
+    return array($file_name, $queue_id, $team_id, $ts);
+}
+
+/**
+ * Move the submitted source file the specified path
+ */
+function move_submission($source_path)
+{
+    if (!move_uploaded_file($_FILES['source_file']['tmp_name'], $source_path)) {
+        report_status(ERR_FILE_MOVE);
     }
-	$orig_file_name = $_FILES['source_file']['name'];
-        preg_match("/\.(.*)$/", $orig_file_name, $matches);
-	$extension = $matches[1];
-
-	$ts = time();
-        $uploadfile = "$team_id-$ts";
-		
-	$auto_response_number = ENONE;
-	$sql  = "SELECT * ";
-	$sql .= "FROM FILE_EXTENSIONS, LANGUAGE_FILE_EXTENSIONS ";
-	$sql .= "WHERE EXT = '" . mysqli_real_escape_string($link, $extension) . "' ";
-	$sql .= "  AND FILE_EXTENSIONS.EXT_ID = LANGUAGE_FILE_EXTENSIONS.EXT_ID";
-	$sql_result = mysqli_query($link, $sql);
-	if(!$sql_result){
-        	sql_error($sql);
-        }
-
-	//If file extension exists in File_Extensions table of DB, move file for judging
-	if(!mysqli_num_rows($sql_result)) {
-		header("location: testcompile.php?state=3");
-		exit(0);
-	}
-	$temp_file = "$problem_handle[judged_dir]$uploadfile.$extension";
-
-	if(move_uploaded_file($_FILES['source_file']['tmp_name'],$temp_file)) {
-		chmod($temp_file, 0644);
-		#Save Original File
-	        $temp_store = read_entire_file($temp_file);
-		save_file("$temp_file-orig",$temp_store);
-	}
-	else {
-		header("location: testcompile.php?state=4");
-		exit(0);
-	}
-
-	//Get Language of extension
-	$row = mysqli_fetch_assoc($sql_result);
-        $lang_id = $row['LANGUAGE_ID'];
-
-        $sql  = "SELECT * ";
-        $sql .= "FROM LANGUAGE ";
-        $sql .= "WHERE LANGUAGE_ID = $lang_id ";
-        $sql_result = mysqli_query($link, $sql);
-        $row = mysqli_fetch_assoc($sql_result);
-
-        $lang_name = $row['LANGUAGE_NAME'];
-        $replace_headers = $row['REPLACE_HEADERS'];
-        $check_bad_words = $row['CHECK_BAD_WORDS'];
-
-        # The contents of the file in the judged directory
-        $problem_handle['judged_source'] = $temp_store;
-	
-        $problem_handle['file_name'] = $uploadfile;
-        $problem_handle['file_extension'] = $extension;
-        $submission_output = "";
-
-	# Include the specific language file
-        include_once("judge/Lang/$lang_name.inc");
-	$init_name = $lang_name . "_init";
-	$init_name($problem_handle);
-
-	# Replace headers
-        if($auto_response_number == ENONE && $replace_headers) {
-        	$sql  = "SELECT HEADER ";
-                $sql .= "FROM HEADERS ";
-                $sql .= "WHERE LANGUAGE_ID = $lang_id ";
-                $sql_result = mysqli_query($link, $sql);
-                if(!$sql_result){
-                	sql_error($sql);
-                }
-                $headers = array();
-                while($row = mysqli_fetch_row($sql_result)) {
-                	array_push($headers, $row[0]);
-                }
-                $problem_handle['preprocess']($headers);
-                save_file($temp_file, $problem_handle['judged_source']);
-	}
-
-        # Check for forbidden words
-        if($auto_response_number == ENONE && $check_bad_words) {
-		$pre_proc_array = $problem_handle['check_forbidden']();
-
-		if (sizeof($pre_proc_array) > 0) {
-		    $sql  = "SELECT WORD ";
-                    $sql .= "FROM FORBIDDEN_WORDS ";
-                    $sql .= "WHERE LANGUAGE_ID = $lang_id ";
-                    $sql_result = mysqli_query($link, $sql);
-                    if(!$sql_result) {
-                	sql_error($sql);
-                    }
-                    while($row = mysqli_fetch_row($sql_result)) {
-                	if(preg_match("/(^.*$row[0].*$)/m",
-				      $pre_proc_array[sizeof($pre_proc_array)-1],
-				      $context))
-		        {
-                                $auto_response_number = EFORBIDDEN;
-                      		$submission_output .= "Found word: <b>$row[0]</b>    ";
-                                $submission_output .= "<pre>$context[1]</pre><br />\n";
-                        }
-		    }
-
-		    if ($auto_response_number == EFORBIDDEN) {
-			$_SESSION['compile_errors'] = $submission_output;
-			header("location: testcompile.php?state=6");
-			exit(0);
-		    }
-                }
-	}
-        # Compile
-        if($auto_response_number == ENONE) {
-  	      $sys_command = $problem_handle['compile']();
-              $tmp = system($sys_command,$result);
-              if($result == 127) {
-          	    $auto_response_number = EUNKNOWN;
-              	    $submission_output .= "**Unknown Error**";
-		    $_SESSION['compile_errors'] = $problem_handle['process_errors']($submission_output, $orig_file_name);
-		    header("location: testcompile.php?state=5");
-		    exit(0);
-              }
-              else if($result) {
-		  $auto_response_number = ECOMPILE;
-              	  $submission_output .=
-		      read_entire_file($problem_handle['judged_dir'] . $problem_handle['file_name'] . ".err");
-		  $_SESSION['compile_errors'] = $problem_handle['process_errors']($submission_output, $orig_file_name);
-		  header("location: testcompile.php?state=5");
-		  exit(0);
-              }
-	}
-	header("location: testcompile.php?state=2");
-	exit(0);
-
-
-# Read the entire file into a string
-# Input: $filename - file path to read
-function read_entire_file($filename) {
-    if(file_exists($filename)){
-                return file_get_contents($filename);
-        }
-        else{
-                return "";
-        }
+    chmod($source_path, 0644);
 }
 
-# Write the submission file to the judged directory
-# Input: $filename - file path to write to
-#        $file - string to write to the file
-function save_file($filename,$file) {
-    if($handle = fopen($filename,"w+")) {
-                if($file && !fwrite($handle,$file)){
-                        $submission_output .= "Error: Unable to write to the file!";
-                        fclose($handle);
-                }
-        }
-    else{
-                $submission_output .= "Error: Unable to open the file!";
-        }
+/**
+ * execute the cronscript with a flag that tells it to only compile our submission
+ */
+function execute_cronscript($queue_id)
+{
+    chdir('judge');
+    system("python3 cronscript.py --test-compile $queue_id");
+    chdir('..');
 }
 
+/**
+ * Get the response from the cronscript and report it to the testcompile page
+ */
+function interpret_response($submission_dir, $ts)
+{
+    $reponses = $GLOBALS['responses'];
+
+    $result = execute_query("SELECT JUDGED_ID FROM JUDGED_SUBMISSIONS WHERE TEAM_ID = $GLOBALS[team_id] AND TS = $ts");
+    $judged_id = mysqli_fetch_array($result)['JUDGED_ID'];
+
+    $result = execute_query("SELECT * FROM AUTO_RESPONSES WHERE JUDGED_ID = '$judged_id'");
+    $auto_response_row = mysqli_fetch_assoc($result);
+
+    switch ($reponses[$auto_response_row['RESPONSE_ID']]['KEYWORD']) {
+        case 'EFILETYPE':
+            report_status(ERR_FILE_TYPE);
+            break;
+        case 'CORRECT':
+            report_status(CLEAN_COMPILE);
+            break;
+        case 'ECOMPILE':
+            $status = COMPILE_ERR;
+        case 'EFORBIDDEN':
+            if (!$status)
+                $status = FORBIDDEN_WORD;
+
+            $err_file = "$submission_dir/$auto_response_row[OUTPUT_FILE]";
+            $_SESSION['compile_errors'] = read_entire_file($err_file);
+            report_status($status);
+            break;
+        default:
+            echo "Unknown response from cronscript: $auto_response_row[RESPONSE_ID]";
+            die(1);
+    }
+}
+
+/**
+ * return to the testcompile page with the given status
+ * @param int $status_code should be one of the constants defined at the top of this file
+ */
+function report_status($status_code){
+    header("location: testcompile.php?state=$status_code");
+    exit(0);
+}
+
+/**
+ * Read the specified file into a string or report an error and die
+ */
+function read_entire_file($path) {
+    if(file_exists($path))
+        return file_get_contents($path);
+
+    echo "<br> Error opening file $path";
+    die(1);
+}
+
+function execute_query($sql){
+    $link = $GLOBALS['link'];
+    $result = mysqli_query($link, $sql);
+    if (!$result) {
+        echo "Error in sql: $sql";
+        echo mysqli_error($link);
+        die(1);
+    }
+    return $result;
+}
 ?>

@@ -76,7 +76,7 @@ for ($i = 0; $i < count($standings); $i++) {
     $sql  = "SELECT PROBLEM_ID, TS, ATTEMPT, RESPONSE_ID ";
     $sql .= "FROM JUDGED_SUBMISSIONS ";
     $sql .= "WHERE ";
-    $sql .= "    TEAM_ID='" . $standings[$i]['team_id'] . "' ";
+    $sql .= "    TEAM_ID='" . $standings[$i]['team_id'] . "' AND TEST_COMPILE = 0 ";
     $sql .= "ORDER BY PROBLEM_ID, ATTEMPT ASC ";
     $result = mysqli_query($link, $sql);
 

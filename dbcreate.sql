@@ -45,14 +45,15 @@ DROP TABLE IF EXISTS JUDGED_SUBMISSIONS;
 
 CREATE TABLE JUDGED_SUBMISSIONS (
   JUDGED_ID int(11) NOT NULL auto_increment,
-  TEAM_ID int(11) NOT NULL default '0',
-  PROBLEM_ID int(11) NOT NULL default '0',
-  TS int(11) NOT NULL default '0',
-  ATTEMPT int(11) NOT NULL default '0',
-  SOURCE_NAME char(255) NOT NULL default '',
+  TEAM_ID int(11) NOT NULL,
+  PROBLEM_ID int(11) default NULL,
+  TS int(11) NOT NULL,
+  ATTEMPT int(11) default NULL,
+  SOURCE_NAME char(255) NOT NULL,
   RESPONSE_ID int(11) NOT NULL default '0',
-  VIEWED int(11) NOT NULL default '0',
-  JUDGED int(10) NOT NULL default '0',
+  VIEWED int(11) NOT NULL default '0', # This should be a boolean value???
+  JUDGED int(10) NOT NULL default '0', # This should be a boolean value???
+  TEST_COMPILE bool default FALSE,
   PRIMARY KEY  (JUDGED_ID)
 );
 # --------------------------------------------------------
@@ -64,11 +65,12 @@ DROP TABLE IF EXISTS QUEUED_SUBMISSIONS;
 
 CREATE TABLE QUEUED_SUBMISSIONS (
   QUEUE_ID int(11) NOT NULL auto_increment,
-  TEAM_ID int(11) NOT NULL default '0',
-  PROBLEM_ID int(11) NOT NULL default '0',
-  TS int(11) NOT NULL default '0',
-  ATTEMPT int(11) NOT NULL default '0',
-  SOURCE_NAME char(10) NOT NULL default '',
+  TEAM_ID int(11) NOT NULL,
+  PROBLEM_ID int(11) default NULL,
+  TS int(11) NOT NULL,
+  ATTEMPT int(11) default NULL,
+  SOURCE_NAME char(10) NOT NULL,
+  TEST_COMPILE bool default FALSE,
   PRIMARY KEY  (QUEUE_ID)
 );
 # --------------------------------------------------------

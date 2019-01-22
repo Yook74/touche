@@ -95,15 +95,22 @@ class DBDriver:
         curs.close()
         return out
 
-    def get_submission_info(self):
+    def get_queued_submissions(self, queue_id=None, test_compile=False):
         """
         :return: Information on all the queued submissions submitted before the contest ends
+        :param queue_id If specified, only fetch submissions with that ID
+        :param test_compile True if test compile submissions should only be fetched and false if they should be ignored
         """
         curs = self.__connection.cursor()
-        curs.execute('''SELECT QUEUE_ID, TEAM_ID, PROBLEM_ID, TS, ATTEMPT, SOURCE_NAME
-                        FROM QUEUED_SUBMISSIONS, CONTEST_CONFIG 
-                        WHERE TS < (START_TS + CONTEST_END_DELAY) 
-                       ORDER BY TS''')
+        where_clause = '''WHERE TS < (START_TS + CONTEST_END_DELAY) AND TEST_COMPILE = %s''' % test_compile
+
+        if queue_id is not None:
+            where_clause += ''' AND QUEUE_ID = %d''' % queue_id
+
+        curs.execute('''SELECT QUEUE_ID, TEAM_ID, PROBLEM_ID, TS, ATTEMPT, SOURCE_NAME, TEST_COMPILE
+                        FROM QUEUED_SUBMISSIONS, CONTEST_CONFIG
+                        %s
+                        ORDER BY TS''' % where_clause)
 
         out = curs.fetchall()
         curs.close()
@@ -127,8 +134,14 @@ class DBDriver:
         :return: the id of the inserted row
         """
         curs = self.__connection.cursor()
-        curs.execute('''INSERT INTO JUDGED_SUBMISSIONS (TEAM_ID, PROBLEM_ID, TS, ATTEMPT, SOURCE_NAME) 
-                        VALUES (%d, %d, %d, %d, '%s')''' % one_submission_info[1:])
+
+        one_submission_info = list(one_submission_info)  # to make it mutable
+        for idx, elem in enumerate(one_submission_info):
+            if elem is None:
+                one_submission_info[idx] = 'NULL'  # SQL syntax
+
+        curs.execute('''INSERT INTO JUDGED_SUBMISSIONS (TEAM_ID, PROBLEM_ID, TS, ATTEMPT, SOURCE_NAME, TEST_COMPILE) 
+                        VALUES (%s, %s, %s, %s, '%s', %s)''' % tuple(one_submission_info[1:]))
         row_id = curs.lastrowid
 
         curs.execute('''DELETE FROM QUEUED_SUBMISSIONS WHERE QUEUE_ID = %d''' % one_submission_info[0])

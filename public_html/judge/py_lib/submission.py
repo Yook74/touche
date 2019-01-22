@@ -354,9 +354,10 @@ class Submission:
             else:
                 self.results.add_sub_judgment(CORRECT, in_name, compare_out_name)
 
-    def get_results(self):
+    def get_results(self, test_compile=False):
         """
         This is the only function the user should need to call; it does everything necessary to judge the submission
+        :param test_compile: if set to True, judging will stop after the compile step
         :return: A SubmissionResults object which describes the results of attempting to process the submission
         """
         self.move_to_judged()
@@ -366,6 +367,10 @@ class Submission:
 
         self.compile()
         if self.results.is_err():
+            return self.results
+
+        if test_compile:
+            self.results.report_pre_exec_error(CORRECT, ERROR_FILE_NAME)
             return self.results
 
         self.move_to_jail()

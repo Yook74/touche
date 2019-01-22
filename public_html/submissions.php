@@ -71,14 +71,14 @@
 		$sql =  "SELECT TS, ATTEMPT, RESPONSE_ID ";
 		$sql .= "FROM JUDGED_SUBMISSIONS ";
 		$sql .= "WHERE ";
-		$sql .= "    PROBLEM_ID='$problem[id]' AND TEAM_ID='$team_id' ";
+		$sql .= "    PROBLEM_ID='$problem[id]' AND TEAM_ID='$team_id' AND TEST_COMPILE = 0  ";
 		$sql .= "ORDER BY ATTEMPT ASC";
 		$result = mysqli_query($link, $sql);
 		echo mysqli_error($link);
 		$sql2 =  "SELECT TS, ATTEMPT ";
 		$sql2 .= "FROM QUEUED_SUBMISSIONS ";
 		$sql2 .= "WHERE ";
-		$sql2 .= "    PROBLEM_ID='$problem[id]' AND TEAM_ID='$team_id' ";
+		$sql2 .= "    PROBLEM_ID='$problem[id]' AND TEAM_ID='$team_id' AND TEST_COMPILE = 0 ";
 		$sql2 .= "ORDER BY ATTEMPT";
 		$result2 = mysqli_query($link, $sql2);
 		echo mysqli_error($link);

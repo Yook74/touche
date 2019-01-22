@@ -74,7 +74,10 @@ def release_lock(file_handle):
 
 
 def get_submission_name(team_id, problem_id, timestamp):
-    return '%d-%d-%d' % (team_id, problem_id, timestamp)
+    if problem_id is None:
+        return '%d-T-%d' % (team_id, timestamp)
+    else:
+        return '%d-%d-%d' % (team_id, problem_id, timestamp)
 
 
 def report_error(judgement_code, one_submission_info, db_driver: DBDriver):
@@ -136,11 +139,14 @@ def construct_submission(one_submission_info, db_driver: DBDriver):
                               headers=db_driver.get_headers(lang_info[0]))
 
 
-def judge_submissions(db_driver: DBDriver):
+def process_submissions(db_driver: DBDriver, submissions, test_compile=False):
     """
-    Creates one or more entries in the AUTO_RESPONSE table for every row in the QUEUED_SUBMISSIONS table
+    Creates one or more entries in the AUTO_RESPONSE table for every row in the given list of submissions
+    :param db_driver: a connection to the database
+    :param submissions: a list of rows from the QUEUED_SUBMISSIONS table
+    :param bool test_compile: true if a test compile is desired
     """
-    for row in db_driver.get_submission_info():
+    for row in submissions:
         print_status('Reporting submission %s as pending' % get_submission_name(*row[1:4]))
         sub_id = db_driver.report_pending(row)
 
@@ -154,7 +160,7 @@ def judge_submissions(db_driver: DBDriver):
 
             else:
                 print_status('Judging submission %s' % get_submission_name(*row[1:4]))
-                results = submission.get_results()
+                results = submission.get_results(test_compile=test_compile)
 
         except:
             report_error(EUNKNOWN, row, db_driver)
@@ -171,11 +177,28 @@ def judge_submissions(db_driver: DBDriver):
             db_driver.report_auto_judgement(sub_id, **judgement)
 
 
+def judge_queued(db_driver: DBDriver):
+    """
+    Judges all the submissions which are queued for judging
+    """
+    process_submissions(db_driver, db_driver.get_queued_submissions())
+
+
+def test_compile(queue_id, db_driver):
+    """
+    Performs a test compile on the submission indicated by queue_id
+    :param queue_id: the id of one of the rows in the QUEUED_SUBMISSIONS table
+    """
+    submissions = db_driver.get_queued_submissions(queue_id=queue_id, test_compile=True)
+    process_submissions(db_driver, submissions)
+
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('-v', '--verbose', action='store_true', help='Print status messages to stdout')
-    parser.add_argument('-c', '--test-compile', type=str, metavar='Source File Path',
-                        help="Compile the specified file (if applicable) and print the compiler's output to stdout")
+    parser.add_argument('-c', '--test-compile', type=str, metavar='Queue ID',
+                        help="Take the row specified by the given ID out if the QUEUED_SUBMISSIONS table, compile it "
+                             "(if applicable) and put the result of the compile in the JUDGED_SUBMISSIONS table")
 
     args = parser.parse_args()
     global verbose
@@ -186,17 +209,22 @@ def parse_args():
 def main():
     args = parse_args()
 
-    print_status("Connecting to database")
-    with DBDriver() as db:
+    if args.test_compile is None:
+        print_status("Connecting to database")
+        with DBDriver() as db:
 
-        print_status("Acquiring file lock")
-        lock_file = open(os.path.join(db.dirs['base'], "lockfile.lock"), 'w')
-        acquire_lock(lock_file)
+            print_status("Acquiring file lock")
+            lock_file = open(os.path.join(db.dirs['base'], "lockfile.lock"), 'w')
+            acquire_lock(lock_file)
 
-        judge_submissions(db)
+            judge_queued(db)
 
-    print_status("Releasing file lock")
-    release_lock(lock_file)
+        print_status("Releasing file lock")
+        release_lock(lock_file)
+    else:
+        print_status("Connecting to database")
+        with DBDriver() as db:
+            test_compile(int(args.test_compile), db)
 
 
 if __name__ == '__main__':

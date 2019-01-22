@@ -103,7 +103,7 @@
 	$sql  = "SELECT PROBLEM_ID, TS, ATTEMPT, RESPONSE_ID ";
 	$sql .= "FROM JUDGED_SUBMISSIONS ";
 	$sql .= "WHERE ";
-	$sql .= "    TEAM_ID='".$standings[$i]['team_id'] . "'";
+	$sql .= "    TEAM_ID='".$standings[$i]['team_id'] . "' AND TEST_COMPILE=0 ";
 	if ($standings[$i]['team_id'] != $team_id) {
 		$sql .= " AND ";
 		$sql .= "    TS<'$contest_freeze_ts'  AND ";
