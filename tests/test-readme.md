@@ -75,4 +75,30 @@ Contest_duration runs right before delete_contest because nothing should happen 
 
 After a set of tests runs, the results of the test can be reviewed.
 By pointing your browser to `src/tests/_output/records.html`, you can view the results of the most recently run set of tests. 
- 
+
+## Tests that should fail
+There are certain tests that are currently (as of 1/22/2019) failing because certain features don't work/aren't implemented yet.
+Here's a list of those tests:
+- EditCategoryCest
+  - editCancelCategory
+- EditProblemCest
+  - uploadPDF
+- EditTeamCest
+  - cancelEdit
+- RecalculateResponsesCest
+  - startRecalculating
+- JudgeSubmissionsCest
+  - filterByTeam
+- JudgeUpdateCest
+  - viewStandingsAfterDeletionTeam
+- ScoringCest
+  - viewUpdatedScoresTeam
+  - checkCompletedTeam
+  - checkNewScoresTeam
+- FreezeCest
+  - viewUpdatedStandings
+- ContestEndCest
+  - noContestJudge 
+
+Also JudgingCest works *most* of the time, but there are a few strange errors we haven't been able to replicate.
+If you see that JudgingCest fails, look at the recorder result to determine if it was something serious or something dumb.
