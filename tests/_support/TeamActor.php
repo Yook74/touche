@@ -58,6 +58,19 @@ class TeamActor extends AcceptanceTester
     }
 
     /**
+     * Submit a solution to the test compiler
+     * @param $dir the directory where the intended file lives
+     * @param string $ext defaults to c, but sometimes a different extension will be necessary
+     */
+    public function submitToTestCompile($dir, $ext = "c")
+    {
+        $I = $this;
+        $I->amOnMyPage("testcompile.php");
+        $I->attachFile("source_file", "example_submissions/$dir/src.$ext");
+        $I->click("Submit");
+    }
+
+    /**
      * View the category page
      */
     public function viewCategory($catName)
