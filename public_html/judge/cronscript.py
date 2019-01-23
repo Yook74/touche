@@ -190,7 +190,7 @@ def test_compile(queue_id, db_driver):
     :param queue_id: the id of one of the rows in the QUEUED_SUBMISSIONS table
     """
     submissions = db_driver.get_queued_submissions(queue_id=queue_id, test_compile=True)
-    process_submissions(db_driver, submissions)
+    process_submissions(db_driver, submissions, test_compile=True)
 
 
 def parse_args():

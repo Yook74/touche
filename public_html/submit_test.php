@@ -73,7 +73,7 @@ function move_submission($source_path)
 function execute_cronscript($queue_id)
 {
     chdir('judge');
-    system("python3 cronscript.py --test-compile $queue_id");
+    system("python3 cronscript.py --test-compile $queue_id 2> errorLog.txt");
     chdir('..');
 }
 
