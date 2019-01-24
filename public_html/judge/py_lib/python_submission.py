@@ -29,6 +29,7 @@ class PythonSubmission(Submission):
         self.stripped_headers += '\n'
 
     def pre_compile(self):
+        shutil.copy(self.source_path, self.source_path + '.orig')
         self.check_bad_words()
         self.strip_headers()
         self.insert_headers()

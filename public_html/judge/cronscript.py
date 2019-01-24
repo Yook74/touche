@@ -21,6 +21,7 @@ import fcntl
 import traceback
 import sys
 import argparse
+import shutil
 from os import path
 from os import mkdir
 
@@ -53,13 +54,19 @@ def print_status(message: str):
         print(message)
 
 
-def acquire_lock(file_handle):
+def acquire_lock(file_handle, blocking):
     """
     Keeps other instances of this script from running simultaneously.
     :param file_handle: The return value of a call to open. Should be writable
+    :param blocking: True if the file lock should be waited for, False will exit on failing to acquire the lock
     """
+    print_status("Acquiring file lock")
+    flags = fcntl.LOCK_EX
+
+    if not blocking:
+        flags |= fcntl.LOCK_NB
     try:
-        fcntl.lockf(file_handle, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        fcntl.lockf(file_handle, flags)
     except IOError:
         print('Failed to acquire file lock. Exiting.', file=sys.stderr)
         exit(1)
@@ -70,7 +77,28 @@ def release_lock(file_handle):
     Releases the lock created in acquire_lock so that it can be used by other instances of this script
     :param file_handle: The same parameter you passed to acquire_lock
     """
+    print_status("Releasing file lock")
     fcntl.lockf(file_handle, fcntl.LOCK_UN)
+
+
+def move_to_queue(judged_row, dirs):
+    """
+    Moves the source file for judged_row from the judged directory specified by dirs to the queue directory
+    Needed for the rejudge feature
+    :param judged_row: one row from the JUDGED_SUBMISSIONS table
+    :param dirs: the dirs dictionary from DBDriver
+    """
+    dir_name = get_submission_name(*judged_row[:3])
+    source_name = judged_row[4]
+
+    old_source_dir = path.join(dirs['judged'], dir_name)
+    new_source_dir = path.join(dirs['queue'], dir_name)
+    old_source_path = path.join(old_source_dir, source_name + '.orig')
+    new_source_path = path.join(new_source_dir, source_name)
+
+    os.mkdir(new_source_dir)
+    shutil.move(old_source_path, new_source_path)
+    shutil.rmtree(old_source_dir)
 
 
 def get_submission_name(team_id, problem_id, timestamp):
@@ -184,7 +212,7 @@ def judge_queued(db_driver: DBDriver):
     process_submissions(db_driver, db_driver.get_queued_submissions())
 
 
-def test_compile(queue_id, db_driver):
+def test_compile(queue_id, db_driver: DBDriver):
     """
     Performs a test compile on the submission indicated by queue_id
     :param queue_id: the id of one of the rows in the QUEUED_SUBMISSIONS table
@@ -193,12 +221,25 @@ def test_compile(queue_id, db_driver):
     process_submissions(db_driver, submissions, test_compile=True)
 
 
+def requeue(db_driver: DBDriver):
+    """
+    Removes all the entries in the JUDGED_SUBMISSIONS and AUTO_RESPONSES tables
+    and queues the removed submissions up to be judged again
+    """
+    print_status("Re-queuing files")
+    for judged_submission in db_driver.empty_judged():
+        move_to_queue(judged_submission, db_driver.dirs)
+        db_driver.enqueue_submission(*judged_submission)
+
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('-v', '--verbose', action='store_true', help='Print status messages to stdout')
-    parser.add_argument('-c', '--test-compile', type=str, metavar='Queue ID',
-                        help="Take the row specified by the given ID out if the QUEUED_SUBMISSIONS table, compile it "
+    modes = parser.add_mutually_exclusive_group()
+    modes.add_argument('-c', '--test-compile', type=str, metavar='Queue ID',
+                       help="Take the row specified by the given ID out if the QUEUED_SUBMISSIONS table, compile it "
                              "(if applicable) and put the result of the compile in the JUDGED_SUBMISSIONS table")
+    modes.add_argument('--rejudge', action='store_true', help='Recalculate all previous judgements')
 
     args = parser.parse_args()
     global verbose
@@ -209,22 +250,26 @@ def parse_args():
 def main():
     args = parse_args()
 
-    if args.test_compile is None:
-        print_status("Connecting to database")
-        with DBDriver() as db:
+    print_status("Connecting to database")
+    with DBDriver() as db:
+        lock_file = open(os.path.join(db.dirs['base'], "lockfile.lock"), 'w')
 
-            print_status("Acquiring file lock")
-            lock_file = open(os.path.join(db.dirs['base'], "lockfile.lock"), 'w')
-            acquire_lock(lock_file)
+        if args.test_compile is not None:
+            test_compile(int(args.test_compile), db)
+
+        elif args.rejudge:
+            acquire_lock(lock_file, blocking=True)
+
+            requeue(db)
+            judge_queued(db)
+
+            release_lock(lock_file)
+        else:
+            acquire_lock(lock_file, blocking=False)
 
             judge_queued(db)
 
-        print_status("Releasing file lock")
-        release_lock(lock_file)
-    else:
-        print_status("Connecting to database")
-        with DBDriver() as db:
-            test_compile(int(args.test_compile), db)
+            release_lock(lock_file)
 
 
 if __name__ == '__main__':

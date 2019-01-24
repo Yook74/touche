@@ -116,6 +116,37 @@ class DBDriver:
         curs.close()
         return out
 
+    def enqueue_submission(self, team_id: int, problem_id: int, timestamp: int, attempt: int, source_name: str):
+        """
+        Inserts a submission into the QUEUED_SUBMISSIONS table
+        :param team_id: The ID of the team in the database
+        :param problem_id: the ID of the problem this submission is for
+        :param timestamp: the timestamp of the submission
+        :param attempt: how many times has this team attempted to solve this problem?
+        :param source_name: the name of the source file (not a full path)
+        """
+        curs = self.__connection.cursor()
+        curs.execute('''INSERT INTO QUEUED_SUBMISSIONS (TEAM_ID, PROBLEM_ID, TS, ATTEMPT, SOURCE_NAME)
+                        VALUES (%d, %d, %d, %d, '%s')''' % (team_id, problem_id, timestamp, attempt, source_name))
+
+        self.__connection.commit()
+        curs.close()
+
+    def empty_judged(self):
+        """
+        Clears the JUDGED_SUBMISSIONS and AUTO_RESPONSES tables
+        :return: the contents of the JUDGED_SUBMISSIONS table
+        """
+        curs = self.__connection.cursor()
+        curs.execute('''SELECT TEAM_ID, PROBLEM_ID, TS, ATTEMPT, SOURCE_NAME FROM JUDGED_SUBMISSIONS''')
+        out = curs.fetchall()
+
+        curs.execute('''TRUNCATE JUDGED_SUBMISSIONS''')
+        curs.execute('''TRUNCATE AUTO_RESPONSES''')
+        self.__connection.commit()
+        curs.close()
+        return out
+
     def get_ignore_stderr(self):
         """
         :return boolean: Whether IGNORE_STDERR is set

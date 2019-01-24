@@ -169,6 +169,7 @@ class Submission:
                 return
 
     def pre_compile(self):
+        shutil.copy(self.source_path, self.source_path + '.orig')
         self.strip_headers()
         self.check_bad_words()
         self.insert_headers()
