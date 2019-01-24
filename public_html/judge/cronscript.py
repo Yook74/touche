@@ -108,11 +108,12 @@ def get_submission_name(team_id, problem_id, timestamp):
         return '%d-%d-%d' % (team_id, problem_id, timestamp)
 
 
-def report_error(judgement_code, one_submission_info, db_driver: DBDriver):
+def report_error(judgement_code, one_submission_info, judged_id, db_driver: DBDriver):
     """
     Reports an EFILETYPE or EUNKNOWN error to the database
     :param judgement_code: EFILETYPE or EUNKNOWN
     :param one_submission_info: a row from the QUEUED_SUBMISSIONS table
+    :param judged_id: The ID of this submission in the JUDGED_SUBMISSIONS table
     :param db_driver: a DBDriver object
     """
     results = SubmissionResults()
@@ -141,7 +142,7 @@ def report_error(judgement_code, one_submission_info, db_driver: DBDriver):
     results.report_pre_exec_error(judgement_code, ERROR_FILE_NAME, message, error_path)
 
     judgement_info = results.get_auto_judgements()[0]
-    db_driver.report_auto_judgement(one_submission_info[0], **judgement_info)
+    db_driver.report_auto_judgement(judged_id, **judgement_info)
 
 
 def construct_submission(one_submission_info, db_driver: DBDriver):
@@ -191,7 +192,7 @@ def process_submissions(db_driver: DBDriver, submissions, test_compile=False):
 
             if submission is None:
                 print_status('Undefined File Type')
-                report_error(EFILETYPE, row, db_driver)
+                report_error(EFILETYPE, row, sub_id, db_driver)
                 continue
 
             else:
@@ -199,12 +200,12 @@ def process_submissions(db_driver: DBDriver, submissions, test_compile=False):
                 results = submission.get_results(test_compile=test_compile)
 
         except:
-            report_error(EUNKNOWN, row, db_driver)
+            report_error(EUNKNOWN, row, sub_id, db_driver)
             traceback.print_exc()
             continue
 
         if results.get_overall_judgement_code() is None:
-            report_error(EUNKNOWN, row, db_driver)
+            report_error(EUNKNOWN, row, sub_id, db_driver)
             print("Something goofed when getting the overall judgement code", file=sys.stderr)
             continue
 
