@@ -67,7 +67,7 @@ include_once("lib/header.inc");
         echo "<td>".$team_row["TEAM_NAME"]."</td>";
 
         for($x=1; $x<=$num_cat; $x++) {
-            //Grab the category id that correlates to the right category - garph 2019
+            //Grab the category id that correlates to the right category
             $cat_row = mysqli_fetch_assoc($category);
             $category_id_sql = "SELECT CATEGORY_ID FROM CATEGORIES WHERE CATEGORY_NAME = '" . $cat_row["CATEGORY_NAME"] . "'";
             $category_id_query = mysqli_query($link, $category_id_sql);
