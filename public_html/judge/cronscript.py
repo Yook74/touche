@@ -115,20 +115,28 @@ def report_error(judgement_code, one_submission_info, db_driver: DBDriver):
     :param one_submission_info: a row from the QUEUED_SUBMISSIONS table
     :param db_driver: a DBDriver object
     """
+    results = SubmissionResults()
+    judged_dir = db_driver.dirs['judged']
+    queue_dir = db_driver.dirs['queue']
+    submission_name = get_submission_name(*one_submission_info[1:4])
+
     if judgement_code == EFILETYPE:
+        submission_dir = path.join(queue_dir, submission_name)
+        new_dir = path.join(judged_dir, submission_name)
+        shutil.move(submission_dir, new_dir)
+        submission_dir = new_dir
+
         message = 'Unknown file type'
     elif judgement_code == EUNKNOWN:
+        submission_dir = path.join(judged_dir, submission_name)
+        mkdir(submission_dir)
+
         message = 'Something went wrong, probably on our end. Check public_html/judge/errorLog.txt'
     else:
         raise ValueError('report_error cannot handle the error code %d' % judgement_code)
 
-    results = SubmissionResults()
-    judged_dir = db_driver.dirs['judged']
-    submission_dir = get_submission_name(*one_submission_info[1:4])
-    submission_dir = path.join(judged_dir, submission_dir)
-    if not path.isdir(submission_dir):
-        mkdir(submission_dir)
-
+    source_path = path.join(submission_dir, one_submission_info[5])
+    shutil.copy(source_path, source_path + ".orig")
     error_path = path.join(submission_dir, ERROR_FILE_NAME)
     results.report_pre_exec_error(judgement_code, ERROR_FILE_NAME, message, error_path)
 
