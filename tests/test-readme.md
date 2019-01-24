@@ -78,27 +78,39 @@ By pointing your browser to `src/tests/_output/records.html`, you can view the r
 
 ## Tests that should fail
 There are certain tests that are currently (as of 1/22/2019) failing because certain features don't work/aren't implemented yet.
-Here's a list of those tests:
+Here's a list of those tests and why they should fail:
 - EditCategoryCest
   - editCancelCategory
+    - 'Edit cancelling' is an action that involves editing a form, navigating
+    away from the page, and then submitting something new to the form. This
+    action breaks many forms on Touche.
 - EditProblemCest
   - uploadPDF
+    - There is no success message present after uploading a PDF.
 - EditTeamCest
   - cancelEdit
+    - Edit cancel error.
 - RecalculateResponsesCest
   - startRecalculating
+    - Recalculating responses is not fully functional.
 - JudgeSubmissionsCest
   - filterByTeam
+    - Judges cannot successfully filter by team.
 - JudgeUpdateCest
   - viewStandingsAfterDeletionTeam
+    - The scoring format for team standings is incorrect. It should be formatted
+    like the judge standings page.
 - ScoringCest
   - viewUpdatedScoresTeam
+    - This is the same error as viewStandingsAfterDeletionTeam.
   - checkCompletedTeam
+    - This is the same error as viewStandingsAfterDeletionTeam.
   - checkNewScoresTeam
-- FreezeCest
-  - viewUpdatedStandings
+    - This is the same error as viewStandingsAfterDeletionTeam.
 - ContestEndCest
-  - noContestJudge 
+  - noContestJudge
+    - There is nothing to signify that a contest has ended as a Judge;
+    time wraps around back to 23 hours 59 minutes etc.
 
 Also JudgingCest works *most* of the time, but there are a few strange errors we haven't been able to replicate.
 If you see that JudgingCest fails, look at the recorder result to determine if it was something serious or something dumb.
