@@ -193,7 +193,7 @@ if ($_POST)
 	$sql.= "VALUES ( '$host_name', '$contest_name', '$num_problems', '$contest_date', ";
 	$sql.= "	     '$save_start', '$freeze_delay', '$contest_delay', ";
 	$sql.= "	     '$base_directory', '$ignore_stderr', '$username', '$password', '$show_team_names', '$save_ts', '$save_hs') ";
-//echo $sql;
+
 	$success = mysqli_query($link, $sql);
 	if ($success) {
 		if (   $forbidden_c == 1
