@@ -70,6 +70,7 @@ class CSubmission(Submission):
 
             args = [self.config['compiler']] + \
                    self.config['compiler_flags'] + \
+                   ['-o'] + \
                    [self.executable_path, self.source_path] + \
                    self.config['linker_flags']
             try:
