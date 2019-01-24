@@ -182,10 +182,13 @@ def process_submissions(db_driver: DBDriver, submissions, test_compile=False):
     :param db_driver: a connection to the database
     :param submissions: a list of rows from the QUEUED_SUBMISSIONS table
     :param bool test_compile: true if a test compile is desired
+    :return: a list containing the IDs of the rows this function inserted into JUDGED_SUBMISSIONS
     """
+    id_list = []
     for row in submissions:
         print_status('Reporting submission %s as pending' % get_submission_name(*row[1:4]))
         sub_id = db_driver.report_pending(row)
+        id_list.append(sub_id)
 
         try:
             submission = construct_submission(row, db_driver)
@@ -213,12 +216,19 @@ def process_submissions(db_driver: DBDriver, submissions, test_compile=False):
             print_status("Reporting judgement with code %d" % judgement['judgement_code'])
             db_driver.report_auto_judgement(sub_id, **judgement)
 
+    return id_list
 
-def judge_queued(db_driver: DBDriver):
+
+def judge_queued(db_driver: DBDriver, no_human=False):
     """
     Judges all the submissions which are queued for judging
+    :param no_human: True if the human judge should be taken out of the loop
     """
-    process_submissions(db_driver, db_driver.get_queued_submissions())
+    id_list = process_submissions(db_driver, db_driver.get_queued_submissions())
+
+    if no_human:
+        for sub_id in id_list:
+            db_driver.make_judgement(sub_id)
 
 
 def test_compile(queue_id, db_driver: DBDriver):
@@ -244,6 +254,8 @@ def requeue(db_driver: DBDriver):
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('-v', '--verbose', action='store_true', help='Print status messages to stdout')
+    parser.add_argument('-f', '--no-human', action='store_true', help='Take the human judge out of the judging loop')
+
     modes = parser.add_mutually_exclusive_group()
     modes.add_argument('-c', '--test-compile', type=str, metavar='Queue ID',
                        help="Take the row specified by the given ID out if the QUEUED_SUBMISSIONS table, compile it "
@@ -270,13 +282,13 @@ def main():
             acquire_lock(lock_file, blocking=True)
 
             requeue(db)
-            judge_queued(db)
+            judge_queued(db, no_human=args.no_human)
 
             release_lock(lock_file)
         else:
             acquire_lock(lock_file, blocking=False)
 
-            judge_queued(db)
+            judge_queued(db, no_human=args.no_human)
 
             release_lock(lock_file)
 

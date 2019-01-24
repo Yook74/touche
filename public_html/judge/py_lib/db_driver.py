@@ -212,6 +212,23 @@ class DBDriver:
         self.__connection.commit()
         curs.close()
 
+    def make_judgement(self, judged_id):
+        """
+        Acts like a human judgement and makes the reccomended judgement on the given ID
+        :param judged_id: an ID from the JUDGED_SUBMISSIONS table
+        """
+        curs = self.__connection.cursor()
+        curs.execute('''SELECT RESPONSE_ID FROM AUTO_RESPONSES WHERE JUDGED_ID = %d''' % judged_id)
+
+        judgement_codes = [row[0] for row in curs.fetchall()]
+        final_code = min(judgement_codes)
+
+        curs.execute('''UPDATE JUDGED_SUBMISSIONS SET RESPONSE_ID=%d, JUDGED=1 WHERE JUDGED_ID=%d''' %
+                     (final_code, judged_id))
+        self.__connection.commit()
+
+        curs.close()
+
     def get_response_codes(self):
         """
         :return: A dictionary which associates response keywords with their IDs
